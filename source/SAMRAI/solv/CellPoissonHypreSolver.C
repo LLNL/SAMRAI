@@ -682,11 +682,11 @@ CellPoissonHypreSolver::copyToHypre(
 {
    TBOX_ASSERT_DIM_OBJDIM_EQUALITY2(d_dim, src, box);
 
-   pdat::CellIterator cend(pdat::CellGeometry::end(box));
-   for (pdat::CellIterator c(pdat::CellGeometry::begin(box)); c != cend; ++c) {
-      hier::IntVector ic = *c;
-      HYPRE_StructVectorSetValues(vector, &ic[0], src(*c, depth));
-   }
+   pdat::CellData<double> tmp(box,1,hier::IntVector::getZero(d_dim));
+   tmp.copyDepth(0,src,depth);
+   hier::Index lower(box.lower());
+   hier::Index upper(box.upper());
+   HYPRE_StructVectorSetBoxValues(vector,&lower[0],&upper[0],tmp.getPointer());
 }
 
 /*
@@ -706,13 +706,11 @@ CellPoissonHypreSolver::copyFromHypre(
 {
    TBOX_ASSERT_DIM_OBJDIM_EQUALITY2(d_dim, dst, box);
 
-   pdat::CellIterator cend(pdat::CellGeometry::end(box));
-   for (pdat::CellIterator c(pdat::CellGeometry::begin(box)); c != cend; ++c) {
-      double value;
-      hier::IntVector ic = *c;
-      HYPRE_StructVectorGetValues(vector, &ic[0], &value);
-      dst(*c, depth) = value;
-   }
+   pdat::CellData<double> tmp(box,1,hier::IntVector::getZero(d_dim));
+   hier::Index lower(box.lower());
+   hier::Index upper(box.upper());
+   HYPRE_StructVectorGetBoxValues(vector,&lower[0],&upper[0],tmp.getPointer());
+   dst.copyDepth(depth,tmp,0);
 }
 
 /*
