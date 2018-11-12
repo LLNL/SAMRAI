@@ -246,12 +246,16 @@ CellPoissonFACSolver::deallocateSolverState()
       d_fac_precond->deallocateSolverState();
 
       /*
-       * Delete internally managed data.
+       * Delete internally managed data if not already done by other
+       * instance of class
        */
       int ln;
       for (ln = d_ln_min; ln <= d_ln_max; ++ln) {
-         d_hierarchy->getPatchLevel(ln)->deallocatePatchData(
-            s_weight_id[d_dim.getValue() - 1]);
+         std::shared_ptr<hier::PatchLevel> level(
+            d_hierarchy->getPatchLevel(ln));
+         const int weight_id = s_weight_id[d_dim.getValue() - 1];
+         if (!level->checkAllocated(weight_id))
+            level->deallocatePatchData(weight_id);
       }
 
       d_hierarchy.reset();
