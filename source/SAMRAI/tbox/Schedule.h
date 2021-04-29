@@ -17,6 +17,8 @@
 #include "SAMRAI/tbox/SAMRAI_MPI.h"
 #include "SAMRAI/tbox/MessageStream.h"
 #include "SAMRAI/tbox/Transaction.h"
+#include "SAMRAI/tbox/TransactionFuseable.h"
+#include "SAMRAI/tbox/KernelFuser.h"
 
 #include <iostream>
 #include <map>
@@ -275,7 +277,7 @@ public:
    bool
    allocatedCommunicationObjects()
    {
-      return d_coms != 0;
+      return (d_recv_coms.size() > 0 && d_send_coms.size() > 0);
    }
 
    /*!
@@ -293,10 +295,8 @@ private:
    void
    deallocateCommunicationObjects()
    {
-      if (d_coms) {
-         delete[] d_coms;
-      }
-      d_coms = 0;
+      d_send_coms.clear();
+      d_recv_coms.clear();
    }
 
    void
@@ -344,11 +344,25 @@ private:
    TransactionSets d_send_sets;
    TransactionSets d_recv_sets;
 
+   TransactionSets d_send_sets_fuseable;
+   TransactionSets d_recv_sets_fuseable;
+
+   KernelFuser* d_send_fuser{nullptr};
+   KernelFuser* d_recv_fuser{nullptr};
+
    /*
     * @brief Transactions where the source and destination are the
     * local process.
     */
    std::list<std::shared_ptr<Transaction> > d_local_set;
+
+   /*
+    * @brief Fuseable transactions where the source and destination are the
+    * local process.
+    */
+   std::list<std::shared_ptr<Transaction> > d_local_set_fuseable;
+
+   KernelFuser* d_local_fuser{nullptr};
 
    //@{ @name High-level asynchronous messages passing objects
 
@@ -359,7 +373,10 @@ private:
     * d_coms is typed for byte sending because our data is of
     * unknown mixed type.
     */
-   AsyncCommPeer<char>* d_coms;
+   using CommMap = std::map<int, std::shared_ptr<AsyncCommPeer<char>>>;
+   CommMap d_send_coms;
+   CommMap d_recv_coms;
+
    /*!
     * @brief Stage for advancing communication operations to
     * completion.

@@ -58,6 +58,7 @@ set ( tbox_headers
   TimerManager.h
   Tracer.h
   Transaction.h
+  TransactionFuseable.h
   Utilities.h)
 
 set_source_files_properties(
@@ -115,6 +116,7 @@ set (tbox_sources
   TimerManager.C
   Tracer.C
   Transaction.C
+  TransactionFuseable.C
   Utilities.C)
 
 if (ENABLE_HDF5)
@@ -146,8 +148,10 @@ if (ENABLE_RAJA)
 endif ()
 
 if (ENABLE_CUDA)
-  set(cuda_sources Schedule.C)
+  set(cuda_sources TransactionFuseable.C Schedule.C)
   set_source_files_properties(${cuda_sources} PROPERTIES LANGUAGE CUDA)
+
+  set (tbox_depends ${tbox_depends} cuda)
 
   if (ENABLE_NVTX_REGIONS)
     find_package(CUDA REQUIRED)
@@ -175,6 +179,9 @@ target_include_directories( SAMRAI_tbox
   PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source>
   $<INSTALL_INTERFACE:include>)
+
+blt_print_target_properties(
+  TARGET SAMRAI_tbox)
 
 
 install(TARGETS SAMRAI_tbox

@@ -31,6 +31,33 @@ PatchData::~PatchData()
 {
 }
 
+void
+PatchData::copy(
+   const PatchData& src,
+   const BoxOverlap& overlap,
+   tbox::KernelFuser& fuser)
+{
+   copy(src, overlap);
+}
+
+void
+PatchData::packStream(
+   tbox::MessageStream& stream,
+   const BoxOverlap& overlap,
+   tbox::KernelFuser& fuser)
+{
+   packStream(stream, overlap);
+}
+
+void
+PatchData::unpackStream(
+   tbox::MessageStream& stream,
+   const BoxOverlap& overlap,
+   tbox::KernelFuser& fuser)
+{
+   unpackStream(stream, overlap);
+}
+
 /*
  *************************************************************************
  *

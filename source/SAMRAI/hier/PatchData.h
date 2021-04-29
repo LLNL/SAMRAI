@@ -20,6 +20,15 @@
 #include "SAMRAI/tbox/Utilities.h"
 
 namespace SAMRAI {
+
+/*
+ * Forward declaration of KernelFuser class - required here because it sucks in
+ * RAJA and requires CUDA.
+ */
+namespace tbox {
+class KernelFuser;
+}
+
 namespace hier {
 
 /**
@@ -160,6 +169,12 @@ public:
       const PatchData& src,
       const BoxOverlap& overlap) = 0;
 
+   virtual void
+   copy(
+      const PatchData& src,
+      const BoxOverlap& overlap,
+      tbox::KernelFuser& fuser);
+
    /**
     * Copy data from the source into the destination using the designated
     * overlap descriptor.  The overlap description will have been computed
@@ -207,6 +222,19 @@ public:
       const BoxOverlap& overlap) const = 0;
 
    /**
+    * Pack data lying on the specified index set into the output stream using
+    * the given KernelFuser. The default implementation of this method will
+    * call packStream without the fuser argument. See the abstract stream
+    * virtual base class for more information about the packing operators
+    * defined for streams.
+    */
+   virtual void
+   packStream(
+      tbox::MessageStream& stream,
+      const BoxOverlap& overlap,
+      tbox::KernelFuser& fuser);
+
+   /**
     * Unpack data from the message stream into the specified index set.
     * See the abstract stream virtual base class for more information about
     * the packing operators defined for streams.
@@ -215,6 +243,19 @@ public:
    unpackStream(
       tbox::MessageStream& stream,
       const BoxOverlap& overlap) = 0;
+
+   /**
+    * Unpack data from the message stream into the specified index set using
+    * the given KernelFuser. The default implementation of this method will
+    * call unpackStream without the fuser argument. See the abstract stream
+    * virtual base class for more information about the packing operators
+    * defined for streams.
+    */
+   virtual void
+   unpackStream(
+      tbox::MessageStream& stream,
+      const BoxOverlap& overlap,
+      tbox::KernelFuser& fuser);
 
    /**
     * Checks that class version and restart file version are equal.  If so,

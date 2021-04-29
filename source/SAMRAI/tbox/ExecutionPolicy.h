@@ -111,6 +111,11 @@ struct policy_traits<policy::parallel> {
    >;
 
    using ReductionPolicy = RAJA::cuda_reduce;
+
+   using WorkGroupPolicy = RAJA::WorkGroupPolicy<
+      RAJA::cuda_work_async<1024>, 
+      RAJA::unordered_cuda_loop_y_block_iter_x_threadblock_average,
+      RAJA::constant_stride_array_of_objects>;
 };
 
 #else
