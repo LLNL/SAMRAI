@@ -131,7 +131,7 @@ public:
     *
     * @return the patch descriptor for this patch.
     */
-   std::shared_ptr<PatchDescriptor>
+   const std::shared_ptr<PatchDescriptor>&
    getPatchDescriptor() const
    {
       return d_descriptor;
@@ -152,7 +152,7 @@ public:
     *
     * @pre (id >= 0) && (id < numPatchData())
     */
-   std::shared_ptr<PatchData>
+   const std::shared_ptr<PatchData>&
    getPatchData(
       const int id) const
    {
@@ -178,7 +178,7 @@ public:
     * @pre getDim() == variable->getDim()
     * @pre (id >= 0) && (id < numPatchData())
     */
-   std::shared_ptr<PatchData>
+   const std::shared_ptr<PatchData>&
    getPatchData(
       const std::shared_ptr<Variable>& variable,
       const std::shared_ptr<VariableContext>& context) const
@@ -340,7 +340,7 @@ public:
     *
     * @return pointer to patch geometry object.
     */
-   std::shared_ptr<PatchGeometry>
+   const std::shared_ptr<PatchGeometry>&
    getPatchGeometry() const
    {
       return d_patch_geometry;
