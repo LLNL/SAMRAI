@@ -11,6 +11,8 @@
 #ifndef included_pdat_ArrayDataOperationUtilities_C
 #define included_pdat_ArrayDataOperationUtilities_C
 
+#include <vector>
+
 #include "SAMRAI/pdat/ArrayDataOperationUtilities.h"
 #include "SAMRAI/pdat/ArrayData.h"
 #include "SAMRAI/hier/ForAll.h"
@@ -621,7 +623,7 @@ inline void ArrayDataOperationUtilities<dcomplex, SumOperation<dcomplex> >::doAr
 #if !defined(HAVE_RAJA)
    const hier::Box& array_d_box(arraydata.getBox());
 
-   int box_w[dim.getValue()];
+   std::vector<int> box_w(dim.getValue());
    int dat_w[SAMRAI::MAX_DIM_VAL];
    int dim_counter[SAMRAI::MAX_DIM_VAL];
    for (tbox::Dimension::dir_t i = 0; i < dim.getValue(); ++i) {
