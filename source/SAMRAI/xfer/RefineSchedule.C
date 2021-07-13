@@ -5070,6 +5070,29 @@ RefineSchedule::setDeterministicUnpackOrderingFlag(bool flag)
 
 /*
  **************************************************************************
+ **************************************************************************
+ */
+
+void
+RefineSchedule::setCopyBeforePackingFlag(bool flag)
+{
+   if (d_coarse_priority_level_schedule) {
+      d_coarse_priority_level_schedule->setCopyBeforePackingFlag(flag);
+   }
+   if (d_fine_priority_level_schedule) {
+      d_fine_priority_level_schedule->setCopyBeforePackingFlag(flag);
+   }
+   if (d_coarse_interp_schedule) {
+      d_coarse_interp_schedule->setCopyBeforePackingFlag(flag);
+   }
+   if (d_coarse_interp_encon_schedule) {
+      d_coarse_interp_encon_schedule->setCopyBeforePackingFlag(flag);
+   }
+}
+
+
+/*
+ **************************************************************************
  *
  * Allocate internal data
  *

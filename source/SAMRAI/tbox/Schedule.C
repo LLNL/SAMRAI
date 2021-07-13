@@ -211,6 +211,9 @@ Schedule::beginCommunication()
    d_object_timers->t_begin_communication->start();
    allocateCommunicationObjects();
    postReceives();
+   if (d_copy_before_packing) {
+       performLocalCopies();
+   }
    postSends();
    d_object_timers->t_begin_communication->stop();
 }
@@ -225,7 +228,9 @@ void
 Schedule::finalizeCommunication()
 {
    d_object_timers->t_finalize_communication->start();
-   performLocalCopies();
+   if (!d_copy_before_packing) {
+       performLocalCopies();
+   }
 #if defined(HAVE_RAJA)
    parallel_synchronize();
 #endif
