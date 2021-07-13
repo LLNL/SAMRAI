@@ -248,6 +248,21 @@ public:
       d_unpack_in_deterministic_order = flag;
    }
 
+
+   /*!
+    * @brief Set whether to copy local values before packing
+    *
+    * By default copying local values are done after values are packed.
+    * If your results are dependent on copying before packing,
+    * set this flag to true.
+    *
+    * @param [in] flag
+    */
+   void setCopyBeforePackingFlag(bool flag)
+   {
+      d_copy_before_packing = flag;
+   }
+
    /*!
     * @brief Setup names of timers.
     *
@@ -399,6 +414,14 @@ private:
     * @see setDeterministicUnpackOrderingFlag()
     */
    bool d_unpack_in_deterministic_order;
+
+
+   /*!
+    * @brief Whether to copy before packing
+    *
+    * @see setCopyBeforePackingFlag()
+    */
+   bool d_copy_before_packing = false;
 
    static const int s_default_first_tag;
    static const int s_default_second_tag;

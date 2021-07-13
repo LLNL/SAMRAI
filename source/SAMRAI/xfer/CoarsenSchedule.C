@@ -1225,6 +1225,22 @@ CoarsenSchedule::setDeterministicUnpackOrderingFlag(bool flag)
 }
 
 /*
+ **************************************************************************
+ **************************************************************************
+ */
+
+void
+CoarsenSchedule::setCopyBeforePackingFlag(bool flag)
+{
+   if (d_schedule) {
+      d_schedule->setCopyBeforePackingFlag(flag);
+   }
+   if (d_precoarsen_refine_schedule) {
+      d_precoarsen_refine_schedule->setCopyBeforePackingFlag(flag);
+   }
+}
+
+/*
  * ************************************************************************
  *
  * Print coarsen schedule data to the specified output stream.

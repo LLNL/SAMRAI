@@ -274,6 +274,20 @@ public:
    setDeterministicUnpackOrderingFlag(
       bool flag);
 
+
+   /*!
+    * @brief Set whether to copy local values before packing
+    *
+    * By default copying local values are done after values are packed.
+    * If your results are dependent on copying before packing,
+    * set this flag to true.
+    *
+    * @param [in] flag
+    */
+   void
+   setCopyBeforePackingFlag(
+      bool flag);
+
    /*!
     * @brief Allocated needed data on all internal levels.
     *
