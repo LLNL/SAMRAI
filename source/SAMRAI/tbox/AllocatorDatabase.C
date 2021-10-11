@@ -11,11 +11,11 @@
 #include "SAMRAI/tbox/AllocatorDatabase.h"
 
 #ifdef HAVE_UMPIRE
-#include "umpire/strategy/DynamicPool.hpp"
+#include "umpire/strategy/QuickPool.hpp"
 #include "umpire/ResourceManager.hpp"
 
 #include "umpire/resource/MemoryResourceTypes.hpp"
-#include "umpire/strategy/DynamicPool.hpp"
+#include "umpire/strategy/QuickPool.hpp"
 #include "umpire/strategy/AllocationAdvisor.hpp"
 #endif
 
@@ -83,11 +83,11 @@ AllocatorDatabase::initialize()
     auto allocator = rm.getAllocator(umpire::resource::Host);
 #endif
 
-    rm.makeAllocator<umpire::strategy::DynamicPool>("samrai::data_allocator", allocator);
+    rm.makeAllocator<umpire::strategy::QuickPool>("samrai::data_allocator", allocator);
   }
 
   if (!rm.isAllocator("samrai::tag_allocator")) {
-    rm.makeAllocator<umpire::strategy::DynamicPool>("samrai::tag_allocator",
+    rm.makeAllocator<umpire::strategy::QuickPool>("samrai::tag_allocator",
         rm.getAllocator(umpire::resource::Host));
   }
 
@@ -98,7 +98,7 @@ AllocatorDatabase::initialize()
     auto allocator = rm.getAllocator(umpire::resource::Host);
 #endif
 
-    rm.makeAllocator<umpire::strategy::DynamicPool>("samrai::stream_allocator", allocator);
+    rm.makeAllocator<umpire::strategy::QuickPool>("samrai::stream_allocator", allocator);
   }
 
   if (!rm.isAllocator("samrai::temporary_data_allocator")) {
@@ -108,7 +108,7 @@ AllocatorDatabase::initialize()
 #else
     auto allocator = rm.getAllocator(umpire::resource::Host);
 #endif
-    rm.makeAllocator<umpire::strategy::DynamicPool>("samrai::temporary_data_allocator", allocator);
+    rm.makeAllocator<umpire::strategy::QuickPool>("samrai::temporary_data_allocator", allocator);
   }
 
 #endif
