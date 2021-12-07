@@ -20,6 +20,7 @@
 #include "boost/shared_ptr.hpp"
 #include <string>
 #include <map>
+#include <memory>
 
 namespace SAMRAI {
 namespace hier {
@@ -158,7 +159,9 @@ private:
    registerInLookupTable(
       const std::string& name)
    {
-      s_lookup_table.insert(
+      //s_lookup_table.insert(
+      //   std::pair<std::string, CoarsenOperator *>(name, this));
+      (*s_lookup_table).insert(
          std::pair<std::string, CoarsenOperator *>(name, this));
    }
 
@@ -176,12 +179,15 @@ private:
    static void
    finalizeCallback()
    {
-      s_lookup_table.clear();
+      (*s_lookup_table).clear();
    }
 
    const std::string d_name;
 
-   static std::multimap<std::string, CoarsenOperator *> s_lookup_table;
+   //static std::multimap<std::string, CoarsenOperator *> s_lookup_table;
+   static std::shared_ptr<std::multimap<std::string, CoarsenOperator *>> s_lookup_table;
+   std::weak_ptr<std::multimap<std::string, CoarsenOperator *>> l_lookup_table = s_lookup_table;
+
 
    static tbox::StartupShutdownManager::Handler s_finalize_handler;
 

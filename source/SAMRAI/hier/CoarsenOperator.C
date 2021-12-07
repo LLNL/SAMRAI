@@ -18,7 +18,8 @@
 namespace SAMRAI {
 namespace hier {
 
-std::multimap<std::string, CoarsenOperator *> CoarsenOperator::s_lookup_table;
+//std::multimap<std::string, CoarsenOperator *> CoarsenOperator::s_lookup_table;
+std::shared_ptr<std::multimap<std::string, CoarsenOperator *>> CoarsenOperator::s_lookup_table(new std::multimap<std::string, CoarsenOperator *>);
 
 tbox::StartupShutdownManager::Handler
 CoarsenOperator::s_finalize_handler(
@@ -36,7 +37,10 @@ CoarsenOperator::CoarsenOperator(const std::string& name):
 
 CoarsenOperator::~CoarsenOperator()
 {
-   removeFromLookupTable(d_name);
+   //removeFromLookupTable(d_name);
+   if(std::shared_ptr<std::multimap<std::string, CoarsenOperator *>> l_lookup_table_lock = l_lookup_table.lock()) {
+     removeFromLookupTable(d_name);
+   }
 }
 
 void
@@ -48,18 +52,18 @@ CoarsenOperator::removeFromLookupTable(
     * in which case the table will have been cleared before the statics
     * are destroyed.
     */
-   if (!s_lookup_table.empty()) {
+   if (!(*s_lookup_table).empty()) {
       std::multimap<std::string, CoarsenOperator *>::iterator mi =
-         s_lookup_table.find(name);
-      TBOX_ASSERT(mi != s_lookup_table.end());
+         (*s_lookup_table).find(name);
+      TBOX_ASSERT(mi != (*s_lookup_table).end());
       while (mi->first == name && mi->second != this) {
          ++mi;
-         TBOX_ASSERT(mi != s_lookup_table.end());
+         TBOX_ASSERT(mi != (*s_lookup_table).end());
       }
       TBOX_ASSERT(mi->first == name);
       TBOX_ASSERT(mi->second == this);
       mi->second = 0;
-      s_lookup_table.erase(mi);
+      (*s_lookup_table).erase(mi);
    }
 }
 /*
@@ -75,7 +79,7 @@ CoarsenOperator::getMaxCoarsenOpStencilWidth(
    IntVector max_width(dim, 0);
 
    for (std::multimap<std::string, CoarsenOperator *>::const_iterator
-        mi = s_lookup_table.begin(); mi != s_lookup_table.end(); ++mi) {
+        mi = (*s_lookup_table).begin(); mi != (*s_lookup_table).end(); ++mi) {
       const CoarsenOperator* op = mi->second;
       max_width.max(op->getStencilWidth(dim));
    }

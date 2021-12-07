@@ -33,6 +33,7 @@ END_BOOST_WARNING_SUPPRESSION
 #include <list>
 #include <string>
 #include <vector>
+#include <utility>
 
 namespace SAMRAI {
 namespace pdat {

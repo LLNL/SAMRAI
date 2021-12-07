@@ -743,9 +743,14 @@ SparseData<BOX_GEOMETRY>::getFromRestart(
 
    d_dbl_names.clear();
    for (int i = 0; i < d_dbl_attr_size; ++i) {
+     auto pp = std::make_pair(keys[i], DoubleAttributeId(ids[i]));
+     d_dbl_names.insert(pp);
+
+ #if 0
       d_dbl_names.insert(
          std::make_pair<std::string, DoubleAttributeId>(
             keys[i], DoubleAttributeId(ids[i])));
+#endif
    }
 
    delete[] keys;
@@ -763,9 +768,12 @@ SparseData<BOX_GEOMETRY>::getFromRestart(
 
    d_int_names.clear();
    for (int i = 0; i < d_int_attr_size; ++i) {
-      d_int_names.insert(
+      auto pp = std::make_pair(keys[i], IntegerAttributeId(ids[i]));
+      d_int_names.insert(pp);
+ #if 0
          std::make_pair<std::string, IntegerAttributeId>(
             keys[i], IntegerAttributeId(ids[i])));
+#endif
    }
 
    delete[] keys;
