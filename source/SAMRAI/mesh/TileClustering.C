@@ -1088,7 +1088,7 @@ TileClustering::makeCoarsenedTagData(const pdat::CellData<int>& tag_data,
                               hier::IntVector::getZero(tag_data.getDim())));
    coarsened_tag_data->fill(0, 0);
 #if defined(HAVE_CUDA)
-   tbox::parallel_sychronize();
+   tbox::parallel_synchronize();
 #endif
 
    size_t coarse_tag_count = 0;
