@@ -47,7 +47,9 @@ static void
 parallel_synchronize()
 {
 #if defined(HAVE_CUDA) && defined(HAVE_RAJA)
-   if (s_using_gpu) RAJA::synchronize<RAJA::cuda_synchronize>();
+   if (s_using_gpu) {
+      RAJA::synchronize<RAJA::cuda_synchronize>();
+   }
 #endif       
 }
 
