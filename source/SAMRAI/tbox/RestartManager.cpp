@@ -255,7 +255,7 @@ RestartManager::unregisterRestartItem(
  *
  *************************************************************************
  */
-void
+std::string
 RestartManager::writeRestartFile(
    const std::string& root_dirname,
    int restore_num)
@@ -290,6 +290,8 @@ RestartManager::writeRestartFile(
          "No DatabaseFactory supplied to RestartManager for writeRestartFile "
          << restart_filename << std::endl);
    }
+
+   return restart_filename;
 }
 
 /*

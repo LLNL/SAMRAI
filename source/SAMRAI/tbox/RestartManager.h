@@ -215,11 +215,11 @@ public:
     * Note:  This method creates/uses a restart directory structure
     *    with 00000 as the restore number.
     */
-   void
+   std::string
    writeRestartFile(
       const std::string& root_dirname)
    {
-      writeRestartFile(root_dirname, 0);
+      return writeRestartFile(root_dirname, 0);
    }
 
    /**
@@ -230,7 +230,7 @@ public:
     *
     * @pre hasDatabaseFactory()
     */
-   void
+   std::string
    writeRestartFile(
       const std::string& root_dirname,
       const int restore_num);
