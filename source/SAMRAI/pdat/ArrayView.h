@@ -70,7 +70,7 @@ struct ArrayView<1, TYPE> : public RAJA::View<TYPE, detail::layout_traits::Layou
          data,
          RAJA::make_permuted_offset_layout(
             std::array<RAJA::Index_type, 1>{ {box.lower()[0]} },
-            std::array<RAJA::Index_type, 1>{ {box.upper()[0]} },
+            std::array<RAJA::Index_type, 1>{ {box.upper()[0]+1} },
             RAJA::as_array<RAJA::PERM_I>::get())){}
 };
 
@@ -84,7 +84,7 @@ struct ArrayView<2, TYPE> : public RAJA::View<TYPE, detail::layout_traits::Layou
          data,
          RAJA::make_permuted_offset_layout(
             std::array<RAJA::Index_type, 2>{ {box.lower()[0], box.lower()[1]} },
-            std::array<RAJA::Index_type, 2>{ {box.upper()[0], box.upper()[1]} },
+            std::array<RAJA::Index_type, 2>{ {box.upper()[0]+1, box.upper()[1]+1} },
             RAJA::as_array<RAJA::PERM_JI>::get())){}
 };
 
@@ -98,7 +98,7 @@ struct ArrayView<3, TYPE> : public RAJA::View<TYPE, detail::layout_traits::Layou
          data,
          RAJA::make_permuted_offset_layout(
             std::array<RAJA::Index_type, 3>{ {box.lower()[0], box.lower()[1], box.lower()[2]} },
-            std::array<RAJA::Index_type, 3>{ {box.upper()[0], box.upper()[1], box.upper()[2]} },
+            std::array<RAJA::Index_type, 3>{ {box.upper()[0]+1, box.upper()[1]+1, box.upper()[2]+1} },
             RAJA::as_array<RAJA::PERM_KJI>::get())){};
 };
 
@@ -112,7 +112,7 @@ struct ArrayView<1, const TYPE> : public RAJA::View<const TYPE, detail::layout_t
          data,
          RAJA::make_permuted_offset_layout(
             std::array<RAJA::Index_type, 1>{ {box.lower()[0]} },
-            std::array<RAJA::Index_type, 1>{ {box.upper()[0]} },
+            std::array<RAJA::Index_type, 1>{ {box.upper()[0]+1} },
             RAJA::as_array<RAJA::PERM_I>::get())){}
 };
 
@@ -126,7 +126,7 @@ struct ArrayView<2, const TYPE> : public RAJA::View<const TYPE, detail::layout_t
          data,
          RAJA::make_permuted_offset_layout(
             std::array<RAJA::Index_type, 2>{ {box.lower()[0], box.lower()[1]} },
-            std::array<RAJA::Index_type, 2>{ {box.upper()[0], box.upper()[1]} },
+            std::array<RAJA::Index_type, 2>{ {box.upper()[0]+1, box.upper()[1]+1} },
             RAJA::as_array<RAJA::PERM_JI>::get())){}
 };
 
@@ -141,7 +141,7 @@ struct ArrayView<3, const TYPE> : public RAJA::View<const TYPE, detail::layout_t
          data,
          RAJA::make_permuted_offset_layout(
             std::array<RAJA::Index_type, 3>{ {box.lower()[0], box.lower()[1], box.lower()[2]} },
-            std::array<RAJA::Index_type, 3>{ {box.upper()[0], box.upper()[1], box.upper()[2]} },
+            std::array<RAJA::Index_type, 3>{ {box.upper()[0]+1, box.upper()[1]+1, box.upper()[2]+1} },
             RAJA::as_array<RAJA::PERM_KJI>::get())){};
 };
 
