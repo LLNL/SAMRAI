@@ -62,7 +62,7 @@ these libraries.
                 Details about what's new
 -----------------------------------------------------------------------------
 
-
+1) When building with the new versions of RAJA and Umpire, C++ 14 is required.
 
 -----------------------------------------------------------------------------
                 Details about what's changed

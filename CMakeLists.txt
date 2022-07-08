@@ -39,7 +39,7 @@ set(ENABLE_CUDA Off CACHE Bool "Enable CUDA")
 set(ENABLE_MPI On CACHE Bool "Enable MPI.")
 set(ENABLE_TESTS On CACHE Bool "Enable Tests.")
 set(ENABLE_DOCS Off CACHE Bool "Enable Docs.")
-set(BLT_CXX_STD "c++11" CACHE STRING "Version of C++ standard")
+set(BLT_CXX_STD "c++14" CACHE STRING "Version of C++ standard")
 set(gtest_disable_pthreads ON CACHE BOOL "")
 
 message(STATUS "Enable Test Flag Top: ${ENABLE_TESTS} " )
