@@ -1,0 +1,103 @@
+*****************************************************************************
+  Copyright 1997-2022
+  Lawrence Livermore National Security, LLC.
+  All rights reserved.
+*****************************************************************************
+
+                     Release Notes for SAMRAI v4.1.1
+
+     (notes for previous releases may be found in /SAMRAI/docs/release)
+
+*****************************************************************************
+
+Please direct any questions related to these notes to the SAMRAI development
+team by sending email to samrai@llnl.gov.
+
+*****************************************************************************
+
+VERSION 4.1.1
+
+Version 4.1.1 is a minor release update.  Please also see the release notes
+for version 4.1.0 located at docs/release/version-4.1.0
+
+*****************************************************************************
+
+Where to report Bugs
+--------------------
+
+If a bug is found in the SAMRAI library, we ask that you kindly report
+it to us so that we may fix it.
+
+Please send email to samrai-bugs@llnl.gov or post an issue on github.
+https://github.com/LLNL/SAMRAI
+
+
+
+*****************************************************************************
+
+----------------------------------------------------------------------------
+                Significant bug fixes
+----------------------------------------------------------------------------
+
+*****************************************************************************
+
+
+
+----------------------------------------------------------------------------
+                Summary of what's new
+-----------------------------------------------------------------------------
+
+1) The filename extension for all C++ source files has been changed from
+.C to .cpp.
+
+-----------------------------------------------------------------------------
+                Summary of what's changed
+-----------------------------------------------------------------------------
+
+1) The logic surrounding the internal RAJA kernels in ArrayData has been
+modified so that they can run on either the host or device, depending on
+how the underlying data is allocated.
+
+2) Usage of Umpire's deprecated DynamicPool has been replaced by QuickPool.
+
+
+*****************************************************************************
+
+-----------------------------------------------------------------------------
+                Details about what's new
+-----------------------------------------------------------------------------
+
+1) The filename extension for all C++ source files has been changed from
+'.C' to '.cpp'.  The extension for header files remains unchanged as '.h'
+so as not to require changes to `#include` lines inside user codes.
+
+
+-----------------------------------------------------------------------------
+                Details about what's changed
+----------------------------------------------------------------------------
+
+1) The logic surrounding the internal RAJA kernels in ArrayData has been
+modified so that they can run on either the host or device, depending on
+how the underlying data is allocated.
+
+SAMRAI's core patch data types (CellData, NodeData, etc.) use ArrayData for
+their underlying arrays.  When SAMRAI is built with CUDA and the RAJA
+and Umpire libraries for use on GPU architectures, their constructors
+can take a tbox::ResourceAllocator, which is an alias for an Umpire
+allocator, to choose the memory resource where the arrays are
+allocated.  In the previous release, the RAJA kernels within ArrayData that
+operated on these arrays were set up to always run on the GPU device, so
+the allocator must always have been for a memory resource that can run on
+the device.
+
+To give users the flexibility to choose to allocate objects of these
+classes on either the host or device, the logic has been modified such that
+to construct these patch data objects with a host allocator, in which case
+the kernels will execute on the CPU host.
+
+2) Usage of Umpire's deprecated DynamicPool has been replaced by QuickPool.
+This is the Umpire strategy class used for SAMRAI's Umpire allocators
+provided in tbox::AllocatorDatabase.
+
+=============================================================================
+=============================================================================
