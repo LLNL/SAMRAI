@@ -1067,7 +1067,7 @@ CoarsenSchedule::coarsenSourceData(
 
    tbox::StagedKernelFusers::getInstance()->launch();
 #if defined(HAVE_RAJA)
-   if (patch_strategy->needSynchronize() || tbox::StagedKernelFusers::getInstance()->launched()) {
+   if (!patch_strategy || patch_strategy->needSynchronize() || tbox::StagedKernelFusers::getInstance()->launched()) {
       tbox::parallel_synchronize();
    }
 #endif

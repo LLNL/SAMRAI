@@ -116,7 +116,7 @@ ArrayData<TYPE>::ArrayData(
    }
 #endif
 
-#ifdef DEBUG_IINITIALIZE_UNDEFINED
+#ifdef DEBUG_INITIALIZE_UNDEFINED
    undefineData();
 #endif
 }
@@ -149,7 +149,7 @@ ArrayData<TYPE>::ArrayData(
    }
 #endif
 
-#ifdef DEBUG_IINITIALIZE_UNDEFINED
+#ifdef DEBUG_INITIALIZE_UNDEFINED
    undefineData();
 #endif
 }
@@ -1030,7 +1030,7 @@ void ArrayData<TYPE>::fillAll(
             ptr[i] = t;
          });
       }
-#if defined(DEBUG_IINITIALIZE_UNDEFINED)      
+#if defined(DEBUG_INITIALIZE_UNDEFINED)      
       tbox::parallel_synchronize();
 #endif
 #else
