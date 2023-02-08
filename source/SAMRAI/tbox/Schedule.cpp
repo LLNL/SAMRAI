@@ -494,7 +494,6 @@ Schedule::postSends()
       bool have_fuseable = !(d_send_sets_fuseable[peer_rank].empty());
       bool have_nonfuseable = !(d_send_sets[peer_rank].empty());
 
-
       if (have_fuseable || have_nonfuseable) { 
          for (const auto& transaction : d_send_sets_fuseable[peer_rank]) {
             transaction->packStream(outgoing_stream);
@@ -514,7 +513,6 @@ Schedule::postSends()
 
       if (d_ops_strategy && !defer_send) {
          defer_send = d_ops_strategy->deferMessageSend();
-//         defer_send = true;
       }
 
       if (!defer_send) {
@@ -537,14 +535,16 @@ Schedule::postSends()
 
    }
 
+   bool need_sync = true;
    if (d_ops_strategy) {
       d_ops_strategy->postPack();
+      need_sync = d_ops_strategy->needSynchronize();
    }
 
    if (defer_send) {
 
 #if defined(HAVE_RAJA)
-      if (!d_ops_strategy) {
+      if (!d_ops_strategy || need_sync) {
          parallel_synchronize();
       }
 #endif
@@ -595,10 +595,18 @@ Schedule::performLocalCopies()
       local->copyLocalData();
    }
 
+   // need_sync initialized true unless both sets are empty.
+   bool need_sync = !(d_local_set_fuseable.empty() && d_local_set.empty());
    if (d_ops_strategy) {
       d_ops_strategy->postCopy();
+      // d_ops_strategy may indicate sync no longer needed.
+      need_sync = d_ops_strategy->needSynchronize();
    }
-
+#if defined(HAVE_RAJA)
+   if (need_sync) {
+      parallel_synchronize();
+   }
+#endif
    d_object_timers->t_local_copies->stop();
 
 }
@@ -656,9 +664,19 @@ Schedule::processCompletedCommunications()
             transaction->unpackStream(incoming_stream);
          }
 
+         // need_sync initialized true unless both sets are empty.
+         bool need_sync = !(d_recv_sets_fuseable[sender].empty() &&
+                            d_recv_sets[sender].empty());
          if (d_ops_strategy) {
             d_ops_strategy->postUnpack();
+            // d_ops_strategy may indicate sync no longer needed.
+            need_sync = d_ops_strategy->needSynchronize();
          }
+#if defined(HAVE_RAJA)
+         if (need_sync) {
+            parallel_synchronize();
+         }
+#endif
 
          d_object_timers->t_unpack_stream->stop();
          completed_comm->clearRecvData();
@@ -678,6 +696,8 @@ Schedule::processCompletedCommunications()
          d_ops_strategy->preUnpack();
       }
 
+      bool have_fuseable = false;
+      bool have_nonfuseable = false;
       while (d_com_stage.hasCompletedMembers() || d_com_stage.advanceSome()) {
 
          AsyncCommPeer<char>* completed_comm =
@@ -699,7 +719,11 @@ Schedule::processCompletedCommunications()
 #endif
                );
 
-            bool have_fuseable = !(d_recv_sets_fuseable[sender].empty());
+            have_fuseable = have_fuseable ||
+                            !(d_recv_sets_fuseable[sender].empty());
+
+            have_nonfuseable = have_nonfuseable ||
+                               !(d_recv_sets[sender].empty());
 
             d_object_timers->t_unpack_stream->start();
             for (const auto& transaction : d_recv_sets_fuseable[sender]) {
@@ -716,9 +740,19 @@ Schedule::processCompletedCommunications()
          }
       }
 
+      // need_sync initialized true unless there were no transactions found
+      // in the above loop.
+      bool need_sync = have_fuseable || have_nonfuseable;
       if (d_ops_strategy) {
          d_ops_strategy->postUnpack();
+         // d_ops_strategy may indicate sync no longer needed.
+         need_sync = d_ops_strategy->needSynchronize();
       }
+#if defined(HAVE_RAJA)
+      if (need_sync) {
+         parallel_synchronize();
+      }
+#endif
 
       for (auto& comms : d_recv_coms) {
          auto& completed_comm = comms.second;

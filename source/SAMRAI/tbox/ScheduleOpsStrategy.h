@@ -96,6 +96,11 @@ public:
     */
    virtual bool deferMessageSend() = 0;
 
+   virtual bool needSynchronize()
+   {
+      return true;
+   }
+
 private:
    ScheduleOpsStrategy(
       const ScheduleOpsStrategy&);              // not implemented
