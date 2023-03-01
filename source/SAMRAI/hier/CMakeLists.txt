@@ -140,6 +140,10 @@ if (ENABLE_MPI)
   set (hier_depends ${hier_depends} mpi)
 endif ()
 
+if (ENABLE_CUDA)
+  set (hier_depends ${hier_depends} cuda)
+endif ()
+
 blt_add_library(
   NAME SAMRAI_hier
   SOURCES ${hier_sources}

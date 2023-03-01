@@ -139,6 +139,43 @@ public:
       const hier::Box& coarse_box,
       const hier::IntVector& ratio) = 0;
 
+   virtual void
+   setPostCoarsenSyncFlag()
+   {
+      setNeedCoarsenSynchronize(true);
+   }
+
+   /*!
+    * @brief Check flag for if host-device synchronization is needed.
+    *
+    * Returns current value of the flag while setting the flag back to
+    * the default value of true.
+    */
+   bool
+   needSynchronize()
+   {
+      bool flag = d_need_synchronize;
+      d_need_synchronize = true;
+      return flag;
+   }
+
+protected:
+
+   /*!
+    * @brief Set flag indicating if device synchronization is needed after
+    * a child class operation.
+    *
+    * This allows implementations of methods such as preprocessCoarsen and
+    * postprocessCoarsen to set the flag to false if they have done nothing
+    * that requires host-device synchronization and do not need
+    * CoarsenSchedule to call the synchronize routine.
+    */
+   void
+   setNeedCoarsenSynchronize(bool flag)
+   {
+      d_need_synchronize = flag;
+   }
+
 private:
    /*!
     * @brief Get the set of CoarsenPatchStrategy objects that have been
@@ -162,6 +199,8 @@ private:
          CoarsenPatchStrategy::getCurrentObjects();
       current_objects.insert(this);
    }
+
+   bool d_need_synchronize = true;
 
 };
 

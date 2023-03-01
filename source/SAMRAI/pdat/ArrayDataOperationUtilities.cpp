@@ -14,10 +14,11 @@
 #include "SAMRAI/pdat/ArrayDataOperationUtilities.h"
 #include "SAMRAI/pdat/ArrayData.h"
 #include "SAMRAI/hier/ForAll.h"
-#include "SAMRAI/tbox/Utilities.h"
 #include "SAMRAI/pdat/SumOperation.h"
 #include "SAMRAI/tbox/Collectives.h"
 #include "SAMRAI/tbox/NVTXUtilities.h"
+#include "SAMRAI/tbox/StagedKernelFusers.h"
+#include "SAMRAI/tbox/Utilities.h"
 
 #include <array>
 
@@ -114,6 +115,12 @@ void ArrayDataOperationUtilities<TYPE, OP>::doArrayDataOperationOnBox(
    bool on_host = (src_on_host && dst_on_host);
 #endif
 
+#if defined(HAVE_RAJA)
+   bool use_fuser = dst.useFuser();
+   tbox::KernelFuser* fuser = use_fuser ?
+      tbox::StagedKernelFusers::getInstance()->getFuser(0) : nullptr;
+#endif
+
    /*
     * Loop over the depth sections of the data arrays.
     */
@@ -133,7 +140,7 @@ void ArrayDataOperationUtilities<TYPE, OP>::doArrayDataOperationOnBox(
                   op(dest(i), s2(i));
                });
             } else {
-               hier::parallel_for_all(opbox, [=] SAMRAI_HOST_DEVICE(int i) {
+               hier::parallel_for_all(fuser, opbox, [=] SAMRAI_HOST_DEVICE(int i) {
                   op(dest(i), s2(i));
                });
             }
@@ -150,7 +157,7 @@ void ArrayDataOperationUtilities<TYPE, OP>::doArrayDataOperationOnBox(
                   op(dest(i, j), s2(i, j));
                });
             } else {
-               hier::parallel_for_all(opbox, [=] SAMRAI_HOST_DEVICE(int i, int j) {
+               hier::parallel_for_all(fuser, opbox, [=] SAMRAI_HOST_DEVICE(int i, int j) {
                   op(dest(i, j), s2(i, j));
                });
             }
@@ -168,7 +175,7 @@ void ArrayDataOperationUtilities<TYPE, OP>::doArrayDataOperationOnBox(
                   op(dest(i, j, k), s2(i, j, k));
                });
             } else {
-               hier::parallel_for_all(opbox, [=] SAMRAI_HOST_DEVICE(int i, int j, int k) {
+               hier::parallel_for_all(fuser, opbox, [=] SAMRAI_HOST_DEVICE(int i, int j, int k) {
                   op(dest(i, j, k), s2(i, j, k));
                });
             }
@@ -314,6 +321,12 @@ void ArrayDataOperationUtilities<TYPE, OP>::doArrayDataBufferOperationOnBox(
    bool on_host = arraydata.dataOnHost();
 #endif
 
+#if defined(HAVE_RAJA)
+   bool use_fuser = arraydata.useFuser();
+   tbox::KernelFuser* fuser = use_fuser ?
+      tbox::StagedKernelFusers::getInstance()->getFuser(0) : nullptr;
+#endif
+
    /*
     * Loop over the depth sections of the data arrays.
     */
@@ -337,7 +350,7 @@ void ArrayDataOperationUtilities<TYPE, OP>::doArrayDataBufferOperationOnBox(
                   op(dest(i), source(i));
                });
             } else {
-               hier::parallel_for_all(opbox, [=] SAMRAI_HOST_DEVICE(int i) {
+               hier::parallel_for_all(fuser, opbox, [=] SAMRAI_HOST_DEVICE(int i) {
                   op(dest(i), source(i));
                });
             }
@@ -351,7 +364,7 @@ void ArrayDataOperationUtilities<TYPE, OP>::doArrayDataBufferOperationOnBox(
                   op(dest(i, j), source(i, j));
                });
             } else {
-               hier::parallel_for_all(opbox, [=] SAMRAI_HOST_DEVICE(int i, int j) {
+               hier::parallel_for_all(fuser, opbox, [=] SAMRAI_HOST_DEVICE(int i, int j) {
                   op(dest(i, j), source(i, j));
                });
             }
@@ -365,7 +378,7 @@ void ArrayDataOperationUtilities<TYPE, OP>::doArrayDataBufferOperationOnBox(
                   op(dest(i, j, k), source(i, j, k));
                });
             } else {
-               hier::parallel_for_all(opbox, [=] SAMRAI_HOST_DEVICE(int i, int j, int k) {
+               hier::parallel_for_all(fuser, opbox, [=] SAMRAI_HOST_DEVICE(int i, int j, int k) {
                   op(dest(i, j, k), source(i, j, k));
                });
             }
@@ -514,6 +527,12 @@ inline void ArrayDataOperationUtilities<dcomplex,SumOperation<dcomplex> >::doArr
    bool on_host = (src_on_host && dst_on_host);
 #endif
 
+#if defined(HAVE_RAJA)
+//   bool use_fuser = dst.useFuser();
+//   tbox::KernelFuser* fuser = use_fuser ?
+//      tbox::KernelFuser::getFuser() : nullptr;
+#endif
+
    /*
     * Loop over the depth sections of the data arrays.
     */
@@ -538,6 +557,7 @@ inline void ArrayDataOperationUtilities<dcomplex,SumOperation<dcomplex> >::doArr
                   sumop_dbl(dest_imag, s2_imag);
                });
             } else {
+               //hier::parallel_for_all(fuser, opbox, [=] SAMRAI_HOST_DEVICE(int i) {
                hier::parallel_for_all(opbox, [=] SAMRAI_HOST_DEVICE(int i) {
                   double &dest_real = reinterpret_cast<double(&)[2]>(dest(i))[0];
                   double &dest_imag = reinterpret_cast<double(&)[2]>(dest(i))[1];
@@ -565,6 +585,7 @@ inline void ArrayDataOperationUtilities<dcomplex,SumOperation<dcomplex> >::doArr
                   sumop_dbl(dest_imag, s2_imag);
                });
             } else {
+               //hier::parallel_for_all(fuser, opbox, [=] SAMRAI_HOST_DEVICE(int i, int j) {
                hier::parallel_for_all(opbox, [=] SAMRAI_HOST_DEVICE(int i, int j) {
                   double &dest_real = reinterpret_cast<double(&)[2]>(dest(i,j))[0];
                   double &dest_imag = reinterpret_cast<double(&)[2]>(dest(i,j))[1];
@@ -593,6 +614,7 @@ inline void ArrayDataOperationUtilities<dcomplex,SumOperation<dcomplex> >::doArr
                   sumop_dbl(dest_imag, s2_imag);
                });
             } else {
+               //hier::parallel_for_all(fuser, opbox, [=] SAMRAI_HOST_DEVICE(int i, int j, int k) {
                hier::parallel_for_all(opbox, [=] SAMRAI_HOST_DEVICE(int i, int j, int k) {
                   double &dest_real = reinterpret_cast<double(&)[2]>(dest(i,j,k))[0];
                   double &dest_imag = reinterpret_cast<double(&)[2]>(dest(i,j,k))[1];
@@ -748,6 +770,12 @@ inline void ArrayDataOperationUtilities<dcomplex, SumOperation<dcomplex> >::doAr
    bool on_host = arraydata.dataOnHost();
 #endif
 
+#if defined(HAVE_RAJA)
+//   bool use_fuser = arraydata.useFuser();
+//   tbox::KernelFuser* fuser = use_fuser ?
+//      tbox::KernelFuser::getFuser() : nullptr;
+#endif
+
    /*
     * Loop over the depth sections of the data arrays.
     */
@@ -776,6 +804,7 @@ inline void ArrayDataOperationUtilities<dcomplex, SumOperation<dcomplex> >::doAr
                   sumop_dbl(dest_imag, source_imag);
                });
             } else {
+               //hier::parallel_for_all(fuser, opbox, [=] SAMRAI_HOST_DEVICE(int i) {
                hier::parallel_for_all(opbox, [=] SAMRAI_HOST_DEVICE(int i) {
                   double &dest_real = reinterpret_cast<double(&)[2]>(dest(i))[0];
                   double &dest_imag = reinterpret_cast<double(&)[2]>(dest(i))[1];
@@ -800,6 +829,7 @@ inline void ArrayDataOperationUtilities<dcomplex, SumOperation<dcomplex> >::doAr
                   sumop_dbl(dest_imag, source_imag);
                });
             } else {
+               //hier::parallel_for_all(fuser, opbox, [=] SAMRAI_HOST_DEVICE(int i, int j) {
                hier::parallel_for_all(opbox, [=] SAMRAI_HOST_DEVICE(int i, int j) {
                   double &dest_real = reinterpret_cast<double(&)[2]>(dest(i,j))[0];
                   double &dest_imag = reinterpret_cast<double(&)[2]>(dest(i,j))[1];
@@ -824,6 +854,7 @@ inline void ArrayDataOperationUtilities<dcomplex, SumOperation<dcomplex> >::doAr
                   sumop_dbl(dest_imag, source_imag);
                });
             } else {
+               //hier::parallel_for_all(fuser, opbox, [=] SAMRAI_HOST_DEVICE(int i, int j, int k) {
                hier::parallel_for_all(opbox, [=] SAMRAI_HOST_DEVICE(int i, int j, int k) {
                   double &dest_real = reinterpret_cast<double(&)[2]>(dest(i,j,k))[0];
                   double &dest_imag = reinterpret_cast<double(&)[2]>(dest(i,j,k))[1];

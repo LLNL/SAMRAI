@@ -5,7 +5,8 @@ set (mblktree_depends_on
     SAMRAI_hier
     SAMRAI_geom
     SAMRAI_mesh
-    SAMRAI_tbox)
+    SAMRAI_tbox
+    cuda)
 
 blt_add_executable(
   NAME mblktree

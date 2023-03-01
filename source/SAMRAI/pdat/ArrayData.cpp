@@ -11,6 +11,8 @@
 #ifndef included_pdat_ArrayData_C
 #define included_pdat_ArrayData_C
 
+#include "SAMRAI/tbox/KernelFuser.h"
+#include "SAMRAI/tbox/StagedKernelFusers.h"
 #include "SAMRAI/tbox/MessageStream.h"
 #include "SAMRAI/tbox/Utilities.h"
 #include "SAMRAI/tbox/MathUtilities.h"
@@ -102,7 +104,8 @@ ArrayData<TYPE>::ArrayData(
                           ,
                           d_array(d_depth * d_offset),
 #endif
-                          d_on_host(true)
+                          d_on_host(true),
+                          d_use_fuser(false)
 {
    TBOX_ASSERT(depth > 0);
 
@@ -133,7 +136,8 @@ ArrayData<TYPE>::ArrayData(
 #else
    d_array(d_depth * d_offset),
 #endif
-   d_on_host(true) 
+   d_on_host(true),
+   d_use_fuser(false)
 {
 #ifndef HAVE_UMPIRE
    NULL_USE(allocator);
@@ -299,12 +303,14 @@ void ArrayData<TYPE>::copy(
       const TYPE* const src_ptr = &src.d_array[0];
       const size_t n = d_offset * d_depth;
 #if defined(HAVE_RAJA)
+      tbox::KernelFuser* fuser = d_use_fuser ?
+         tbox::StagedKernelFusers::getInstance()->getFuser(0) : nullptr;
       if (d_on_host) {
          hier::host_parallel_for_all(0, n, [=] (int i) {
             copyop(dst_ptr[i], src_ptr[i]);
          });
       } else {
-         hier::parallel_for_all(0, n, [=] SAMRAI_HOST_DEVICE(int i) {
+         hier::parallel_for_all(fuser, 0, n, [=] SAMRAI_HOST_DEVICE(int i) {
             copyop(dst_ptr[i], src_ptr[i]);
          });
       } 
@@ -493,12 +499,15 @@ void ArrayData<TYPE>::copyDepth(
 
 
 #if defined(HAVE_RAJA)
+      tbox::KernelFuser* fuser = d_use_fuser ?
+         tbox::StagedKernelFusers::getInstance()->getFuser(0) : nullptr;
+
       if (d_on_host) {
          hier::host_parallel_for_all(0, d_offset, [=] (int i) {
             copyop(dst_ptr_d[i], src_ptr_d[i]);
          });
       } else {
-         hier::parallel_for_all(0, d_offset, [=] SAMRAI_HOST_DEVICE(int i) {
+         hier::parallel_for_all(fuser, 0, d_offset, [=] SAMRAI_HOST_DEVICE(int i) {
             copyop(dst_ptr_d[i], src_ptr_d[i]);
          });
       }
@@ -1010,12 +1019,15 @@ void ArrayData<TYPE>::fillAll(
       TYPE* ptr = &d_array[0];
       const size_t n = d_depth * d_offset;
 #if defined(HAVE_RAJA)
+      tbox::KernelFuser* fuser = d_use_fuser ?
+         tbox::StagedKernelFusers::getInstance()->getFuser(0) : nullptr;
+
       if (d_on_host) {
          hier::host_parallel_for_all(0, n, [=] (int i) {
             ptr[i] = t;
          });
       } else {
-         hier::parallel_for_all(0, n, [=] SAMRAI_HOST_DEVICE(int i) {
+         hier::parallel_for_all(fuser, 0, n, [=] SAMRAI_HOST_DEVICE(int i) {
             ptr[i] = t;
          });
       }
@@ -1052,12 +1064,15 @@ void ArrayData<TYPE>::fill(
    const size_t n = d_offset;
    if (!d_box.empty()) {
 #if defined(HAVE_RAJA)
+      tbox::KernelFuser* fuser = d_use_fuser ?
+         tbox::StagedKernelFusers::getInstance()->getFuser(0) : nullptr;
+
       if (d_on_host) {
          hier::host_parallel_for_all(0, n, [=] (int i) {
             ptr[i] = t;
          });
       } else {
-         hier::parallel_for_all(0, n, [=] SAMRAI_HOST_DEVICE(int i) {
+         hier::parallel_for_all(fuser, 0, n, [=] SAMRAI_HOST_DEVICE(int i) {
             ptr[i] = t;
          });
       }
@@ -1083,6 +1098,9 @@ void ArrayData<TYPE>::fill(
 
    if (!ispace.empty()) {
 #if defined(HAVE_RAJA)
+      tbox::KernelFuser* fuser = d_use_fuser ?
+         tbox::StagedKernelFusers::getInstance()->getFuser(0) : nullptr;
+
       switch (ispace.getDim().getValue()) {
          case 1: {
             auto data = getView<1>(d);
@@ -1091,7 +1109,7 @@ void ArrayData<TYPE>::fill(
                   data(i) = t;
                });
             } else {
-               hier::parallel_for_all(ispace, [=] SAMRAI_HOST_DEVICE(int i) {
+               hier::parallel_for_all(fuser, ispace, [=] SAMRAI_HOST_DEVICE(int i) {
                   data(i) = t;
                });
             }
@@ -1104,7 +1122,7 @@ void ArrayData<TYPE>::fill(
                   data(i,j) = t;
                });
             } else {
-               hier::parallel_for_all(ispace, [=] SAMRAI_HOST_DEVICE(int i, int j) {
+               hier::parallel_for_all(fuser, ispace, [=] SAMRAI_HOST_DEVICE(int i, int j) {
                   data(i,j) = t;
                });
             }
@@ -1117,7 +1135,7 @@ void ArrayData<TYPE>::fill(
                   data(i,j,k) = t;
                });
             } else {
-               hier::parallel_for_all(ispace, [=] SAMRAI_HOST_DEVICE(int i, int j, int k) {
+               hier::parallel_for_all(fuser, ispace, [=] SAMRAI_HOST_DEVICE(int i, int j, int k) {
                   data(i,j,k) = t;
                });
             }

@@ -284,6 +284,16 @@ public:
       const hier::PatchData& src,
       const hier::BoxOverlap& overlap);
 
+   virtual void
+   copyFuseable(
+      const hier::PatchData& src,
+      const hier::BoxOverlap& overlap)
+   {
+       d_data->startKernelFuser();
+       copy(src, overlap);
+       d_data->stopKernelFuser();
+   }
+
    /*!
     * @brief Copy data from source (i.e., this) to destination
     * patch data object on the given overlap.
@@ -362,6 +372,16 @@ public:
       tbox::MessageStream& stream,
       const hier::BoxOverlap& overlap) const;
 
+   virtual void
+   packStreamFuseable(
+      tbox::MessageStream& stream,
+      const hier::BoxOverlap& overlap) const
+   {
+      d_data->startKernelFuser();
+      packStream(stream, overlap);
+      d_data->stopKernelFuser();
+   }
+
    /*!
     * @brief Unpack data from stream into this patch data object over
     * the specified box overlap region. The overlap must be a
@@ -373,6 +393,17 @@ public:
    unpackStream(
       tbox::MessageStream& stream,
       const hier::BoxOverlap& overlap);
+
+   virtual void
+   unpackStreamFuseable(
+      tbox::MessageStream& stream,
+      const hier::BoxOverlap& overlap)
+   {
+      d_data->startKernelFuser();
+      unpackStream(stream, overlap);
+      d_data->stopKernelFuser();
+   }
+
 
    /*!
     * @brief Fill all values at depth d with the value t.

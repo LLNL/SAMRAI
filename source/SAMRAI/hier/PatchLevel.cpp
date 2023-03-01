@@ -9,7 +9,9 @@
  ************************************************************************/
 #include "SAMRAI/hier/PatchLevel.h"
 
+#include "SAMRAI/tbox/Collectives.h"
 #include "SAMRAI/tbox/MathUtilities.h"
+#include "SAMRAI/tbox/StagedKernelFusers.h"
 #include "SAMRAI/tbox/TimerManager.h"
 #include "SAMRAI/hier/BaseGridGeometry.h"
 #include "SAMRAI/hier/BoxContainer.h"

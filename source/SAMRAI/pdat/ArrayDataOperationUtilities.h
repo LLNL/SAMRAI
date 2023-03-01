@@ -113,7 +113,6 @@ private:
    ArrayDataOperationUtilities&
    operator = (
       const ArrayDataOperationUtilities&);
-
 };
 
 }

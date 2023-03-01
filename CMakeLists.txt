@@ -60,8 +60,6 @@ option(ENABLE_PERF_TESTS "Enable Performance Tests." Off)
 set(MIN_TEST_PROCS 1 CACHE INT "Minimum number of procs for tests.")
 set(NUM_PERF_PROCS 8 CACHE INT "Number of processors for performance tests.")
 option(ENABLE_CHECK_ASSERTIONS "Enable assertion checking." On)
-option(ENABLE_CHECK_DEV_ASSERTIONS "Enable SAMRAI developer assertion checking." Off)
-option(ENABLE_CHECK_DIM_ASSERTIONS "Enable assertion checking for dimensions." Off)
 option(ENABLE_BOX_COUNTING "Turns on box telemetry." Off)
 option(ENABLE_DEPRECATED "Build with deprecated features." On)
 option(ENABLE_TIMERS "Enable SAMRAI timers." On)
@@ -73,6 +71,7 @@ set(CUDA_ARCH "sm_70" CACHE STRING "Compute architecture to pass to CUDA builds"
 set(CMAKE_CUDA_FLAGS "" CACHE STRING "")
 set(CMAKE_INSTALL_LIBDIR lib)
 #set(CMAKE_INSTALL_RPATH_USE_LINK_PATH Off CACHE Bool "Rpath uses Link path")
+set(SAMRAI_RAJA_WORKGROUP_THREADS 512 CACHE INT "Number of workgroup threads")
 
 include(GNUInstallDirs)
 

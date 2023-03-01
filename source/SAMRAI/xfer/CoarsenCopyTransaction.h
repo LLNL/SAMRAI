@@ -14,7 +14,7 @@
 
 #include "SAMRAI/SAMRAI_config.h"
 
-#include "SAMRAI/tbox/Transaction.h"
+#include "SAMRAI/tbox/TransactionFuseable.h"
 #include "SAMRAI/hier/BaseGridGeometry.h"
 #include "SAMRAI/hier/PatchLevel.h"
 #include "SAMRAI/xfer/CoarsenClasses.h"
@@ -40,7 +40,7 @@ namespace xfer {
  * @see tbox::Transaction
  */
 
-class CoarsenCopyTransaction:public tbox::Transaction
+class CoarsenCopyTransaction:public tbox::TransactionFuseable
 {
 public:
    /*!

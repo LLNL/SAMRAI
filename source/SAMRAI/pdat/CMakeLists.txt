@@ -339,6 +339,10 @@ target_include_directories(
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source>
   $<INSTALL_INTERFACE:include>)
 
+blt_print_target_properties(TARGET SAMRAI_pdat)
+blt_print_target_properties(TARGET raja)
+blt_print_target_properties(TARGET RAJA)
+
 install(TARGETS SAMRAI_pdat
   EXPORT SAMRAITargets
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

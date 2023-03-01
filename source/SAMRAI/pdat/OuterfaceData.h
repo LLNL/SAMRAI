@@ -415,6 +415,16 @@ public:
       tbox::MessageStream& stream,
       const hier::BoxOverlap& overlap) const;
 
+   virtual void
+   packStream(
+      tbox::MessageStream& stream,
+      const hier::BoxOverlap& overlap,
+      tbox::KernelFuser& fuser) const
+   {
+      NULL_USE(fuser);
+      packStream(stream, overlap);
+   }
+
    /*!
     * @brief Unpack data from stream into this patch data object over
     * the specified box overlap region. The overlap must be an
@@ -426,6 +436,16 @@ public:
    unpackStream(
       tbox::MessageStream& stream,
       const hier::BoxOverlap& overlap);
+
+   virtual void
+   unpackStream(
+      tbox::MessageStream& stream,
+      const hier::BoxOverlap& overlap,
+      tbox::KernelFuser& fuser)
+   {
+      NULL_USE(fuser);
+      unpackStream(stream, overlap);
+   }
 
    /*!
     * @brief Fill all values at depth d with the value t.

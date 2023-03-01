@@ -100,6 +100,16 @@ AllocatorDatabase::initialize()
     rm.makeAllocator<umpire::strategy::QuickPool>("samrai::stream_allocator", allocator);
   }
 
+  if (!rm.isAllocator("samrai::fuser_allocator")) {
+#if defined(HAVE_CUDA)
+    auto allocator = rm.getAllocator(umpire::resource::Pinned);
+#else
+    auto allocator = rm.getAllocator(umpire::resource::Host);
+#endif
+
+    rm.makeAllocator<umpire::strategy::QuickPool>("samrai::fuser_allocator", allocator);
+  }
+
   if (!rm.isAllocator("samrai::temporary_data_allocator")) {
 #if defined(HAVE_CUDA)
     //auto allocator = rm.getAllocator(umpire::resource::Device);
@@ -131,6 +141,13 @@ AllocatorDatabase::getStreamAllocator()
 {
   umpire::ResourceManager& rm = umpire::ResourceManager::getInstance();
   return umpire::TypedAllocator<char>(rm.getAllocator("samrai::stream_allocator"));
+}
+
+umpire::TypedAllocator<char>
+AllocatorDatabase::getKernelFuserAllocator()
+{
+  umpire::ResourceManager& rm = umpire::ResourceManager::getInstance();
+  return umpire::TypedAllocator<char>(rm.getAllocator("samrai::fuser_allocator"));
 }
 
 umpire::TypedAllocator<char>

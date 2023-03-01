@@ -131,7 +131,7 @@ RefineCopyTransaction::packStream(
    tbox::MessageStream& stream)
 {
    d_src_patch->getPatchData(d_refine_data[d_item_id]->d_src)
-   ->packStream(stream, *d_overlap);
+   ->packStreamFuseable(stream, *d_overlap);
 }
 
 void
@@ -139,7 +139,7 @@ RefineCopyTransaction::unpackStream(
    tbox::MessageStream& stream)
 {
    d_dst_patch->getPatchData(d_refine_data[d_item_id]->d_scratch)
-   ->unpackStream(stream, *d_overlap);
+   ->unpackStreamFuseable(stream, *d_overlap);
 }
 
 void
@@ -151,7 +151,7 @@ RefineCopyTransaction::copyLocalData()
    const hier::PatchData& src_data =
       *d_src_patch->getPatchData(d_refine_data[d_item_id]->d_src);
 
-   dst_data.copy(src_data, *d_overlap);
+   dst_data.copyFuseable(src_data, *d_overlap);
 }
 
 /*

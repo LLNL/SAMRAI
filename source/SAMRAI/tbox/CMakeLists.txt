@@ -27,6 +27,7 @@ set ( tbox_headers
   InputDatabase.h
   InputManager.h
   IOStream.h
+  KernelFuser.h
   Logger.h
   MathUtilities.h
   MathUtilities.cpp
@@ -48,9 +49,11 @@ set ( tbox_headers
   SAMRAI_MPI.h
   SAMRAIManager.h
   Schedule.h
+  ScheduleKernelFuser.h
   Serializable.h
   SiloDatabase.h
   SiloDatabaseFactory.h
+  StagedKernelFusers.h
   StartupShutdownManager.h
   Statistic.h
   Statistician.h
@@ -59,6 +62,7 @@ set ( tbox_headers
   TimerManager.h
   Tracer.h
   Transaction.h
+  TransactionFuseable.h
   Utilities.h)
 
 set_source_files_properties(
@@ -88,6 +92,7 @@ set (tbox_sources
   HDFDatabaseFactory.cpp
   IEEE.cpp
   InputManager.cpp
+  KernelFuser.cpp
   Logger.cpp
   MathUtilitiesSpecial.cpp
   MemoryDatabase.cpp
@@ -106,9 +111,11 @@ set (tbox_sources
   SAMRAI_MPI.cpp
   Scanner.cpp
   Schedule.cpp
+  ScheduleKernelFuser.cpp
   Serializable.cpp
   SiloDatabase.cpp
   SiloDatabaseFactory.cpp
+  StagedKernelFusers.cpp
   StartupShutdownManager.cpp
   StatTransaction.cpp
   Statistic.cpp
@@ -117,6 +124,7 @@ set (tbox_sources
   TimerManager.cpp
   Tracer.cpp
   Transaction.cpp
+  TransactionFuseable.cpp
   Utilities.cpp)
 
 if (ENABLE_HDF5)
@@ -148,8 +156,10 @@ if (ENABLE_RAJA)
 endif ()
 
 if (ENABLE_CUDA)
-  set(cuda_sources GPUUtilities.cpp Schedule.cpp)
+  set(cuda_sources GPUUtilities.cpp Schedule.cpp TransactionFuseable.cpp)
   set_source_files_properties(${cuda_sources} PROPERTIES LANGUAGE CUDA)
+
+  set (tbox_depends ${tbox_depends} cuda)
 
   if (ENABLE_NVTX_REGIONS)
     find_package(CUDA REQUIRED)
@@ -177,6 +187,9 @@ target_include_directories( SAMRAI_tbox
   PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source>
   $<INSTALL_INTERFACE:include>)
+
+blt_print_target_properties(
+  TARGET SAMRAI_tbox)
 
 
 install(TARGETS SAMRAI_tbox

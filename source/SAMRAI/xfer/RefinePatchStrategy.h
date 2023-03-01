@@ -265,6 +265,7 @@ public:
       NULL_USE(coarse_to_unfilled);
       NULL_USE(overlaps);
       NULL_USE(refine_items);
+      setNeedRefineSynchronize(false);
    }
 
    /*!
@@ -290,6 +291,44 @@ public:
       NULL_USE(coarse_level);
       NULL_USE(coarse_to_fine);
       NULL_USE(coarse_to_unfilled);
+      setNeedRefineSynchronize(false);
+   }
+
+   virtual void
+   setPostRefineSyncFlag()
+   {
+      setNeedRefineSynchronize(true);
+   }
+
+   /*!
+    * @brief Check flag for if host-device synchronization is needed.
+    *
+    * Returns current value of the flag while setting the flag back to
+    * the default value of true.
+    */
+   bool
+   needSynchronize()
+   {
+      bool flag = d_need_synchronize;
+      d_need_synchronize = true;
+      return flag;
+   }
+
+protected:
+
+   /*!
+    * @brief Set flag indicating if device synchronization is needed after
+    * a child class operation.
+    *
+    * This allows implementations of methods such as preprocessRefine and
+    * postprocessRefine to set the flag to false if they have done nothing
+    * that requires host-device synchronization and do not need
+    * RefineSchedule to call the synchronize routine.
+    */
+   void
+   setNeedRefineSynchronize(bool flag)
+   {
+      d_need_synchronize = flag;
    }
 
 private:
@@ -326,6 +365,8 @@ private:
          RefinePatchStrategy::getCurrentObjects();
       current_objects.erase(this);
    }
+
+   bool d_need_synchronize = true;
 
 };
 

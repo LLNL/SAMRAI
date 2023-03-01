@@ -10,6 +10,7 @@
 #include "SAMRAI/tbox/Schedule.h"
 #include "SAMRAI/tbox/AllocatorDatabase.h"
 #include "SAMRAI/tbox/InputManager.h"
+#include "SAMRAI/tbox/StagedKernelFusers.h"
 #include "SAMRAI/tbox/PIO.h"
 #include "SAMRAI/tbox/SAMRAIManager.h"
 #include "SAMRAI/tbox/SAMRAI_MPI.h"
@@ -40,7 +41,11 @@ const int Schedule::s_default_second_tag = 1;
  * MPI communication.  This parameter should be dependent on the MPI
  * implementation.
  */
+#if defined(HAVE_CUDA)
+const size_t Schedule::s_default_first_message_length = 0;
+#else
 const size_t Schedule::s_default_first_message_length = 1000;
+#endif
 
 const std::string Schedule::s_default_timer_prefix("tbox::Schedule");
 std::map<std::string, Schedule::TimerStruct> Schedule::s_static_timers;
@@ -60,7 +65,6 @@ Schedule::s_initialize_finalize_handler(
  */
 
 Schedule::Schedule():
-   d_coms(0),
    d_com_stage(),
    d_mpi(SAMRAI_MPI::getSAMRAIWorld()),
    d_first_tag(s_default_first_tag),
@@ -101,13 +105,40 @@ Schedule::addTransaction(
    const int src_id = transaction->getSourceProcessor();
    const int dst_id = transaction->getDestinationProcessor();
 
+   std::shared_ptr<TransactionFuseable> fuseable_transaction{
+      std::dynamic_pointer_cast<TransactionFuseable>(transaction)};
+
    if ((d_mpi.getRank() == src_id) && (d_mpi.getRank() == dst_id)) {
-      d_local_set.push_front(transaction);
+      if (fuseable_transaction) {
+         if (!d_local_fusers) {
+            d_local_fusers = StagedKernelFusers::getInstance();
+         }
+         fuseable_transaction->setKernelFuser(d_local_fusers);
+         d_local_set_fuseable.push_front(fuseable_transaction);
+      } else {
+         d_local_set.push_front(transaction);
+      }
    } else {
       if (d_mpi.getRank() == dst_id) {
-         d_recv_sets[src_id].push_front(transaction);
+         if (fuseable_transaction) {
+            if (!d_recv_fusers) {
+               d_recv_fusers = StagedKernelFusers::getInstance();
+            }
+            fuseable_transaction->setKernelFuser(d_recv_fusers);
+            d_recv_sets_fuseable[src_id].push_front(fuseable_transaction);
+         } else {
+            d_recv_sets[src_id].push_front(transaction);
+         }
       } else if (d_mpi.getRank() == src_id) {
-         d_send_sets[dst_id].push_front(transaction);
+         if (fuseable_transaction) {
+            if (!d_send_fusers) {
+               d_send_fusers = StagedKernelFusers::getInstance();
+            }
+            fuseable_transaction->setKernelFuser(d_send_fusers);
+            d_send_sets_fuseable[dst_id].push_front(fuseable_transaction);
+         } else {
+            d_send_sets[dst_id].push_front(transaction);
+         }
       }
    }
 }
@@ -126,13 +157,40 @@ Schedule::appendTransaction(
    const int src_id = transaction->getSourceProcessor();
    const int dst_id = transaction->getDestinationProcessor();
 
+   std::shared_ptr<TransactionFuseable> fuseable_transaction{
+      std::dynamic_pointer_cast<TransactionFuseable>(transaction)};
+
    if ((d_mpi.getRank() == src_id) && (d_mpi.getRank() == dst_id)) {
-      d_local_set.push_back(transaction);
+      if (fuseable_transaction) {
+         if (!d_local_fusers) {
+            d_local_fusers = StagedKernelFusers::getInstance();
+         }
+         fuseable_transaction->setKernelFuser(d_local_fusers);
+         d_local_set_fuseable.push_back(fuseable_transaction);
+      } else {
+         d_local_set.push_back(transaction);
+      }
    } else {
       if (d_mpi.getRank() == dst_id) {
-         d_recv_sets[src_id].push_back(transaction);
+         if (fuseable_transaction) {
+            if (!d_recv_fusers) {
+               d_recv_fusers = StagedKernelFusers::getInstance();
+            }
+            fuseable_transaction->setKernelFuser(d_recv_fusers);
+            d_recv_sets_fuseable[src_id].push_back(fuseable_transaction);
+         } else {
+            d_recv_sets[src_id].push_back(transaction);
+         }
       } else if (d_mpi.getRank() == src_id) {
-         d_send_sets[dst_id].push_back(transaction);
+         if (fuseable_transaction) {
+            if (!d_send_fusers) {
+               d_send_fusers = StagedKernelFusers::getInstance();
+            }
+            fuseable_transaction->setKernelFuser(d_send_fusers);
+            d_send_sets_fuseable[dst_id].push_back(transaction);
+         } else {
+            d_send_sets[dst_id].push_back(transaction);
+         }
       }
    }
 }
@@ -149,8 +207,13 @@ Schedule::getNumSendTransactions(
    int size = 0;
    TransactionSets::const_iterator mi = d_send_sets.find(rank);
    if (mi != d_send_sets.end()) {
-      size = static_cast<int>(mi->second.size());
+      size += static_cast<int>(mi->second.size());
    }
+   mi = d_send_sets_fuseable.find(rank);
+   if (mi != d_send_sets_fuseable.end()) {
+      size += static_cast<int>(mi->second.size());
+   }
+
    return size;
 }
 
@@ -166,7 +229,11 @@ Schedule::getNumRecvTransactions(
    int size = 0;
    TransactionSets::const_iterator mi = d_recv_sets.find(rank);
    if (mi != d_recv_sets.end()) {
-      size = static_cast<int>(mi->second.size());
+      size += static_cast<int>(mi->second.size());
+   }
+   mi = d_recv_sets_fuseable.find(rank);
+   if (mi != d_recv_sets_fuseable.end()) {
+      size += static_cast<int>(mi->second.size());
    }
    return size;
 }
@@ -186,6 +253,7 @@ Schedule::communicate()
 #endif
 
    d_object_timers->t_communicate->start();
+   d_completed_transactions = false;
    beginCommunication();
    finalizeCommunication();
    d_object_timers->t_communicate->stop();
@@ -226,9 +294,6 @@ Schedule::finalizeCommunication()
 {
    d_object_timers->t_finalize_communication->start();
    performLocalCopies();
-#if defined(HAVE_RAJA)
-   parallel_synchronize();
-#endif
    processCompletedCommunications();
    deallocateCommunicationObjects();
    d_object_timers->t_finalize_communication->stop();
@@ -245,13 +310,15 @@ Schedule::finalizeCommunication()
 void
 Schedule::postReceives()
 {
-   if (d_recv_sets.empty()) {
+   if (d_recv_sets.empty() && d_recv_sets_fuseable.empty()) {
       /*
        * Short cut because some looping logic in this method assumes
        * non-empty d_recv_sets.
        */
       return;
    }
+
+   d_completed_transactions = true;
 
    int rank = d_mpi.getRank();
 
@@ -263,60 +330,87 @@ Schedule::postReceives()
     * send posted earlier is paired with a receive that is also posted
     * earlier.
     */
-   AsyncCommPeer<char>* recv_coms = d_coms;
-
-   // Initialize iterators to where we want to start looping.
-   size_t icom = 0; // Index into recv_coms.
-   while (icom < d_recv_sets.size() &&
-          recv_coms[icom].getPeerRank() < rank) {
-      ++icom;
-   }
-   icom = icom > 0 ? icom - 1 : d_recv_sets.size() - 1;
-
-   // Map iterator mi corresponds to recv_coms[icom].
-   TransactionSets::const_iterator mi =
-      d_recv_sets.find(recv_coms[icom].getPeerRank());
-
-   for (size_t counter = 0;
-        counter < d_recv_sets.size();
-        ++counter, --mi, --icom) {
-
-      TBOX_ASSERT(mi->first == recv_coms[icom].getPeerRank());
-
+   for (CommMap::reverse_iterator comm_peer(d_recv_coms.lower_bound(rank));
+        comm_peer != d_recv_coms.rend();
+        ++comm_peer) {
+      const int recv_rank = (*comm_peer).first;
+      auto& comm = (*comm_peer).second;
       // Compute incoming message size, if possible.
-      const std::list<std::shared_ptr<Transaction> >& transactions =
-         mi->second;
       unsigned int byte_count = 0;
       bool can_estimate_incoming_message_size = true;
-      for (ConstIterator r = transactions.begin();
-           r != transactions.end(); ++r) {
-         if (!(*r)->canEstimateIncomingMessageSize()) {
+
+      for (const auto& t : d_recv_sets[recv_rank] ) {
+         if (!t->canEstimateIncomingMessageSize()) {
             can_estimate_incoming_message_size = false;
             break;
          }
          byte_count +=
-            static_cast<unsigned int>((*r)->computeIncomingMessageSize());
+            static_cast<unsigned int>(t->computeIncomingMessageSize());
+      }
+
+      for (const auto& t: d_recv_sets_fuseable[recv_rank]) {
+         if (!t->canEstimateIncomingMessageSize()) {
+            can_estimate_incoming_message_size = false;
+            break;
+         }
+         byte_count +=
+            static_cast<unsigned int>(t->computeIncomingMessageSize());
       }
 
       // Set AsyncCommPeer to receive known message length.
       if (can_estimate_incoming_message_size) {
-         recv_coms[icom].limitFirstDataLength(byte_count);
+         comm->limitFirstDataLength(byte_count);
       }
 
       // Begin non-blocking receive operation.
       d_object_timers->t_post_receives->start();
-      recv_coms[icom].beginRecv();
-      if (recv_coms[icom].isDone()) {
-         recv_coms[icom].pushToCompletionQueue();
+      comm->beginRecv();
+      if (comm->isDone()) {
+         comm->pushToCompletionQueue();
       }
       d_object_timers->t_post_receives->stop();
-
-      if (mi == d_recv_sets.begin()) {
-         // Continue loop at the opposite end.
-         mi = d_recv_sets.end();
-         icom = d_recv_sets.size();
-      }
    }
+
+   CommMap::reverse_iterator stop(d_recv_coms.lower_bound(rank));
+   for (CommMap::reverse_iterator comm_peer = d_recv_coms.rbegin(); comm_peer != stop; ++comm_peer) {
+      const int recv_rank = (*comm_peer).first;
+      auto& comm = (*comm_peer).second;
+      // Compute incoming message size, if possible.
+      unsigned int byte_count = 0;
+      bool can_estimate_incoming_message_size = true;
+
+      for (const auto& t : d_recv_sets[recv_rank] ) {
+         if (!t->canEstimateIncomingMessageSize()) {
+            can_estimate_incoming_message_size = false;
+            break;
+         }
+         byte_count +=
+            static_cast<unsigned int>(t->computeIncomingMessageSize());
+      }
+
+      for (const auto& t: d_recv_sets_fuseable[recv_rank]) {
+         if (!t->canEstimateIncomingMessageSize()) {
+            can_estimate_incoming_message_size = false;
+            break;
+         }
+         byte_count +=
+            static_cast<unsigned int>(t->computeIncomingMessageSize());
+      }
+
+      // Set AsyncCommPeer to receive known message length.
+      if (can_estimate_incoming_message_size) {
+         comm->limitFirstDataLength(byte_count);
+      }
+
+      // Begin non-blocking receive operation.
+      d_object_timers->t_post_receives->start();
+      comm->beginRecv();
+      if (comm->isDone()) {
+         comm->pushToCompletionQueue();
+      }
+      d_object_timers->t_post_receives->stop();
+   }
+
 }
 
 /*
@@ -339,38 +433,26 @@ Schedule::postSends()
 
    int rank = d_mpi.getRank();
 
-   AsyncCommPeer<char>* send_coms = d_coms + d_recv_sets.size();
+   for (auto comm_peer = d_send_coms.lower_bound(rank);
+        comm_peer != d_send_coms.end(); 
+        ++comm_peer) {
+      const int peer_rank = (*comm_peer).first;
+      auto& comm = (*comm_peer).second;
 
-   // Initialize iterators to where we want to start looping.
-   TransactionSets::const_iterator mi = d_send_sets.upper_bound(rank);
-   size_t icom = 0; // send_coms[icom] corresponds to mi.
-   while (icom < d_send_sets.size() &&
-          send_coms[icom].getPeerRank() < rank) {
-      ++icom;
-   }
-
-   for (size_t counter = 0;
-        counter < d_send_sets.size();
-        ++counter, ++mi, ++icom) {
-
-      if (mi == d_send_sets.end()) {
-         // Continue loop at the opposite end.
-         mi = d_send_sets.begin();
-         icom = 0;
-      }
-      TBOX_ASSERT(mi->first == send_coms[icom].getPeerRank());
-
-      // Compute message size and whether receiver can estimate it.
-      const std::list<std::shared_ptr<Transaction> >& transactions =
-         mi->second;
       size_t byte_count = 0;
       bool can_estimate_incoming_message_size = true;
-      for (ConstIterator pack = transactions.begin();
-           pack != transactions.end(); ++pack) {
-         if (!(*pack)->canEstimateIncomingMessageSize()) {
+      for (const auto& transaction : d_send_sets[peer_rank]) {
+         if (!transaction->canEstimateIncomingMessageSize()) {
             can_estimate_incoming_message_size = false;
          }
-         byte_count += (*pack)->computeOutgoingMessageSize();
+         byte_count += transaction->computeOutgoingMessageSize();
+      }
+
+      for (const auto& transaction : d_send_sets_fuseable[peer_rank]) {
+         if (!transaction->canEstimateIncomingMessageSize()) {
+            can_estimate_incoming_message_size = false;
+         }
+         byte_count += transaction->computeOutgoingMessageSize();
       }
 
       // Pack outgoing data into a message.
@@ -385,27 +467,115 @@ Schedule::postSends()
          );
 
       d_object_timers->t_pack_stream->start();
-      for (ConstIterator pack = transactions.begin();
-           pack != transactions.end(); ++pack) {
-         (*pack)->packStream(outgoing_stream);
+
+      bool have_fuseable = !(d_send_sets_fuseable[peer_rank].empty());
+
+      for (const auto& transaction : d_send_sets_fuseable[peer_rank]) {
+         transaction->packStream(outgoing_stream);
       }
-#if defined(HAVE_RAJA)      
-      parallel_synchronize();
+      if (d_send_fusers && have_fuseable) {
+         d_send_fusers->launch();
+      }
+ 
+      for (const auto& transaction : d_send_sets[peer_rank]) {
+         transaction->packStream(outgoing_stream);
+      }
+
+      bool have_non_fuseable = !(d_send_sets[peer_rank].empty());
+
+      if (have_fuseable || have_non_fuseable) {
+         d_completed_transactions = true;
+#if defined(HAVE_RAJA)
+         parallel_synchronize();
+         if (d_send_fusers) d_send_fusers->cleanup();
 #endif
+      }
 
       d_object_timers->t_pack_stream->stop();
 
       if (can_estimate_incoming_message_size) {
          // Receiver knows message size so set it exactly.
-         send_coms[icom].limitFirstDataLength(byte_count);
+         comm->limitFirstDataLength(byte_count);
       }
 
       // Begin non-blocking send operation.
-      send_coms[icom].beginSend(
+      comm->beginSend(
          (const char *)outgoing_stream.getBufferStart(),
          static_cast<int>(outgoing_stream.getCurrentSize()));
-      if (send_coms[icom].isDone()) {
-         send_coms[icom].pushToCompletionQueue();
+      if (comm->isDone()) {
+         comm->pushToCompletionQueue();
+      }
+   }
+
+   for (auto comm_peer = d_send_coms.begin();
+        comm_peer != d_send_coms.lower_bound(rank); 
+        ++comm_peer) {
+      const int peer_rank = (*comm_peer).first;
+      auto& comm = (*comm_peer).second;
+
+      size_t byte_count = 0;
+      bool can_estimate_incoming_message_size = true;
+      for (const auto& transaction : d_send_sets[peer_rank]) {
+         if (!transaction->canEstimateIncomingMessageSize()) {
+            can_estimate_incoming_message_size = false;
+         }
+         byte_count += transaction->computeOutgoingMessageSize();
+      }
+
+      for (const auto& transaction : d_send_sets_fuseable[peer_rank]) {
+         if (!transaction->canEstimateIncomingMessageSize()) {
+            can_estimate_incoming_message_size = false;
+         }
+         byte_count += transaction->computeOutgoingMessageSize();
+      }
+
+      // Pack outgoing data into a message.
+      MessageStream outgoing_stream(
+         byte_count,
+         MessageStream::Write,
+         nullptr,
+         true
+#ifdef HAVE_UMPIRE
+         , AllocatorDatabase::getDatabase()->getStreamAllocator()
+#endif
+         );
+
+      bool have_fuseable = !(d_send_sets_fuseable[peer_rank].empty());
+
+      d_object_timers->t_pack_stream->start();
+      for (const auto& transaction : d_send_sets_fuseable[peer_rank]) {
+         transaction->packStream(outgoing_stream);
+      }
+      if (d_send_fusers && have_fuseable) {
+         d_send_fusers->launch();
+      }
+
+      for (const auto& transaction : d_send_sets[peer_rank]) {
+         transaction->packStream(outgoing_stream);
+      }
+      bool have_non_fuseable = !(d_send_sets[peer_rank].empty());
+
+      if (have_fuseable || have_non_fuseable) {
+         d_completed_transactions = true;
+#if defined(HAVE_RAJA)
+         parallel_synchronize();
+         if (d_send_fusers) d_send_fusers->cleanup();
+#endif
+      }
+
+      d_object_timers->t_pack_stream->stop();
+
+      if (can_estimate_incoming_message_size) {
+         // Receiver knows message size so set it exactly.
+         comm->limitFirstDataLength(byte_count);
+      }
+
+      // Begin non-blocking send operation.
+      comm->beginSend(
+         (const char *)outgoing_stream.getBufferStart(),
+         static_cast<int>(outgoing_stream.getCurrentSize()));
+      if (comm->isDone()) {
+         comm->pushToCompletionQueue();
       }
    }
 
@@ -420,12 +590,30 @@ Schedule::postSends()
 void
 Schedule::performLocalCopies()
 {
+   bool have_fuseable = !d_local_set_fuseable.empty();
+
    d_object_timers->t_local_copies->start();
-   for (Iterator local = d_local_set.begin();
-        local != d_local_set.end(); ++local) {
-      (*local)->copyLocalData();
+   for (const auto& local : d_local_set_fuseable) {
+      local->copyLocalData();
+   }
+   if (d_local_fusers && have_fuseable) {
+      d_local_fusers->launch();
+   }
+
+   for (const auto& local : d_local_set) {
+      local->copyLocalData();
    }
    d_object_timers->t_local_copies->stop();
+
+   bool have_non_fuseable = !d_local_set.empty();
+   if (have_fuseable || have_non_fuseable) {
+      d_completed_transactions = true;
+#if defined(HAVE_RAJA)
+      parallel_synchronize();
+      if (d_local_fusers) d_local_fusers->cleanup();
+#endif
+   }
+
 }
 
 /*
@@ -446,39 +634,57 @@ Schedule::processCompletedCommunications()
    if (d_unpack_in_deterministic_order) {
 
       // Unpack in deterministic order.  Wait for receive as needed.
+      // Deterministic order is lowest to highest recv rank
 
       int irecv = 0;
-      for (TransactionSets::iterator recv_itr = d_recv_sets.begin();
-           recv_itr != d_recv_sets.end(); ++recv_itr, ++irecv) {
-
-         int sender = recv_itr->first;
-         AsyncCommPeer<char>& completed_comm = d_coms[irecv];
-         TBOX_ASSERT(sender == completed_comm.getPeerRank());
-         completed_comm.completeCurrentOperation();
-         completed_comm.yankFromCompletionQueue();
+      for (auto& comms : d_recv_coms) {
+         auto& completed_comm = comms.second;
+         int sender = comms.first;
+         TBOX_ASSERT(sender == completed_comm->getPeerRank());
+         completed_comm->completeCurrentOperation();
+         completed_comm->yankFromCompletionQueue();
 
          MessageStream incoming_stream(
-            static_cast<size_t>(completed_comm.getRecvSize()) * sizeof(char),
+            static_cast<size_t>(completed_comm->getRecvSize()) * sizeof(char),
             MessageStream::Read,
-            completed_comm.getRecvData(),
+            completed_comm->getRecvData(),
             false /* don't use deep copy */
 #ifdef HAVE_UMPIRE
             , AllocatorDatabase::getDatabase()->getStreamAllocator()
 #endif
             );
 
+
+         bool have_fuseable = !(d_recv_sets_fuseable[sender].empty());
+
          d_object_timers->t_unpack_stream->start();
-         for (Iterator recv = d_recv_sets[sender].begin();
-              recv != d_recv_sets[sender].end(); ++recv) {
-            (*recv)->unpackStream(incoming_stream);
+         for (const auto& transaction : d_recv_sets_fuseable[sender]) {
+            transaction->unpackStream(incoming_stream);
+         }
+         if (d_recv_fusers || have_fuseable) {
+            d_recv_fusers->launch();
          }
 #if defined(HAVE_RAJA)
-         parallel_synchronize();
+         if (have_fuseable) {
+            parallel_synchronize();
+            if (d_recv_fusers) d_recv_fusers->cleanup();
+         }
 #endif
+         for (const auto& transaction : d_recv_sets[sender]) {
+            transaction->unpackStream(incoming_stream);
+         }
+         bool have_non_fuseable = !(d_recv_sets[sender].empty());
+#if defined(HAVE_RAJA)
+         if (have_non_fuseable) {
+            parallel_synchronize();
+         }
+#endif
+         if (have_fuseable || have_non_fuseable) {
+            d_completed_transactions = true;
+         }
 
          d_object_timers->t_unpack_stream->stop();
-         completed_comm.clearRecvData();
-
+         completed_comm->clearRecvData();
       }
 
       // Complete sends.
@@ -499,7 +705,7 @@ Schedule::processCompletedCommunications()
 
          TBOX_ASSERT(completed_comm != 0);
          TBOX_ASSERT(completed_comm->isDone());
-         if (static_cast<size_t>(completed_comm - d_coms) < num_senders) {
+         if (!completed_comm->isSender()) {
 
             const int sender = completed_comm->getPeerRank();
 
@@ -513,14 +719,34 @@ Schedule::processCompletedCommunications()
 #endif
                );
 
+            bool have_fuseable = !(d_recv_sets_fuseable[sender].empty());
+
             d_object_timers->t_unpack_stream->start();
-            for (Iterator recv = d_recv_sets[sender].begin();
-                 recv != d_recv_sets[sender].end(); ++recv) {
-               (*recv)->unpackStream(incoming_stream);
+            for (const auto& transaction : d_recv_sets_fuseable[sender]) {
+               transaction->unpackStream(incoming_stream);
+            }
+            if (d_recv_fusers && have_fuseable) {
+               d_recv_fusers->launch();
             }
 #if defined(HAVE_RAJA)
-            parallel_synchronize();
+            if (have_fuseable) {
+               parallel_synchronize();
+               if (d_recv_fusers) d_recv_fusers->cleanup();
+            }
 #endif
+            for (const auto& transaction : d_recv_sets[sender]) {
+               transaction->unpackStream(incoming_stream);
+            }
+            bool have_non_fuseable = !(d_recv_sets[sender].empty());
+#if defined(HAVE_RAJA)
+            if (have_non_fuseable) {
+               parallel_synchronize();
+            }
+#endif
+            if (have_fuseable || have_non_fuseable) {
+               d_completed_transactions = true;
+            }
+
             d_object_timers->t_unpack_stream->stop();
             completed_comm->clearRecvData();
          } else {
@@ -542,37 +768,69 @@ Schedule::processCompletedCommunications()
 void
 Schedule::allocateCommunicationObjects()
 {
-   const size_t length = d_recv_sets.size() + d_send_sets.size();
-   if (length > 0) {
-      d_coms = new AsyncCommPeer<char>[length];
+   for (const auto& transaction : d_recv_sets) {
+      int rank = transaction.first;
+
+      auto peer = std::make_shared<AsyncCommPeer<char>>();
+      peer->initialize(&d_com_stage);
+      peer->setPeerRank(rank);
+      peer->setMPITag(d_first_tag, d_second_tag);
+      peer->setMPI(d_mpi);
+      peer->limitFirstDataLength(d_first_message_length);
+#ifdef HAVE_UMPIRE
+      peer->setAllocator(AllocatorDatabase::getDatabase()->getStreamAllocator());
+#endif
+      d_recv_coms[rank] = peer;
    }
 
-   size_t counter = 0;
-   for (TransactionSets::iterator ti = d_recv_sets.begin();
-        ti != d_recv_sets.end();
-        ++ti) {
-      d_coms[counter].initialize(&d_com_stage);
-      d_coms[counter].setPeerRank(ti->first);
-      d_coms[counter].setMPITag(d_first_tag, d_second_tag);
-      d_coms[counter].setMPI(d_mpi);
-      d_coms[counter].limitFirstDataLength(d_first_message_length);
+   for (const auto transaction : d_recv_sets_fuseable) {
+      int rank = transaction.first;
+      
+      if (d_recv_coms.find(rank) == d_recv_coms.end()) {
+         auto peer = std::make_shared<AsyncCommPeer<char>>();
+         peer->initialize(&d_com_stage);
+         peer->setPeerRank(rank);
+         peer->setMPITag(d_first_tag, d_second_tag);
+         peer->setMPI(d_mpi);
+         peer->limitFirstDataLength(d_first_message_length);
 #ifdef HAVE_UMPIRE
-      d_coms[counter].setAllocator(AllocatorDatabase::getDatabase()->getStreamAllocator());
+         peer->setAllocator(AllocatorDatabase::getDatabase()->getStreamAllocator());
 #endif
-      ++counter;
+         d_recv_coms[rank] = peer;
+      }
    }
-   for (TransactionSets::iterator ti = d_send_sets.begin();
-        ti != d_send_sets.end();
-        ++ti) {
-      d_coms[counter].initialize(&d_com_stage);
-      d_coms[counter].setPeerRank(ti->first);
-      d_coms[counter].setMPITag(d_first_tag, d_second_tag);
-      d_coms[counter].setMPI(d_mpi);
-      d_coms[counter].limitFirstDataLength(d_first_message_length);
+
+   for (const auto& transaction : d_send_sets) {
+      int rank = transaction.first;
+      auto peer = std::make_shared<AsyncCommPeer<char>>();
+
+      peer->initialize(&d_com_stage);
+      peer->setPeerRank(rank);
+      peer->setMPITag(d_first_tag, d_second_tag);
+      peer->setMPI(d_mpi);
+      peer->limitFirstDataLength(d_first_message_length);
 #ifdef HAVE_UMPIRE
-      d_coms[counter].setAllocator(AllocatorDatabase::getDatabase()->getStreamAllocator());
+      peer->setAllocator(AllocatorDatabase::getDatabase()->getStreamAllocator());
 #endif
-      ++counter;
+      d_send_coms[rank] = peer;
+   }
+
+   for (const auto& transaction : d_send_sets_fuseable) {
+      int rank = transaction.first;
+      
+      if (d_send_coms.find(rank) == d_send_coms.end()) {
+         auto peer = std::make_shared<AsyncCommPeer<char>>();
+
+         peer->initialize(&d_com_stage);
+         peer->setPeerRank(rank);
+         peer->setMPITag(d_first_tag, d_second_tag);
+         peer->setMPI(d_mpi);
+         peer->limitFirstDataLength(d_first_message_length);
+#ifdef HAVE_UMPIRE
+         peer->setAllocator(AllocatorDatabase::getDatabase()->getStreamAllocator());
+#endif
+         d_send_coms[rank] = peer;
+      }
    }
 }
 

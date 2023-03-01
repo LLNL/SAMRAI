@@ -89,6 +89,13 @@ public:
 #endif
 
    /*!
+    * @brief Get the kernel fuser allocator.
+    */
+#ifdef HAVE_UMPIRE
+   umpire::TypedAllocator<char> getKernelFuserAllocator();
+#endif
+
+   /*!
     * @brief Get a host allocator.
     */
 #ifdef HAVE_UMPIRE

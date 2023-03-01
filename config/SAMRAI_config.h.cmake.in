@@ -340,6 +340,8 @@
 /* Maximum dimension allowed */
 #define SAMRAI_MAXIMUM_DIMENSION @SAMRAI_MAXIMUM_DIMENSION@
 
+#define SAMRAI_RAJA_WORKGROUP_THREADS @SAMRAI_RAJA_WORKGROUP_THREADS@
+
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
@@ -358,7 +360,9 @@
 /* Configure for compiling on BGL family of machines */
 #undef __BGL_FAMILY__
 
-
+#ifdef HAVE_RAJA
+#define SAMRAI_HAVE_KERNEL_FUSER
+#endif
 
 namespace SAMRAI {
    static const unsigned short MAX_DIM_VAL = SAMRAI_MAXIMUM_DIMENSION;

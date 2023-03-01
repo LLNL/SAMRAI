@@ -11,6 +11,8 @@
 #ifndef included_tbox_ExecutionPolicy
 #define included_tbox_ExecutionPolicy
 
+#include "SAMRAI/SAMRAI_config.h"
+
 #if defined(HAVE_RAJA)
 
 #include "RAJA/RAJA.hpp"
@@ -112,6 +114,11 @@ struct policy_traits<policy::parallel> {
    >;
 
    using ReductionPolicy = RAJA::cuda_reduce;
+
+   using WorkGroupPolicy = RAJA::WorkGroupPolicy<
+      RAJA::cuda_work_async<SAMRAI_RAJA_WORKGROUP_THREADS>, 
+      RAJA::unordered_cuda_loop_y_block_iter_x_threadblock_average,
+      RAJA::constant_stride_array_of_objects>;
 };
 
 #else
@@ -146,6 +153,12 @@ struct policy_traits<policy::parallel> {
    >;
 
    using ReductionPolicy = RAJA::seq_reduce;
+
+   using WorkGroupPolicy = RAJA::WorkGroupPolicy<
+      RAJA::loop_work,
+      RAJA::reverse_ordered,
+      RAJA::ragged_array_of_objects>;
+
 };
 
 #endif // HAVE_CUDA

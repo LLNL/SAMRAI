@@ -76,6 +76,7 @@ AsyncCommPeer<TYPE>::AsyncCommPeer():
    d_external_buf(0),
    d_internal_buf_size(0),
    d_internal_buf(0),
+   d_count_buf(0),
    d_mpi(SAMRAI_MPI::getSAMRAIWorld()),
    d_tag0(-1),
    d_tag1(-1),
@@ -119,6 +120,7 @@ AsyncCommPeer<TYPE>::AsyncCommPeer(
    d_external_buf(0),
    d_internal_buf_size(0),
    d_internal_buf(0),
+   d_count_buf(0),
    d_mpi(SAMRAI_MPI::getSAMRAIWorld()),
    d_tag0(-1),
    d_tag1(-1),
@@ -165,6 +167,16 @@ AsyncCommPeer<TYPE>::~AsyncCommPeer()
 #endif
       d_internal_buf = 0;
    }
+   if (d_count_buf) {
+#ifdef HAVE_UMPIRE
+      d_allocator.deallocate(
+         (char*)d_count_buf, 2 * sizeof(FlexData));
+#else
+      free(d_count_buf);
+#endif
+      d_count_buf = 0;
+   }
+   d_first_recv_buf = 0;
 
 }
 
@@ -570,7 +582,31 @@ AsyncCommPeer<TYPE>::checkRecv(
             // Post receive for first (and maybe only) chunk of data.
             const size_t first_chunk_count = getNumberOfFlexData(
                   d_max_first_data_len);
-            resizeBuffer(first_chunk_count + 2);
+
+            if (first_chunk_count > 0) {
+               resizeBuffer(first_chunk_count + 2);
+               d_first_recv_buf = d_internal_buf;
+            } else {
+               // If the size of the first chunk is zero, due to
+               // d_max_first_data_len being set to zero, then we use
+               // a small buffer to get only the full count size, deferring
+               // the receipt of the full data to the second Irecv.
+               if (d_count_buf) {
+#ifdef HAVE_UMPIRE
+                  d_allocator.deallocate(
+                     (char*)d_count_buf, 2 * sizeof(FlexData));
+#else
+                  free(d_count_buf);
+#endif
+               }
+#ifdef HAVE_UMPIRE
+               d_count_buf =
+                  (FlexData *)d_allocator.allocate(2 * sizeof(FlexData));
+#else
+               d_count_buf = (FlexData *)malloc(2 * sizeof(FlexData));
+#endif
+               d_first_recv_buf = d_count_buf;
+            }
 
             TBOX_ASSERT(req[0] == MPI_REQUEST_NULL);
 #ifdef DEBUG_CHECK_ASSERTIONS
@@ -578,7 +614,7 @@ AsyncCommPeer<TYPE>::checkRecv(
 #endif
             t_recv_timer->start();
             d_mpi_err = d_mpi.Irecv(
-                  d_internal_buf,
+                  d_first_recv_buf,
                   static_cast<int>(sizeof(FlexData) * (first_chunk_count + 2)),
                   MPI_BYTE,
                   d_peer_rank,
@@ -647,9 +683,9 @@ AsyncCommPeer<TYPE>::checkRecv(
             TBOX_ASSERT(mpi_status[0].MPI_SOURCE == d_peer_rank);
             TBOX_ASSERT(req[0] == MPI_REQUEST_NULL);
             // Get full count embedded in message.
-            d_full_count = d_internal_buf[count - 1].d_i;
+            d_full_count = d_first_recv_buf[count - 1].d_i;
 
-            TBOX_ASSERT(d_internal_buf[count - 2].d_i == 0); // Sequence number check.
+            TBOX_ASSERT(d_first_recv_buf[count - 2].d_i == 0); // Sequence number check.
             TBOX_ASSERT(getNumberOfFlexData(d_full_count) >= count - 2);
 
             if (d_full_count > d_max_first_data_len) {
@@ -664,7 +700,18 @@ AsyncCommPeer<TYPE>::checkRecv(
                const size_t second_chunk_count = getNumberOfFlexData(
                      d_full_count - d_max_first_data_len);
 
-               resizeBuffer(d_internal_buf_size + second_chunk_count);
+               size_t new_internal_buf_size =
+                  d_internal_buf_size + second_chunk_count;
+
+               // If the first Irecv didn't use d_internal_buf, then
+               // the message in the second Irecv will contain the entire
+               // buffer of data for this communicattion instance, and we need
+               // to add 2 to the buffer size to make room for the trailing
+               // metadata.
+               if (d_internal_buf_size == 0) {
+                  new_internal_buf_size += 2;
+               }
+               resizeBuffer(new_internal_buf_size);
 
                TBOX_ASSERT(req[1] == MPI_REQUEST_NULL);
                req[1] = MPI_REQUEST_NULL;
@@ -971,6 +1018,16 @@ AsyncCommPeer<TYPE>::clearRecvData()
 #endif
       d_internal_buf = 0;
    }
+   if (d_count_buf) {
+#ifdef HAVE_UMPIRE
+      d_allocator.deallocate(
+         (char*)d_count_buf, 2 * sizeof(FlexData));
+#else
+      free(d_count_buf);
+#endif
+      d_count_buf = 0;
+   }
+   d_first_recv_buf = 0;
 }
 
 /*

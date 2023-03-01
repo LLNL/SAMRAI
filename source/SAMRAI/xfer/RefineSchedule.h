@@ -534,9 +534,11 @@ private:
     * If the scratch and destination patch data components are the same,
     * then no copying is performed.
     *
+    * @return  Returns true only if copies were performed.
+    *
     * @pre d_dst_level
     */
-   void
+   bool 
    copyScratchToDestination() const;
 
    /*!

@@ -90,6 +90,27 @@ public:
       const hier::BoundaryBox& boundary_box,
       const std::shared_ptr<hier::BaseGridGeometry>& grid_geometry) = 0;
 
+   bool
+   needSynchronize()
+   {
+      bool flag = d_need_synchronize;
+      d_need_synchronize = true;
+      return flag;
+   }
+
+protected:
+
+   void
+   setNeedSingularitySynchronize(bool flag)
+   {
+      d_need_synchronize = flag;
+   }
+
+private:
+
+   bool d_need_synchronize = true;
+
+
 };
 
 }

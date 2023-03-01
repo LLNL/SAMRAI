@@ -23,7 +23,8 @@ blt_add_executable(
     SAMRAI_tbox
     SAMRAI_hier
     SAMRAI_pdat
-    SAMRAI_geom)
+    SAMRAI_geom
+    cuda)
 
 target_compile_definitions(sparse PUBLIC TESTING=1)
 

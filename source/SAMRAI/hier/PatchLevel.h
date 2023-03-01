@@ -17,6 +17,7 @@
 #include "SAMRAI/hier/BoxLevel.h"
 #include "SAMRAI/hier/PatchFactory.h"
 #include "SAMRAI/hier/ProcessorMapping.h"
+#include "SAMRAI/tbox/StagedKernelFusers.h"
 #include "SAMRAI/tbox/Utilities.h"
 
 #include <map>
@@ -758,6 +759,11 @@ public:
       for (Iterator ip(begin()); ip != end(); ++ip) {
          ip->allocatePatchData(id, timestamp);
       }
+
+#if defined(HAVE_RAJA)
+      tbox::StagedKernelFusers::getInstance()->launchAndCleanup();
+#endif
+
    }
 
    /*!
@@ -775,6 +781,11 @@ public:
       for (Iterator ip(begin()); ip != end(); ++ip) {
          ip->allocatePatchData(components, timestamp);
       }
+
+#if defined(HAVE_RAJA)
+      tbox::StagedKernelFusers::getInstance()->launchAndCleanup();
+#endif
+
    }
 
    /*!
@@ -812,6 +823,10 @@ public:
       for (Iterator ip(begin()); ip != end(); ++ip) {
          ip->deallocatePatchData(id);
       }
+
+#if defined(HAVE_RAJA)
+      tbox::StagedKernelFusers::getInstance()->launchAndCleanup();
+#endif
    }
 
    /*!
@@ -829,6 +844,10 @@ public:
       for (Iterator ip(begin()); ip != end(); ++ip) {
          ip->deallocatePatchData(components);
       }
+
+#if defined(HAVE_RAJA)
+      tbox::StagedKernelFusers::getInstance()->launchAndCleanup();
+#endif
    }
 
    /*!

@@ -8,7 +8,8 @@ blt_add_executable(
     SAMRAI_hier
     SAMRAI_geom
     SAMRAI_mesh
-    SAMRAI_tbox)
+    SAMRAI_tbox
+    cuda)
 
 target_compile_definitions(mblcu PUBLIC TESTING=1)
 

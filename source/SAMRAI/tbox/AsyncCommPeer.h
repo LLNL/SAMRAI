@@ -615,7 +615,10 @@ private:
     * for overhead data.
     */
    size_t d_internal_buf_size;
-   FlexData* d_internal_buf;
+   FlexData* d_internal_buf = nullptr;
+
+   FlexData* d_count_buf = nullptr;
+   FlexData* d_first_recv_buf = nullptr;
 
    /*!
     *
