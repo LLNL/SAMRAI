@@ -67,7 +67,7 @@ public:
    /**
     * Virtual destructor for the cell data factory class.
     */
-   virtual ~CellDataFactory<TYPE>();
+   virtual ~CellDataFactory();
 
    /**
     * @brief Abstract virtual function to clone a patch data factory.

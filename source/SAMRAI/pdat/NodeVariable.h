@@ -68,7 +68,7 @@ public:
    /*!
     * @brief Virtual destructor for node variable objects.
     */
-   virtual ~NodeVariable<TYPE>();
+   virtual ~NodeVariable();
 
    /*!
     * @brief Return boolean indicating which node data values (coarse

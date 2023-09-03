@@ -70,7 +70,7 @@ public:
    /*!
     * @brief Virtual destructor for the outernode data factory class.
     */
-   virtual ~OuternodeDataFactory<TYPE>();
+   virtual ~OuternodeDataFactory();
 
    /**
     * @brief Abstract virtual function to clone a patch data factory.

@@ -145,7 +145,7 @@ public:
    /*!
     * @brief The virtual destructor for a node data object.
     */
-   virtual ~NodeData<TYPE>();
+   virtual ~NodeData();
 
    /*!
     * @brief Return the depth (e.g., the number of components in each spatial

@@ -70,7 +70,7 @@ public:
    /**
     * Virtual destructor for the node data factory class.
     */
-   virtual ~NodeDataFactory<TYPE>();
+   virtual ~NodeDataFactory();
 
    /**
     * @brief Abstract virtual function to clone a patch data factory.
