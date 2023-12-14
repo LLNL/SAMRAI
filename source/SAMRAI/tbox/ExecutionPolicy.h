@@ -155,9 +155,9 @@ struct policy_traits<policy::parallel> {
 
    using Policy3d = RAJA::KernelPolicy<
       RAJA::statement::HipKernelFixedAsync<256,
-         RAJA::statement::Tile<2, RAJA::tile_fixed<4>, RAJA::hip_block_z_loop,
-            RAJA::statement::Tile<1, RAJA::tile_fixed<8>, RAJA::hip_block_y_loop,
-               RAJA::statement::Tile<0, RAJA::tile_fixed<8>, RAJA::hip_block_x_loop,
+         RAJA::statement::Tile<2, RAJA::tile_fixed<2>, RAJA::hip_block_z_loop,
+            RAJA::statement::Tile<1, RAJA::tile_fixed<4>, RAJA::hip_block_y_loop,
+               RAJA::statement::Tile<0, RAJA::tile_fixed<32>, RAJA::hip_block_x_loop,
                   RAJA::statement::For<2, RAJA::hip_thread_z_loop,
                      RAJA::statement::For<1, RAJA::hip_thread_y_loop,
                         RAJA::statement::For<0, RAJA::hip_thread_x_loop,
