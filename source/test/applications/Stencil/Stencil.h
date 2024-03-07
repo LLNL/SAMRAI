@@ -86,6 +86,7 @@ class Stencil :
       NULL_USE(coarse);
       NULL_USE(fine_box);
       NULL_USE(ratio);
+      setNeedRefineSynchronize(false);
    }
 
    /**
@@ -98,6 +99,20 @@ class Stencil :
       const hier::Patch& coarse,
       const hier::Box& fine_box,
       const hier::IntVector& ratio);
+
+   void
+   postprocessRefineLevel(
+      hier::PatchLevel& fine_level,
+      const hier::PatchLevel& coarse_level,
+      const hier::Connector& coarse_to_fine,
+      const hier::Connector& coarse_to_unfilled);
+
+   void
+   setPostRefineSyncFlag()
+   {
+      setNeedRefineSynchronize(false);
+   }
+
 
    /**
     * Return stencil width of conservative averaging operations.
@@ -117,6 +132,7 @@ class Stencil :
       NULL_USE(fine);
       NULL_USE(coarse_box);
       NULL_USE(ratio);
+      setNeedCoarsenSynchronize(false);
    }
 
    /**
@@ -129,6 +145,17 @@ class Stencil :
       const hier::Patch& fine,
       const hier::Box& coarse_box,
       const hier::IntVector& ratio);
+
+   void
+   postprocessCoarsenLevel(
+      hier::PatchLevel& coarse_level,
+      const hier::PatchLevel& fine_level);
+
+   void
+   setPostCoarsenSyncFlag()
+   {
+      setNeedCoarsenSynchronize(false);
+   }
 
    void
    readDirichletBoundaryDataEntry(

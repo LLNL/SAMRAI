@@ -502,7 +502,21 @@ Stencil::postprocessRefine(
    NULL_USE(coarse);
    NULL_USE(fine_box);
    NULL_USE(ratio);
-   // no-op
+   setNeedRefineSynchronize(false);
+}
+
+void
+Stencil::postprocessRefineLevel(
+   hier::PatchLevel& fine_level,
+   const hier::PatchLevel& coarse_level,
+   const hier::Connector& coarse_to_fine,
+   const hier::Connector& coarse_to_unfilled)
+{
+   NULL_USE(fine_level);
+   NULL_USE(coarse_level);
+   NULL_USE(coarse_to_fine);
+   NULL_USE(coarse_to_unfilled);
+   setNeedRefineSynchronize(true);
 }
 
 void
@@ -516,8 +530,18 @@ Stencil::postprocessCoarsen(
    NULL_USE(fine); 
    NULL_USE(coarse_box); 
    NULL_USE(ratio); 
-   // no-op
+   setNeedCoarsenSynchronize(false);
 }
+
+void
+Stencil::postprocessCoarsenLevel(
+   hier::PatchLevel& coarse_level,
+   const hier::PatchLevel& fine_level) {
+   NULL_USE(coarse_level);
+   NULL_USE(fine_level);
+   setNeedCoarsenSynchronize(true);
+}
+
 
 void
 Stencil::readDirichletBoundaryDataEntry(
