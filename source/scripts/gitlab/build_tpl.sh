@@ -70,7 +70,7 @@ if [ ! -d "$BASE_DIR/raja-build" ]; then
   mkdir $BASE_DIR/raja-build
 fi
 cd $BASE_DIR/raja-build
-${cmake_cmd} $RAJA_SRC -C $RAJA_CONFIG -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR/raja
+${cmake_cmd} $RAJA_SRC -C $RAJA_CONFIG -DBLT_SOURCE_DIR=$BASE_DIR/../blt -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR/raja
 make -j
 make install
 cd $BASE_DIR
@@ -79,7 +79,7 @@ if [ ! -d "$BASE_DIR/umpire-build" ]; then
   mkdir $BASE_DIR/umpire-build
 fi
 cd $BASE_DIR/umpire-build
-${cmake_cmd} $UMPIRE_SRC -C $UMPIRE_CONFIG -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR/umpire
+${cmake_cmd} $UMPIRE_SRC -C $UMPIRE_CONFIG -DBLT_SOURCE_DIR=$BASE_DIR/../blt -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR/umpire
 make -j
 make install
 cd $BASE_DIR
@@ -88,7 +88,7 @@ if [ ! -d "$BASE_DIR/camp-build" ]; then
   mkdir $BASE_DIR/camp-build
 fi
 cd $BASE_DIR/camp-build
-${cmake_cmd} $CAMP_SRC -C $CAMP_CONFIG -DBLT_SOURCE_DIR=$RAJA_SRC/blt -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR/camp
+${cmake_cmd} $CAMP_SRC -C $CAMP_CONFIG -DBLT_SOURCE_DIR=$BASE_DIR/../blt -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR/camp
 make -j
 make install
 cd $BASE_DIR

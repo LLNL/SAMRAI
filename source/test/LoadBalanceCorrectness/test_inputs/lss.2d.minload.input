@@ -76,7 +76,7 @@ BergerRigoutsos {
 
 CascadePartitioner {
   flexible_load_tolerance = 0.05
-  minimum_patch_load = 1500,5000,18000
+  artificial_minimum_load = 1500,5000,18000
   DEV_limit_supply_to_surplus = FALSE
   // Debugging options
   DEV_report_load_balance = TRUE

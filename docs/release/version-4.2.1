@@ -1,0 +1,127 @@
+*****************************************************************************
+  Copyright 1997-2024
+  Lawrence Livermore National Security, LLC.
+  All rights reserved.
+*****************************************************************************
+
+                     Release Notes for SAMRAI v4.2.1
+
+     (notes for previous releases may be found in /SAMRAI/docs/release)
+
+*****************************************************************************
+
+
+Where to report Bugs
+--------------------
+
+If a bug is found in the SAMRAI library, we ask that you kindly report
+it to us so that we may fix it.
+
+Please send email to samrai-bugs@llnl.gov or post an issue on github.
+https://github.com/LLNL/SAMRAI
+
+*****************************************************************************
+
+VERSION 4.2.1
+
+Version 4.2.1 is a minor patch release to make SAMRAI compatible with 
+Umpire v2023.06.0 and RAJA v2023.06.0.  The content of the release notes
+file for SAMRAI version 4.2.0 is preserved here, except for notes marked
+as version 4.2.1
+
+
+VERSION 4.2.0
+
+Version 4.2.0 is considered a beta release due to the introduction of
+kernel fusion features which may see notable changes in future releases.
+
+
+*****************************************************************************
+
+----------------------------------------------------------------------------
+                Significant bug fixes
+----------------------------------------------------------------------------
+
+1) A bug in the internal computation of connector widths in
+TimeRefinementIntegrator was fixed.  There was an incorrect computation of
+connector width between adjacent levels when a large tag buffer size was
+provided to the input.  This computation has been fixed.
+
+*****************************************************************************
+
+
+
+----------------------------------------------------------------------------
+                Summary of what's new
+-----------------------------------------------------------------------------
+
+1) RAJA-based kernel fusion features have been added, allowing for independent
+GPU kernels to be accumulated for a single kernel launch.
+
+2) A minimum_patch_load parameter has been added to CascadePartitioner and
+TreeLoadBalancer as an option to change how small patches are treated during
+load balancing.
+
+-----------------------------------------------------------------------------
+                Summary of what's changed
+-----------------------------------------------------------------------------
+
+1) VERSION 4.2.1 Minor changes have been made for compatibility with RAJA
+v2023.06.0 and Umpire v2023.06.0, and those are the recommended releases
+for those libraries for use with this SAMRAI release.
+
+
+*****************************************************************************
+
+-----------------------------------------------------------------------------
+                Details about what's new
+-----------------------------------------------------------------------------
+
+1) RAJA-based kernel fusion features have been added, allowing for independent
+GPU kernels to be accumulated for a single kernel launch.
+
+The core of these features are in the new tbox::KernelFuser class, which uses
+RAJA WorkGroup features to enqueue a set of independent kernels that have been
+defined as lambda functions in RAJA for_alls.  Rather than executing each
+kernel on the GPU device when it is reached in the code, the kernels are
+stored until the KernelFuser object makes a launch() call, at which time all
+kernels are executed concurrently.  The intent of this is to reduce the
+overhead from launching each kernel separately.
+
+To support usage of kernel fusion, a new abstract base class
+tbox::ScheduleOpsStrategy has been added, with methods that are called from
+tbox::Schedule at places where it could be useful for applications to make
+calls for kernel fusion operations in their codes.  In particular, the calls
+to postPack(), postCopy(), and postUnpack() are provided so that
+applications can implement calls to kernel fusion launches after the original
+calls to data packing, copy, and unpacking operations have enqueued rather
+than launched the kernels that do those operations.  ScheuduleOpsStrategy
+is defined generally without reference to kernel fusion, as applications
+could choose to implement other things for their codes to do before and after
+Schedule operations.  A pointer to a ScheduleOpsStrategy can be provided
+using set methods available in RefineSchedule, CoarsenSchedule, or Schedule.
+
+2) A minimum_patch_load parameter has been added to CascadePartitioner and
+TreeLoadBalancer as an option to change how small patches are treated during
+load balancing.
+
+The value given for minimum_patch_load is used to "fool" the load balancing
+algorithm into treating small patches with a cell count below the given value
+as if they were the size of the given value.  This can reduce the likelihood
+that the load balancers will accumulate a large number of small patches on
+on a single rank, with a known side effect being that the decomposition will
+have less uniformity in total cell count on each processor.  This is provided
+as an option for users running in environments where uniformity in patch
+count may be more desired than uniformity in cell count.
+
+-----------------------------------------------------------------------------
+                Details about what's changed
+----------------------------------------------------------------------------
+
+3) VERSION 4.2.1 Minor changes have been made for compatibility with RAJA
+v2023.06.0 and Umpire v2023.06.0, and those are the recommended releases
+for those libraries for use with this SAMRAI release.
+
+
+=============================================================================
+=============================================================================

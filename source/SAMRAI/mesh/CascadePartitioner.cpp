@@ -74,7 +74,7 @@ CascadePartitioner::CascadePartitioner(
    d_limit_supply_to_surplus(true),
    d_reset_obligations(true),
    d_flexible_load_tol(0.05),
-   d_min_load(1,1.0),
+   d_artificial_minimum(1,1.0),
    d_use_vouchers(false),
    d_mca(),
    // Shared data.
@@ -197,16 +197,16 @@ CascadePartitioner::loadBalanceBoxLevel(
    }
 
    size_t minimum_cells = 1;
-   double minimum_load = 1.0;
+   double artificial_minimum = 1.0;
 
    if (hierarchy) {
       minimum_cells = hierarchy->getMinimumCellRequest(level_number);
-      if (static_cast<unsigned int>(level_number) < d_min_load.size()) {
-         minimum_load = d_min_load[level_number];
+      if (static_cast<unsigned int>(level_number) < d_artificial_minimum.size()) {
+         artificial_minimum = d_artificial_minimum[level_number];
       } else {
-         minimum_load = d_min_load.back();
+         artificial_minimum = d_artificial_minimum.back();
       }
-      TBOX_ASSERT(minimum_load >= 0.0);
+      TBOX_ASSERT(artificial_minimum >= 0.0);
    }
 
    if (d_mpi_is_dupe) {
@@ -295,7 +295,7 @@ CascadePartitioner::loadBalanceBoxLevel(
          balance_box_level.getRefinementRatio(),
          min_size, max_size, bad_interval, effective_cut_factor,
          minimum_cells,
-         minimum_load,
+         artificial_minimum,
          d_flexible_load_tol);
 
    LoadType local_load = computeLocalLoad(balance_box_level);
@@ -588,9 +588,11 @@ CascadePartitioner::partitionByCascade(
    local_load->setThresholdWidth(ideal_box_width);
    shipment->setThresholdWidth(ideal_box_width);
 
-   if (d_pparams->getMinimumLoad() > d_pparams->getMinBoxSizeProduct()) {
-      local_load->insertAllWithMinimumLoad(balance_box_level.getBoxes(),
-                                           d_pparams->getMinimumLoad());
+   if (d_pparams->getArtificialMinimumLoad() >
+       d_pparams->getMinBoxSizeProduct()) {
+      local_load->insertAllWithArtificialMinimum(
+         balance_box_level.getBoxes(),
+         d_pparams->getArtificialMinimumLoad());
    } else {
       local_load->insertAll(balance_box_level.getBoxes());
    }
@@ -837,9 +839,9 @@ CascadePartitioner::LoadType
 CascadePartitioner::computeLocalLoad(
    const hier::BoxLevel& box_level) const
 {
-   double request_load = 1.0;
+   double artificial_load = 1.0;
    if (d_pparams) {
-      request_load = d_pparams->getMinimumLoad();
+      artificial_load = d_pparams->getArtificialMinimumLoad();
    }
    double load = 0.0;
    const hier::BoxContainer& boxes = box_level.getBoxes();
@@ -847,8 +849,8 @@ CascadePartitioner::computeLocalLoad(
         ni != boxes.end();
         ++ni) {
       double box_load = static_cast<double>(ni->size());
-      if (box_load < request_load) {
-         box_load = request_load;
+      if (box_load < artificial_load) {
+         box_load = artificial_load;
       }
       load += box_load;
    }
@@ -939,8 +941,9 @@ CascadePartitioner::getFromInput(
          }
       }
 
-      if (input_db->isDouble("minimum_patch_load")) {
-         d_min_load = input_db->getDoubleVector("minimum_patch_load");
+      if (input_db->isDouble("artificial_minimum_load")) {
+         d_artificial_minimum =
+            input_db->getDoubleVector("artificial_minimum_load");
       }
    }
 }

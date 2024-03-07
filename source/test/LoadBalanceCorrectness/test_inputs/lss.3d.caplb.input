@@ -44,7 +44,7 @@ Main {
    mesh_generator_name = "SphericalShellGenerator"
 
    SphericalShellGenerator {
-      radii = 0.0, 0.35,    0.70, 0.75,    1.15, 1.17
+      radii = 0.0, 0.349999,    0.699999, 0.749999,    1.149999, 1.169999
 
       buffer_distance_0 = 0.04, 0.04, 0.04
       buffer_distance_1 = 0.00, 0.00, 0.00

@@ -773,7 +773,7 @@ private:
     */
    double d_flexible_load_tol;
 
-   std::vector<double> d_min_load;
+   std::vector<double> d_artificial_minimum;
 
    /*!
     * @brief Metadata operations with timers set according to this object.

@@ -1,15 +1,24 @@
 set (mapped_boxlevel_sources
   main-mblcu.cpp)
 
-blt_add_executable(
-  NAME mblcu
-  SOURCES ${mapped_boxlevel_sources}
-  DEPENDS_ON
+set (mapped_boxlevel_depends
     SAMRAI_hier
     SAMRAI_geom
     SAMRAI_mesh
-    SAMRAI_tbox
-    cuda)
+    SAMRAI_tbox)
+
+if (ENABLE_OPENMP)
+  set(mapped_boxlevel_depends ${mapped_boxlevel_depends} openmp)
+endif ()
+
+if (ENABLE_CUDA)
+  set(mapped_boxlevel_depends ${mapped_boxlevel_depends} cuda)
+endif ()
+
+blt_add_executable(
+  NAME mblcu
+  SOURCES ${mapped_boxlevel_sources}
+  DEPENDS_ON ${mapped_boxlevel_depends})
 
 target_compile_definitions(mblcu PUBLIC TESTING=1)
 

@@ -92,11 +92,11 @@ public:
     * ignores the minimum load value and is equivalent to insertAll().
     *
     * @param other  box container with boxes to inserted into this object.
-    * @param minimum_load  minimum load value
+    * @param minimum_load  artificial minimum load value
     *                      (ignored in default implementation)
     */
    virtual void
-   insertAllWithMinimumLoad(
+   insertAllWithArtificialMinimum(
       const hier::BoxContainer& other,
       double minimum_load)
    {

@@ -5,8 +5,15 @@ set (mblktree_depends_on
     SAMRAI_hier
     SAMRAI_geom
     SAMRAI_mesh
-    SAMRAI_tbox
-    cuda)
+    SAMRAI_tbox)
+
+if (ENABLE_OPENMP)
+  set(mblktree_depends_on ${mblktree_depends_on} openmp)
+endif ()
+
+if (ENABLE_CUDA)
+  set(mblktree_depends_on ${mblktree_depends_on} cuda)
+endif ()
 
 blt_add_executable(
   NAME mblktree

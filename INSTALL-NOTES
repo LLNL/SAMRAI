@@ -276,9 +276,7 @@ are used in our regression test suite.
 
 Tool 		Version(s)
 --------------  --------------------------------------  
-gcc		7.3.0, 8.1.0
-
-icc		18.0.2, 19.0.0
+gcc		8.1.0, 10.3.1
 
 HDF5		1.8.5
 
@@ -296,9 +294,9 @@ doxygen	        1.6.1
 
 graphviz	2.26
 
-Umpire          v2023.06.0
+Umpire          v2024.02.0
 
-RAJA            v2023.06.0
+RAJA            v2024.02.0
 
 
 Visualization Tools:
@@ -317,14 +315,9 @@ Location users can find VisIt in /usr/apps/visit on CASC systems and
 Performance Analysis Tools:
 ---------------------------
 
-SAMRAI maintains links to the Tau performance analysis tool.  Tau
-(Tuning and Analysis Utilities) is a freely available tool out of the
-University of Oregon (http://www.cs.uoregon.edu/research/paracomp/tau)
-that is available on all CASC and LC platforms.
-
-Configuration options for Tau have not yet been ported to the CMake build
-system.  Please use the autoconf/configure build system as described
-in INSTALL-NOTES to configure with Tau.
+SAMRAI can be build with the Caliper library to allow for code annotations
+that can be used with performance analysis and profiling tools.
+See https://github.com/LLNL/Caliper
 
 Documentation
 --------------------

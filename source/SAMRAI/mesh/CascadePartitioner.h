@@ -448,7 +448,7 @@ private:
     */
    double d_flexible_load_tol;
 
-   std::vector<double> d_min_load;
+   std::vector<double> d_artificial_minimum;
 
    /*!
     * @brief Boolean to determine whether to use vouchers for transferring load.

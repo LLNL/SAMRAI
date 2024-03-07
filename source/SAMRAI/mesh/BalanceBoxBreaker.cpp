@@ -1106,8 +1106,8 @@ double BalanceBoxBreaker::TrialBreak::computeBreakOffLoad(
                        static_cast<double>(d_whole_box.size())) *
                       static_cast<double>(box.size());
 
-      if (breakoff_load < d_pparams->getMinimumLoad()) {
-         breakoff_load = static_cast<double>(d_pparams->getMinimumLoad());
+      if (breakoff_load < d_pparams->getArtificialMinimumLoad()) {
+         breakoff_load = static_cast<double>(d_pparams->getArtificialMinimumLoad());
       }
    } else {
       /*

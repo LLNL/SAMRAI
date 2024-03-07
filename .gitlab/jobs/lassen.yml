@@ -30,5 +30,5 @@ variables:
 # test job
 clang-cuda:
   variables:
-    COMPILER: "clang-cuda"
+    COMPILER: "clang-14-cuda-11"
   extends: .job_on_lassen

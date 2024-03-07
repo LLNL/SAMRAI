@@ -21,10 +21,6 @@ if (ENABLE_UMPIRE OR umpire_DIR)
   set (HAVE_UMPIRE True)
   set (ENABLE_UMPIRE On)
 
-  blt_register_library(
-    NAME umpire
-    INCLUDES ${UMPIRE_INCLUDE_DIRS}
-    LIBRARIES umpire)
 endif ()
 
 # RAJA

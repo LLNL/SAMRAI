@@ -138,7 +138,7 @@ void BoxTransitSet::insertAll(const hier::BoxContainer& other)
    }
 }
 
-void BoxTransitSet::insertAllWithMinimumLoad(
+void BoxTransitSet::insertAllWithArtificialMinimum(
    const hier::BoxContainer& other,
    double minimum_load)
 {
@@ -152,7 +152,7 @@ void BoxTransitSet::insertAllWithMinimumLoad(
       d_sumsize += new_box.getSize();
    }
    if (d_set.size() != old_size + other.size()) {
-      TBOX_ERROR("BoxTransitSet's insertAllWithMinimum currently can't weed out duplicates.");
+      TBOX_ERROR("BoxTransitSet's insertAllWithArtificialMinimum currently can't weed out duplicates.");
    }
 }
 

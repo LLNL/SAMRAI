@@ -184,26 +184,26 @@ struct policy_traits<policy::parallel> {
 // TODO: Make this an OpenMP policy if that is defined
 template <>
 struct policy_traits<policy::parallel> {
-   using Policy = RAJA::loop_exec;
+   using Policy = RAJA::seq_exec;
 
    using Policy1d = RAJA::KernelPolicy<
-      RAJA::statement::For<0, RAJA::loop_exec,
+      RAJA::statement::For<0, RAJA::seq_exec,
          RAJA::statement::Lambda<0>
       >
    >;
 
    using Policy2d = RAJA::KernelPolicy<
-      RAJA::statement::For<1, RAJA::loop_exec,
-         RAJA::statement::For<0, RAJA::loop_exec,
+      RAJA::statement::For<1, RAJA::seq_exec,
+         RAJA::statement::For<0, RAJA::seq_exec,
             RAJA::statement::Lambda<0>
          >
       >
    >;
 
    using Policy3d = RAJA::KernelPolicy<
-      RAJA::statement::For<2, RAJA::loop_exec,
-         RAJA::statement::For<1, RAJA::loop_exec,
-            RAJA::statement::For<0, RAJA::loop_exec,
+      RAJA::statement::For<2, RAJA::seq_exec,
+         RAJA::statement::For<1, RAJA::seq_exec,
+            RAJA::statement::For<0, RAJA::seq_exec,
                RAJA::statement::Lambda<0>
             >
          >
@@ -213,7 +213,7 @@ struct policy_traits<policy::parallel> {
    using ReductionPolicy = RAJA::seq_reduce;
 
    using WorkGroupPolicy = RAJA::WorkGroupPolicy<
-      RAJA::loop_work,
+      RAJA::seq_work,
       RAJA::reverse_ordered,
       RAJA::ragged_array_of_objects>;
 
@@ -223,26 +223,26 @@ struct policy_traits<policy::parallel> {
 
 template <>
 struct policy_traits<policy::host_parallel> {
-   using Policy = RAJA::loop_exec;
+   using Policy = RAJA::seq_exec;
 
    using Policy1d = RAJA::KernelPolicy<
-      RAJA::statement::For<0, RAJA::loop_exec,
+      RAJA::statement::For<0, RAJA::seq_exec,
          RAJA::statement::Lambda<0>
       >
    >;
 
    using Policy2d = RAJA::KernelPolicy<
-      RAJA::statement::For<1, RAJA::loop_exec,
-         RAJA::statement::For<0, RAJA::loop_exec,
+      RAJA::statement::For<1, RAJA::seq_exec,
+         RAJA::statement::For<0, RAJA::seq_exec,
             RAJA::statement::Lambda<0>
          >
       >
    >;
 
    using Policy3d = RAJA::KernelPolicy<
-      RAJA::statement::For<2, RAJA::loop_exec,
-         RAJA::statement::For<1, RAJA::loop_exec,
-            RAJA::statement::For<0, RAJA::loop_exec,
+      RAJA::statement::For<2, RAJA::seq_exec,
+         RAJA::statement::For<1, RAJA::seq_exec,
+            RAJA::statement::For<0, RAJA::seq_exec,
                RAJA::statement::Lambda<0>
             >
          >

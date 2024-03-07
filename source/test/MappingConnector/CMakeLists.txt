@@ -1,15 +1,24 @@
 set (mapping_connector_sources
   main-modify.cpp)
 
-blt_add_executable(
-  NAME mapping-connector
-  SOURCES ${mapping_connector_sources}
-  DEPENDS_ON
+set (mapping_connector_depends
     SAMRAI_hier
     SAMRAI_geom
     SAMRAI_mesh
-    SAMRAI_tbox
-    cuda)
+    SAMRAI_tbox)
+
+if (ENABLE_OPENMP)
+  set(mapping_connector_depends ${mapping_connector_depends} openmp)
+endif ()
+
+if (ENABLE_CUDA)
+  set(mapping_connector_depends ${mapping_connector_depends} cuda)
+endif ()
+
+blt_add_executable(
+  NAME mapping-connector
+  SOURCES ${mapping_connector_sources}
+  DEPENDS_ON ${mapping_connector_depends})
 
 target_compile_definitions(mapping-connector PUBLIC TESTING=1)
 

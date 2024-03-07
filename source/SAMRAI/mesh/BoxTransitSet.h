@@ -86,10 +86,10 @@ public:
     * behavior is desired by the calling code.
     *
     * @param other  box container with boxes to inserted into this object.
-    * @param minimum_load  minimum load value
+    * @param minimum_load  artificial minimum load value
     */
    void
-   insertAllWithMinimumLoad(
+   insertAllWithArtificialMinimum(
       const hier::BoxContainer& box_container,
       double minimum_load);
 

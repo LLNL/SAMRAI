@@ -36,7 +36,7 @@ public:
       const hier::IntVector& bad_interval,
       const hier::IntVector& cut_factor,
       size_t minimum_cells,
-      double minimum_load,
+      double artificial_minimum_load,
       double flexible_load_tol);
 
    PartitioningParams(
@@ -70,8 +70,8 @@ public:
       return d_minimum_cells;
    } 
 
-   double getMinimumLoad() const {
-      return d_minimum_load;
+   double getArtificialMinimumLoad() const {
+      return d_artificial_minimum_load;
    }
 
    const tbox::Dimension& getDim() const {
@@ -130,7 +130,12 @@ private:
     */
    size_t d_minimum_cells;
 
-   double d_minimum_load;
+   /*
+    * @brief An optional artificial load value. If used, new boxes smaller
+    * than this value are treated as if their load is this value during
+    * load balancing operations.
+    */
+   double d_artificial_minimum_load;
 
    /*!
     * @brief Fraction of ideal load a process can accept over and
