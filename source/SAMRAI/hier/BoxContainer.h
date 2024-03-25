@@ -84,6 +84,7 @@ class BoxContainer
    friend class BoxContainerConstIterator;
 
 public:
+   typedef const Box value_type;
    class BoxContainerIterator;
 
    /*!
