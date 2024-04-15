@@ -1631,8 +1631,15 @@ TimeRefinementIntegrator::getFromInput(
          setRegridInterval(regrid_interval);
       } else if (input_db->keyExists("regrid_interval")) {
          TBOX_WARNING("TimeRefinementIntegrator::getFromInput() warning...\n"
-            << "regrid_interval input parameter not applicable with\n"
-            << "refined timestepping and will be ignored." << std::endl);
+            << "regrid_interval input parameter provided with \n"
+            << "refined timestepping will override the computed \n"
+            << "regrid_interval. Use this only if you really want to \n"
+            << "override the computed value. When doing this it is \n"
+            << "recommended to set tag_buffer as well." << std::endl);
+         d_regrid_interval[0] = input_db->getInteger("regrid_interval");
+         if (!(d_regrid_interval[0] >= 1)) {
+            INPUT_RANGE_ERROR("regrid_interval");
+         }
       }
 
       d_start_time = input_db->getDouble("start_time");
@@ -1697,8 +1704,11 @@ TimeRefinementIntegrator::getFromInput(
             setRegridInterval(regrid_interval);
          } else if (input_db->keyExists("regrid_interval")) {
             TBOX_WARNING("TimeRefinementIntegrator::getFromInput() warning...\n"
-               << "regrid_interval input parameter not applicable with\n"
-               << "refined timestepping and will be ignored." << std::endl);
+               << "regrid_interval input parameter provided with \n"
+               << "refined timestepping will override the computed \n"
+               << "regrid_interval. Use this only if you really want to \n"
+               << "override the computed value." << std::endl);
+            d_regrid_interval[0] = input_db->getInteger("regrid_interval"); 
          }
 
          if (input_db->keyExists("start_time")) {
