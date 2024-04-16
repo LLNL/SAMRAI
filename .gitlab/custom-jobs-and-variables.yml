@@ -22,9 +22,9 @@ variables:
 
 # Tioga
 # Arguments for top level allocation
-  TIOGA_SHARED_ALLOC: "" # Disabled: see .gitlab/jobs/tioga.yml
+  TIOGA_SHARED_ALLOC: "--queue=pci --exclusive --time-limit=75m --nodes=1"
 # Arguments for job level allocation
-  TIOGA_JOB_ALLOC: "--queue=pci --exclusive --time-limit=72m --nodes=1 --begin-time=+5s"
+  TIOGA_JOB_ALLOC: "--exclusive --nodes=1 --begin-time=+5s"
 # Add variables that should apply to all the jobs on a machine:
 #  TIOGA_MY_VAR: "..."
 
