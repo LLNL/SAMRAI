@@ -603,6 +603,8 @@ public:
       const unsigned int d = 0);
 
    /*!
+    * @brief Fill with a single value within a box
+    *
     * Fill all array values associated with depth component d
     * within the box with the value t.
     *
@@ -610,6 +612,25 @@ public:
     */
    void
    fill(
+      const TYPE& t,
+      const hier::Box& box,
+      const unsigned int d = 0);
+
+   /*!
+    * @brief Fill with a single value within a box
+    *
+    * Fill all array values associated with depth component d
+    * within the box with the value t.
+    *
+    * If box's dimension is 1, 2, or 3, this will use a sequential loop
+    * implementation that is guaranteed not to do any GPU operations.
+    * If the dimension is greater than 3 it will be equivalent to calling
+    * ArrayData<TYPE>::fill() with the same signature.
+    *
+    * @pre (d >= 0) && (d < getDepth())
+    */
+   void
+   fillSequential(
       const TYPE& t,
       const hier::Box& box,
       const unsigned int d = 0);

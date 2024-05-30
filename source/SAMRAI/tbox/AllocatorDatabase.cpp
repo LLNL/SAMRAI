@@ -93,8 +93,17 @@ AllocatorDatabase::initialize()
   }
 
   if (!rm.isAllocator("samrai::tag_allocator")) {
-    rm.makeAllocator<umpire::strategy::QuickPool>("samrai::tag_allocator",
-        rm.getAllocator(umpire::resource::Host));
+#if defined(HAVE_CUDA) || defined(HAVE_HIP)
+#if defined(USE_DEVICE_ALLOCATOR)
+    auto allocator = rm.getAllocator(umpire::resource::Device);
+#else
+    auto allocator = rm.getAllocator(umpire::resource::Host);
+#endif
+#else
+    auto allocator = rm.getAllocator(umpire::resource::Host);
+#endif
+
+    rm.makeAllocator<umpire::strategy::QuickPool>("samrai::tag_allocator", allocator);
   }
 
   if (!rm.isAllocator("samrai::stream_allocator")) {
