@@ -1726,7 +1726,7 @@ PatchHierarchy::makeAdjacencySets(
 
                }
 
-	       if (node_ovlp.empty() != tnode_ovlp.empty()) {
+               if (node_ovlp.empty() != tnode_ovlp.empty()) {
                   node_ovlp.setEmpty();
                   tnode_ovlp.setEmpty();
                }
@@ -2030,6 +2030,30 @@ PatchHierarchy::makeAdjacencySets(
                      IntVector a_ratio(ratio.getBlockVector(domain_box.getBlockId()));
                      IntVector b_ratio(ratio.getBlockVector(nbr_box.getBlockId()));
 
+                     int partial_lo = 0;
+                     int partial_hi = 0;
+                     for (int d = 0; d < d_dim.getValue(); ++d) {
+                        if (b_width[d] > 1) {
+                           const int& ovlp_lo = tnode_ovlp.lower(d);
+                           partial_lo = ovlp_lo % b_ratio[d];
+                           if (partial_lo) {
+                              tnode_ovlp.setLower(d, ovlp_lo - partial_lo);
+                              b_width[d] += partial_lo;
+                           }
+                           const int& ovlp_hi = tnode_ovlp.upper(d);
+                           int partial_hi = ovlp_hi % b_ratio[d];
+                           if (partial_hi) {
+                              partial_hi = b_ratio[d] - partial_hi;
+                              tnode_ovlp.setUpper(d, ovlp_hi + partial_hi);
+                              b_width[d] += partial_hi;
+                           }
+                           break;
+                        }
+                     }
+                     window_a_db->putInteger("partial_lo", partial_lo);
+                     window_a_db->putInteger("partial_hi", partial_hi);
+                     window_b_db->putInteger("partial_lo", partial_lo);
+                     window_b_db->putInteger("partial_hi", partial_hi);
                      origin_a_db->putInteger("i", node_ovlp.lower(0));
                      width_a_db->putInteger("i", a_width[0]);
                      ratio_a_db->putInteger("i", a_ratio[0]);
@@ -2256,6 +2280,31 @@ PatchHierarchy::makeAdjacencySets(
                      IntVector b_width(tnode_ovlp.numberCells());
                      IntVector a_ratio(ratio.getBlockVector(domain_box.getBlockId()));
                      IntVector b_ratio(ratio.getBlockVector(nbr_box.getBlockId()));
+
+                     int partial_lo = 0;
+                     int partial_hi = 0;
+                     for (int d = 0; d < d_dim.getValue(); ++d) {
+                        if (a_width[d] > 1) {
+                           const int& ovlp_lo = node_ovlp.lower(d);
+                           partial_lo = ovlp_lo % a_ratio[d];
+                           if (partial_lo) {
+                              node_ovlp.setLower(d, ovlp_lo - partial_lo);
+                              a_width[d] += partial_lo;
+                           }
+                           const int& ovlp_hi = node_ovlp.upper(d);
+                           int partial_hi = ovlp_hi % a_ratio[d];
+                           if (partial_hi) {
+                              partial_hi = a_ratio[d] - partial_hi;
+                              node_ovlp.setUpper(d, ovlp_hi + partial_hi);
+                              a_width[d] += partial_hi;
+                           }
+                           break;
+                        }
+                     }
+                     window_a_db->putInteger("partial_lo", partial_lo);
+                     window_a_db->putInteger("partial_hi", partial_hi);
+                     window_b_db->putInteger("partial_lo", partial_lo);
+                     window_b_db->putInteger("partial_hi", partial_hi);
 
                      origin_a_db->putInteger("i", node_ovlp.lower(0));
                      width_a_db->putInteger("i", a_width[0]);

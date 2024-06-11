@@ -36,6 +36,8 @@ FlattenedHierarchy::FlattenedHierarchy(
    TBOX_ASSERT(coarsest_level <= finest_level);
    TBOX_ASSERT(finest_level < num_levels);
 
+   LocalId local_id(0);
+
    d_visible_boxes.resize(num_levels);
    std::vector<int> local_num_boxes(num_levels, 0);
 
@@ -43,7 +45,6 @@ FlattenedHierarchy::FlattenedHierarchy(
       const std::shared_ptr<PatchLevel>& current_level =
          hierarchy.getPatchLevel(ln);
 
-      LocalId local_id(0);
       int& num_boxes = local_num_boxes[ln];
 
       if (ln != finest_level) {
