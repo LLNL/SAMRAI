@@ -32,3 +32,6 @@ gcc_10_3_1:
   variables:
     COMPILER: "gcc_10_3_1"
   extends: .job_on_ruby
+  id_tokens:
+     SITE_ID_TOKEN:
+        aud: $CI_SERVER_URL

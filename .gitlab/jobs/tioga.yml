@@ -44,3 +44,6 @@ cce_16_0_0_rocm_5_6_0:
   variables:
     COMPILER: "cce-16.0.0-rocm-5.6.0"
   extends: .job_on_tioga
+  id_tokens:
+     SITE_ID_TOKEN:
+        aud: $CI_SERVER_URL

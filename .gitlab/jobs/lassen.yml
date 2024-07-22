@@ -25,6 +25,7 @@ variables:
 # customize it per job with variables. E.g.:
 # "./path/to/my_ci_script ${A_VARIABLE}"
 
+
 ####
 # Build and test jobs for specific compilers, extends generic lassen build and
 # test job
@@ -32,3 +33,7 @@ clang-cuda:
   variables:
     COMPILER: "clang-14-cuda-11"
   extends: .job_on_lassen
+  id_tokens:
+   SITE_ID_TOKEN:
+      aud: $CI_SERVER_URL
+
