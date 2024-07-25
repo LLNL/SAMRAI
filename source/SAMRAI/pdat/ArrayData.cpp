@@ -1200,6 +1200,64 @@ void ArrayData<TYPE>::fill(
    }
 }
 
+template <class TYPE>
+void ArrayData<TYPE>::fillSequential(
+    const TYPE& t,
+    const hier::Box& box,
+    const unsigned int d)
+{
+   const tbox::Dimension& dim = box.getDim();
+   if (dim.getValue() > 3) {
+      fill(t, box, d);
+   } else {
+      hier::Box fill_box(box * d_box);
+      const hier::Index& b_lower = fill_box.lower();
+      const hier::Index b_upper = fill_box.upper();
+      int b_ilo = b_lower(0);
+      int b_ihi = b_upper(0);
+      int b_jlo = 0;
+      int b_jhi = 0;
+      int b_klo = 0;
+      int b_khi = 0;
+      if (dim.getValue() > 1) {
+         b_jlo = b_lower(1);
+         b_jhi = b_upper(1);
+      }
+      if (dim.getValue() == 3) {
+         b_klo = b_lower(2);
+         b_khi = b_upper(2);
+      }
+
+      const hier::Index& dbox_lower = d_box.lower();
+      const hier::Index& dbox_upper = d_box.upper();
+      int iwidth = dbox_upper(0)-dbox_lower(0) + 1;
+      int jwidth = 0;
+      int dbox_ilo = dbox_lower(0);
+      int dbox_jlo = 0;
+      int dbox_klo = 0;
+      if (dim.getValue() > 1) {
+         jwidth = dbox_upper(1) - dbox_lower(1) + 1;
+         dbox_jlo = dbox_lower(1);
+      }
+      if (dim.getValue() == 3) {
+         dbox_klo = dbox_lower(2);
+      }
+
+      for (int k = b_klo; k <= b_khi; ++k) { 
+         int koffset = (d * d_offset) + (k - dbox_klo) * iwidth * jwidth; 
+         for (int j = b_jlo; j <= b_jhi; ++j) {
+            int joffset = (j - dbox_jlo) * iwidth;
+            for (int i = b_ilo; i <= b_ihi; ++i) {
+               int ioffset = i - dbox_ilo;
+               d_array[ioffset+joffset+koffset] = t;
+            }
+         }
+      }
+   }
+
+}
+
+
 /*
  *************************************************************************
  *

@@ -74,6 +74,7 @@ set(CMAKE_CUDA_FLAGS "" CACHE STRING "")
 set(CMAKE_INSTALL_LIBDIR lib)
 #set(CMAKE_INSTALL_RPATH_USE_LINK_PATH Off CACHE Bool "Rpath uses Link path")
 set(SAMRAI_RAJA_WORKGROUP_THREADS 512 CACHE INT "Number of workgroup threads")
+set(ENABLE_SAMRAI_DEVICE_ALLOC CACHE BOOL "Use Device allocator on allocations for GPU")
 
 include(GNUInstallDirs)
 

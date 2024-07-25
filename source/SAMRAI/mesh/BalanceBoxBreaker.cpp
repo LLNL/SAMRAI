@@ -682,7 +682,7 @@ BalanceBoxBreaker::breakOffLoad_cubic(TrialBreak& trial) const
        * Compute initial box at corner bn and its expansion rate.
        */
       hier::Box corner_box(trial.d_whole_box);
-      hier::IntVector corner_box_size = zero_vec;
+      hier::IntVector corner_box_extent = zero_vec;
       double corner_box_load = 0;
       hier::IntVector expansion_rate(dim);
 
@@ -714,25 +714,27 @@ BalanceBoxBreaker::breakOffLoad_cubic(TrialBreak& trial) const
 
       }
 
-      corner_box_size = corner_box.numberCells();
-      if (corner_box.size() >= d_pparams->getMinimumCellRequest()) {
+      corner_box_extent = corner_box.numberCells();
+      size_t corner_box_size = corner_box.size();
+      if (corner_box_size >= d_pparams->getMinimumCellRequest() &&
+          corner_box_size >= d_pparams->getArtificialMinimumLoad()) {
          corner_box_load = trial.computeBreakOffLoad(corner_box);
       }
 
       if (d_print_break_steps) {
          tbox::plog << "Initial corner box " << bn << " is " << corner_box
-                    << corner_box.numberCells() << '|' << corner_box.size() << std::endl;
+                    << corner_box.numberCells() << '|' << corner_box_size << std::endl;
       }
 
       int break_acceptance_flags[4] = { 0, 0, 0, 0 };
 
-      if (corner_box.size() >= d_pparams->getMinimumCellRequest() &&
+      if (corner_box_size >= d_pparams->getMinimumCellRequest() &&
           BalanceUtilities::compareLoads(
              break_acceptance_flags, best_breakoff_load,
              corner_box_load, trial.d_ideal_load,
              trial.d_low_load, trial.d_high_load, *d_pparams)) {
          best_breakoff_box = corner_box;
-         best_breakoff_size = corner_box_size;
+         best_breakoff_size = corner_box_extent;
          best_breakoff_load = corner_box_load;
          if (d_print_break_steps) {
             tbox::plog << "best_breakoff_box is now box " << bn << " " << best_breakoff_box
@@ -746,12 +748,12 @@ BalanceBoxBreaker::breakOffLoad_cubic(TrialBreak& trial) const
       }
 
       /*
-       * growable: whether corner_box_size can be grown without
+       * growable: whether corner_box_extent can be grown without
        * breaking off too much.
        */
       hier::IntVector growable(dim, 1);
       for (int d = 0; d < dim.getValue(); ++d) {
-         growable[d] = corner_box_size[d] < box_dims[d];
+         growable[d] = corner_box_extent[d] < box_dims[d];
       }
 
       while (corner_box_load < trial.d_ideal_load) {
@@ -768,12 +770,12 @@ BalanceBoxBreaker::breakOffLoad_cubic(TrialBreak& trial) const
          int inc_dir = -1;
          for (int d = 0; d < dim.getValue(); ++d) {
             if (growable(d) &&
-                (inc_dir == -1 || corner_box_size(d) < corner_box_size(inc_dir)))
+                (inc_dir == -1 || corner_box_extent(d) < corner_box_extent(inc_dir)))
                inc_dir = d;
          }
          if (inc_dir == -1) break;  // No growable direction.
 
-         TBOX_ASSERT(corner_box_size(inc_dir) < box_dims(inc_dir));
+         TBOX_ASSERT(corner_box_extent(inc_dir) < box_dims(inc_dir));
 
          /*
           * Grow corner_box, but keep within boundary of box and
@@ -803,9 +805,10 @@ BalanceBoxBreaker::breakOffLoad_cubic(TrialBreak& trial) const
             growable(inc_dir) = corner_box.lower() (inc_dir) > trial.d_whole_box.lower() (inc_dir);
          }
 
-         corner_box_size = corner_box.numberCells();
-
-         if (corner_box.size() < d_pparams->getMinimumCellRequest()) {
+         corner_box_extent = corner_box.numberCells();
+         size_t corner_box_size = corner_box.size();
+         if (corner_box_size < d_pparams->getMinimumCellRequest() ||
+             corner_box_size < d_pparams->getArtificialMinimumLoad()) {
             continue;
          }
 
@@ -817,7 +820,7 @@ BalanceBoxBreaker::breakOffLoad_cubic(TrialBreak& trial) const
 
          if (accept_break) {
             best_breakoff_box = corner_box;
-            best_breakoff_size = corner_box_size;
+            best_breakoff_size = corner_box_extent;
             best_breakoff_load = corner_box_load;
          }
 
@@ -1066,10 +1069,16 @@ void BalanceBoxBreaker::TrialBreak::computeBreakData(
    d_breakoff.clear();
    d_leftover.clear();
    burstBox(d_leftover, d_whole_box, box);
-   bool do_cut = box.size() >= d_pparams->getMinimumCellRequest();
+   size_t box_size = box.size();
+   bool do_cut = box_size >= d_pparams->getMinimumCellRequest() &&
+                 box_size >= d_pparams->getArtificialMinimumLoad();
    if (do_cut) {
       for (auto itr = d_leftover.begin(); itr != d_leftover.end(); ++itr) {
-         if ((*itr).size() < d_pparams->getMinimumCellRequest()) {
+         size_t itr_size = (*itr).size();
+         if (itr_size < d_pparams->getMinimumCellRequest()) {
+            do_cut = false;
+         }
+         if (do_cut && itr_size < d_pparams->getArtificialMinimumLoad()) {
             do_cut = false;
          }
       }
@@ -1107,7 +1116,7 @@ double BalanceBoxBreaker::TrialBreak::computeBreakOffLoad(
                       static_cast<double>(box.size());
 
       if (breakoff_load < d_pparams->getArtificialMinimumLoad()) {
-         breakoff_load = static_cast<double>(d_pparams->getArtificialMinimumLoad());
+         breakoff_load = d_pparams->getArtificialMinimumLoad();
       }
    } else {
       /*

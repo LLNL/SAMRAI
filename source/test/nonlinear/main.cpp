@@ -146,7 +146,7 @@ int main(
 
    tbox::SAMRAI_MPI::init(&argc, &argv);
 #ifdef HAVE_PETSC
-   PetscInitialize(&argc, &argv, PETSC_NULL, PETSC_NULL);
+   PetscInitialize(&argc, &argv, PETSC_NULLPTR, PETSC_NULLPTR);
 #endif
    tbox::SAMRAIManager::initialize();
    tbox::SAMRAIManager::startup();

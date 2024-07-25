@@ -89,6 +89,10 @@ if (ENABLE_HIP)
   endif ()
 
   set (HAVE_HIP True)
+
+  if (ENABLE_SAMRAI_DEVICE_ALLOC)
+     set (USE_DEVICE_ALLOCATOR True)
+  endif ()
 endif ()
 
 # HDF5

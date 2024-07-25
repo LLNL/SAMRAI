@@ -175,6 +175,7 @@ PETScAbstractVectorReal<TYPE>::vecDuplicateVecs(
    int n,
    Vec** varr_new)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(v_in != 0);
    int ierr = 0;
    ierr = PetscMalloc(n * sizeof(Vec *), varr_new);
@@ -192,6 +193,7 @@ PETScAbstractVectorReal<TYPE>::vecDestroyVecs(
    PetscInt n,
    Vec* v_arr)
 {
+   PetscFunctionBegin;
    int i;
    int ierr = 0;
 
@@ -235,6 +237,7 @@ PETScAbstractVectorReal<TYPE>::vecDuplicate(
    Vec v,
    Vec* newv)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(v != 0);
 
    PETScAbstractVectorReal<TYPE>* new_pav = PABSVEC_CAST(v)->makeNewVector();
@@ -252,6 +255,7 @@ PETScAbstractVectorReal<TYPE>::vecDot(
    Vec y,
    TYPE* val)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
    TBOX_ASSERT(y != 0);
 
@@ -269,6 +273,7 @@ PETScAbstractVectorReal<TYPE>::vecMDot(
    TYPE* val)
 {
 
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
 #ifdef DEBUG_CHECK_ASSERTIONS
    for (int i = 0; i < nv; ++i) {
@@ -292,6 +297,7 @@ PETScAbstractVectorReal<TYPE>::vecNorm(
    NormType type,
    TYPE* val)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
    if (type == NORM_1) {
       *val = PABSVEC_CAST(x)->L1Norm();
@@ -321,6 +327,7 @@ PETScAbstractVectorReal<TYPE>::vecTDot(
    Vec y,
    TYPE* val)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
    TBOX_ASSERT(y != 0);
    *val = PABSVEC_CAST(x)->TdotWith(PABSVEC_CAST(y));
@@ -336,6 +343,7 @@ PETScAbstractVectorReal<TYPE>::vecMTDot(
    const Vec* y,
    TYPE* val)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
 #ifdef DEBUG_CHECK_TBOX_ASSERTIONS
    for (PetscInt i = 0; i < nv; ++i) {
@@ -355,6 +363,7 @@ PETScAbstractVectorReal<TYPE>::vecScale(
    Vec x,
    TYPE alpha)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
 
    PABSVEC_CAST(x)->scaleVector(alpha);
@@ -370,6 +379,7 @@ PETScAbstractVectorReal<TYPE>::vecCopy(
    Vec x,
    Vec y)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
    TBOX_ASSERT(y != 0);
 
@@ -386,6 +396,7 @@ PETScAbstractVectorReal<TYPE>::vecSet(
    Vec x,
    TYPE alpha)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
 
    PABSVEC_CAST(x)->setToScalar(alpha);
@@ -401,6 +412,7 @@ PETScAbstractVectorReal<TYPE>::vecSwap(
    Vec x,
    Vec y)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
    TBOX_ASSERT(y != 0);
 
@@ -421,6 +433,7 @@ PETScAbstractVectorReal<TYPE>::vecAXPY(
    TYPE alpha,
    Vec x)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
    TBOX_ASSERT(y != 0);
 
@@ -439,6 +452,7 @@ PETScAbstractVectorReal<TYPE>::vecAXPBY(
    TYPE beta,
    Vec x)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
    TBOX_ASSERT(y != 0);
 
@@ -457,6 +471,7 @@ PETScAbstractVectorReal<TYPE>::vecMAXPY(
    const TYPE* alpha,
    Vec* x)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(y != 0);
 #ifdef DEBUG_CHECK_TBOX_ASSERTIONS
    for (PetscInt i = 0; i < nv; ++i) {
@@ -479,6 +494,7 @@ PETScAbstractVectorReal<TYPE>::vecAYPX(
    const TYPE alpha,
    Vec x)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
    TBOX_ASSERT(y != 0);
 
@@ -497,6 +513,7 @@ PETScAbstractVectorReal<TYPE>::vecWAXPY(
    Vec x,
    Vec y)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
    TBOX_ASSERT(y != 0);
    TBOX_ASSERT(w != 0);
@@ -515,6 +532,7 @@ PETScAbstractVectorReal<TYPE>::vecPointwiseMult(
    Vec x,
    Vec y)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
    TBOX_ASSERT(y != 0);
    TBOX_ASSERT(w != 0);
@@ -532,6 +550,7 @@ PETScAbstractVectorReal<TYPE>::vecPointwiseDivide(
    Vec x,
    Vec y)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
    TBOX_ASSERT(y != 0);
    TBOX_ASSERT(w != 0);
@@ -561,6 +580,7 @@ PETScAbstractVectorReal<TYPE>::vecGetSize(
    Vec x,
    PetscInt* size)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
 
    *size = PABSVEC_CAST(x)->getDataSize();
@@ -576,6 +596,7 @@ PETScAbstractVectorReal<TYPE>::vecGetLocalSize(
    Vec x,
    PetscInt* size)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
 
    *size = PABSVEC_CAST(x)->getLocalDataSize();
@@ -592,6 +613,7 @@ PETScAbstractVectorReal<TYPE>::vecRestoreArray(
    Vec x,
    TYPE** a)
 {
+   PetscFunctionBegin;
    NULL_USE(x);
    *a = 0;
    PetscFunctionReturn(0);
@@ -604,6 +626,7 @@ PETScAbstractVectorReal<TYPE>::vecMax(
    PetscInt* p,
    TYPE* val)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
 
    PABSVEC_CAST(x)->vecMax(*p, *val);
@@ -620,6 +643,7 @@ PETScAbstractVectorReal<TYPE>::vecMin(
    PetscInt* p,
    TYPE* val)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
 
    PABSVEC_CAST(x)->vecMin(*p, *val);
@@ -635,6 +659,7 @@ PETScAbstractVectorReal<TYPE>::vecSetRandom(
    Vec x,
    PetscRandom rctx)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
 
    TYPE lo, hi;
@@ -653,6 +678,7 @@ PetscErrorCode
 PETScAbstractVectorReal<TYPE>::vecDestroy(
    Vec v)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(v != 0);
 
    PABSVEC_CAST(v)->freeVector();
@@ -666,6 +692,7 @@ PETScAbstractVectorReal<TYPE>::vecView(
    Vec v,
    PetscViewer viewer)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(v != 0);
 
    NULL_USE(viewer);
@@ -681,6 +708,7 @@ PETScAbstractVectorReal<TYPE>::vecDot_local(
    Vec y,
    TYPE* val)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
    TBOX_ASSERT(y != 0);
 
@@ -696,6 +724,7 @@ PETScAbstractVectorReal<TYPE>::vecTDot_local(
    Vec y,
    TYPE* val)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
    TBOX_ASSERT(y != 0);
 
@@ -711,6 +740,7 @@ PETScAbstractVectorReal<TYPE>::vecNorm_local(
    NormType type,
    TYPE* val)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
 
    if (type == NORM_1) {
@@ -742,6 +772,7 @@ PETScAbstractVectorReal<TYPE>::vecMDot_local(
    const Vec* y,
    TYPE* val)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
 #ifdef DEBUG_CHECK_TBOX_ASSERTIONS
    for (PetscInt i = 0; i < nv; ++i) {
@@ -763,6 +794,7 @@ PETScAbstractVectorReal<TYPE>::vecMTDot_local(
    const Vec* y,
    TYPE* val)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
 #ifdef DEBUG_CHECK_TBOX_ASSERTIONS
    for (PetscInt i = 0; i < nv; ++i) {
@@ -784,6 +816,7 @@ PETScAbstractVectorReal<TYPE>::vecMaxPointwiseDivide(
    Vec y,
    TYPE* max)
 {
+   PetscFunctionBegin;
    TBOX_ASSERT(x != 0);
    TBOX_ASSERT(y != 0);
    *max = PABSVEC_CAST(x)->maxPointwiseDivide(PABSVEC_CAST(y));
@@ -977,8 +1010,8 @@ PETScAbstractVectorReal<TYPE>::vecResetArray(
 template<class TYPE>
 PetscErrorCode
 PETScAbstractVectorReal<TYPE>::vecSetFromOptions(
-   PetscOptionItems* options,
-   Vec vec)
+   Vec vec,
+   PetscOptionItems* options)
 {
    NULL_USE(options);
    NULL_USE(vec);

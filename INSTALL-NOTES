@@ -282,11 +282,11 @@ HDF5		1.8.5
 
 MVAPICH2        2.3
 
-PETSc 	        3.10.5    (this version is required if PETSc is used)
+PETSc 	        3.21.0
 
-Sundials        5.3.0
+Sundials        7.0.0
 
-hypre           2.15.1
+hypre           2.31.0
 
 VisIt		3.1.1
 
