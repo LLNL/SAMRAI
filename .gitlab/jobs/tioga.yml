@@ -42,5 +42,5 @@ release_resources:
 # test job
 cce_16_0_0_rocm_5_6_0:
   variables:
-    COMPILER: "cce-17.0.1-rocm-6.1.2"
+    COMPILER: "cce-6.0.0-rocm-5.6.0"
   extends: .job_on_tioga
