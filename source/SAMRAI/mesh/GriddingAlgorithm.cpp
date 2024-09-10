@@ -3323,9 +3323,7 @@ GriddingAlgorithm::bufferTagsOnLevel(
       buf_tag_box.grow(hier::IntVector(dim, buffer_size));
 
       boolean_tag_data->fillAll(not_tag);
-#if defined(HAVE_RAJA)
-      tbox::parallel_synchronize();
-#endif
+
       pdat::CellIterator icend(pdat::CellGeometry::end(buf_tag_box));
       for (pdat::CellIterator ic(pdat::CellGeometry::begin(buf_tag_box));
            ic != icend; ++ic) {
@@ -3333,14 +3331,9 @@ GriddingAlgorithm::bufferTagsOnLevel(
             hier::Box buf_box(*ic - buffer_size,
                               *ic + buffer_size,
                               tag_box_block_id);
-            //TODO:  check on this change
-            //boolean_tag_data->fill(tag_value, buf_box);
-            boolean_tag_data->getArrayData().fill(tag_value, buf_box);
+            boolean_tag_data->getArrayData().fillSequential(tag_value, buf_box);
          }
       }
-#if defined(HAVE_RAJA)
-      tbox::parallel_synchronize();
-#endif
    }
    SAMRAI_CALI_MARK_END("bufferBCdata");
 

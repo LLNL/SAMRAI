@@ -12,6 +12,7 @@
 #define included_hier_BlockId
 
 #include "SAMRAI/SAMRAI_config.h"
+#include "SAMRAI/tbox/MathUtilities.h"
 #include "SAMRAI/tbox/Utilities.h"
 
 #include <iostream>
@@ -36,21 +37,27 @@ public:
    /*!
     * @brief Default constructor sets the value to invalid.
     */
-   BlockId();
+   constexpr BlockId() :
+      d_value(s_invalid_val)
+   {
+   }
 
    /*!
     * @brief Copy constructor.
     */
-   BlockId(
-      const BlockId& other);
+   constexpr BlockId(
+      const BlockId& other) = default;
 
    /*!
     * @brief Construct from an unsigned int. 
     *
     * This method is explicit to prevent automatic conversion.
     */
-   explicit BlockId(
-      const unsigned int& value);
+   constexpr explicit BlockId(
+      const unsigned int& value) :
+      d_value(value)
+   {
+   }
 
    /*!
     * @brief Construct from a signed int.
@@ -59,13 +66,17 @@ public:
     *
     * @pre value >= 0
     */
-   explicit BlockId(
-      const int& value);
+   constexpr explicit BlockId(
+      const int& value) :
+      d_value(static_cast<unsigned int>(value))
+   {
+      TBOX_CONSTEXPR_ASSERT(value >=0);
+   }
 
    /*!
     * @brief Default constructor.
     */
-   ~BlockId();
+   ~BlockId() = default;
 
    /*!
     * @brief Assignment operator.
@@ -74,28 +85,24 @@ public:
     *
     * @return @c *this
     */
-   BlockId&
+   constexpr BlockId&
    operator = (
-      const BlockId& rhs)
-   {
-      d_value = rhs.d_value;
-      return *this;
-   }
+      const BlockId& rhs) = default;
 
    /*!
     * @brief Set to an int value.
     *
     * @param[in] rhs
     */
-   void
+   constexpr void
    setId(
       const int& rhs)
    {
-      TBOX_ASSERT(rhs >= 0); 
+      TBOX_CONSTEXPR_ASSERT(rhs >= 0); 
       d_value = static_cast<block_t>(rhs);
    }
 
-   void
+   constexpr void
    setId(
       const unsigned int& rhs)
    {
@@ -105,16 +112,16 @@ public:
    /*!
     * @brief Whether the value is valid.
     */
-   bool
+   constexpr bool
    isValid() const
    {
-      return d_value != s_invalid_id.d_value;
+      return d_value != s_invalid_val;
    }
 
    /*!
     * @brief Access the numerical value.
     */
-   const block_t&
+   constexpr const block_t&
    getBlockValue() const
    {
       return d_value;
@@ -149,7 +156,7 @@ public:
     *
     * @param[in] rhs
     */
-   bool
+   constexpr bool
    operator == (
       const BlockId& rhs) const
    {
@@ -163,7 +170,7 @@ public:
     *
     * @param[in] rhs
     */
-   bool
+   constexpr bool
    operator != (
       const BlockId& rhs) const
    {
@@ -177,7 +184,7 @@ public:
     *
     * @param[in] rhs
     */
-   bool
+   constexpr bool
    operator < (
       const BlockId& rhs) const
    {
@@ -191,7 +198,7 @@ public:
     *
     * @param[in] rhs
     */
-   bool
+   constexpr bool
    operator > (
       const BlockId& rhs) const
    {
@@ -205,7 +212,7 @@ public:
     *
     * @param[in] rhs
     */
-   bool
+   constexpr bool
    operator <= (
       const BlockId& rhs) const
    {
@@ -219,7 +226,7 @@ public:
     *
     * @param[in] rhs
     */
-   bool
+   constexpr bool
    operator >= (
       const BlockId& rhs) const
    {
@@ -239,7 +246,7 @@ public:
     *
     * @param[in] rhs
     */
-   bool
+   constexpr bool
    operator == (
       const block_t& rhs) const
    {
@@ -253,7 +260,7 @@ public:
     *
     * @param[in] rhs
     */
-   bool
+   constexpr bool
    operator != (
       const block_t& rhs) const
    {
@@ -267,7 +274,7 @@ public:
     *
     * @param[in] rhs
     */
-   bool
+   constexpr bool
    operator < (
       const block_t& rhs) const
    {
@@ -281,7 +288,7 @@ public:
     *
     * @param[in] rhs
     */
-   bool
+   constexpr bool
    operator > (
       const block_t& rhs) const
    {
@@ -295,7 +302,7 @@ public:
     *
     * @param[in] rhs
     */
-   bool
+   constexpr bool
    operator <= (
       const block_t& rhs) const
    {
@@ -309,7 +316,7 @@ public:
     *
     * @param[in] rhs
     */
-   bool
+   constexpr bool
    operator >= (
       const block_t& rhs) const
    {
@@ -335,6 +342,10 @@ private:
     * @brief Numerical value of the identifier.
     */
    unsigned int d_value;
+
+   static constexpr unsigned int s_zero_val = 0;
+   static constexpr unsigned int s_invalid_val =
+      tbox::MathUtilities<int>::getMax();
 
    /*!
     * @brief BlockId with a numerical value of zero.

@@ -20,19 +20,11 @@ variables:
 # Add variables that should apply to all the jobs on a machine:
 #  RUBY_MY_VAR: "..."
 
-# Corona
-# Arguments for top level allocation
-  CORONA_SHARED_ALLOC: ""
-# Arguments for job level allocation
-  CORONA_JOB_ALLOC: "--exclusive --time-limit=10m --nodes=1 --begin-time=+5s"
-# Add variables that should apply to all the jobs on a machine:
-#  CORONA_MY_VAR: "..."
-
 # Tioga
 # Arguments for top level allocation
-  TIOGA_SHARED_ALLOC: ""
+  TIOGA_SHARED_ALLOC: "" # Disabled: see .gitlab/jobs/tioga.yml
 # Arguments for job level allocation
-  TIOGA_JOB_ALLOC: "--exclusive --time-limit=72m --nodes=1 --begin-time=+5s"
+  TIOGA_JOB_ALLOC: "--queue=pci --exclusive --time-limit=72m --nodes=1 --begin-time=+5s"
 # Add variables that should apply to all the jobs on a machine:
 #  TIOGA_MY_VAR: "..."
 

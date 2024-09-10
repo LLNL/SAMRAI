@@ -55,7 +55,6 @@ SAMRAI_MPI SAMRAI_MPI::s_samrai_world(MPI_COMM_NULL);
 
 bool SAMRAI_MPI::s_call_abort_in_serial_instead_of_exit = false;
 bool SAMRAI_MPI::s_call_abort_in_parallel_instead_of_mpiabort = false;
-int SAMRAI_MPI::s_invalid_rank = -1;
 
 /*
  **************************************************************************

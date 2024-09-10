@@ -615,6 +615,21 @@ public:
       const unsigned int d = 0);
 
    /*!
+    * @brief Fill all arrray values associated with depth component d
+    * with the box with the value t
+    *
+    * This is equivalent to the fill() method with the same signature, with an
+    * implementation that never uses parallel threading.
+    *
+    * @pre (d >= 0) && (d < getDepth())
+    */
+   void
+   fillSequential(
+      const TYPE& t,
+      const hier::Box& box,
+      const unsigned int d = 0);
+
+   /*!
     * Check to make sure that the class version and restart file
     * version are equal.  If so, read in data from restart database.
     *

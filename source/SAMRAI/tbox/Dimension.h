@@ -55,19 +55,24 @@ public:
     *
     * @pre (dim > 0) && (dim <= SAMRAI::MAX_DIM_VAL)
     */
-   explicit Dimension(
-      const unsigned short& dim);
+   constexpr explicit Dimension(
+      const unsigned short& dim) : d_dim(dim)
+   {
+      TBOX_CONSTEXPR_DIM_ASSERT(dim > 0 && dim <= SAMRAI::MAX_DIM_VAL);
+   }
 
    /**
     * Construct a dimension equal to the argument.
     */
-   Dimension(
-      const Dimension& dimension);
+   constexpr Dimension(
+      const Dimension& dimension) : d_dim(dimension.d_dim)
+   {
+   }
 
    /**
     * Equality operator.
     */
-   bool
+   constexpr bool
    operator == (
       const Dimension& rhs) const
    {
@@ -77,7 +82,7 @@ public:
    /**
     * Inequality operator.
     */
-   bool
+   constexpr bool
    operator != (
       const Dimension& rhs) const
    {
@@ -87,7 +92,7 @@ public:
    /**
     * Greater than operator.
     */
-   bool
+   constexpr bool
    operator > (
       const Dimension& rhs) const
    {
@@ -97,7 +102,7 @@ public:
    /**
     * Greater than or equal operator.
     */
-   bool
+   constexpr bool
    operator >= (
       const Dimension& rhs) const
    {
@@ -107,7 +112,7 @@ public:
    /**
     * Less than operator.
     */
-   bool
+   constexpr bool
    operator < (
       const Dimension& rhs) const
    {
@@ -117,7 +122,7 @@ public:
    /**
     * Less than or equal operator.
     */
-   bool
+   constexpr bool
    operator <= (
       const Dimension& rhs) const
    {
@@ -132,7 +137,7 @@ public:
     * used for comparisons, the Dimension comparison operations are
     * better suited for that purpose.
     */
-   unsigned short
+   constexpr unsigned short
    getValue() const
    {
       return d_dim;

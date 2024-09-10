@@ -31,26 +31,32 @@ public:
    /*!
     * @brief Default constructor.
     */
-   PeriodicId();
+   constexpr PeriodicId() :
+      d_value(s_invalid_val)
+   {
+   }
 
    /*!
     * @brief Copy constructor.
     */
-   PeriodicId(
-      const PeriodicId& other);
+   constexpr PeriodicId(
+      const PeriodicId& other) = default;
 
    /*!
     * @brief Construct from a numerical value.
     *
     * This method is explicit to prevent automatic conversion.
     */
-   explicit PeriodicId(
-      const int& value);
+   constexpr explicit PeriodicId(
+      const int& value) :
+      d_value(value)
+   {
+   }
 
    /*!
     * @brief Default constructor.
     */
-   ~PeriodicId();
+   ~PeriodicId() = default;
 
    /*!
     * @brief Assignment operator.
@@ -59,13 +65,9 @@ public:
     *
     * @return @c *this
     */
-   PeriodicId&
+   constexpr PeriodicId&
    operator = (
-      const PeriodicId& rhs)
-   {
-      d_value = rhs.d_value;
-      return *this;
-   }
+      const PeriodicId& rhs) = default;
 
    /*!
     * @brief Assignment operator.
@@ -74,7 +76,7 @@ public:
     *
     * @return @c *this
     */
-   PeriodicId&
+   constexpr PeriodicId&
    operator = (
       const int& rhs)
    {
@@ -85,7 +87,7 @@ public:
    /*!
     * @brief Access the numerical value.
     */
-   const int&
+   constexpr const int&
    getPeriodicValue() const
    {
       return d_value;
@@ -112,7 +114,7 @@ public:
    /*!
     * @brief Returns True if the value is valid.
     */
-   bool
+   constexpr bool
    isValid() const
    {
       return d_value >= 0;
@@ -129,7 +131,7 @@ public:
     *
     * @param[in] rhs
     */
-   bool
+   constexpr bool
    operator == (
       const PeriodicId& rhs) const
    {
@@ -143,7 +145,7 @@ public:
     *
     * @param[in] rhs
     */
-   bool
+   constexpr bool
    operator != (
       const PeriodicId& rhs) const
    {
@@ -157,7 +159,7 @@ public:
     *
     * @param[in] rhs
     */
-   bool
+   constexpr bool
    operator < (
       const PeriodicId& rhs) const
    {
@@ -171,7 +173,7 @@ public:
     *
     * @param[in] rhs
     */
-   bool
+   constexpr bool
    operator > (
       const PeriodicId& rhs) const
    {
@@ -185,7 +187,7 @@ public:
     *
     * @param[in] rhs
     */
-   bool
+   constexpr bool
    operator <= (
       const PeriodicId& rhs) const
    {
@@ -199,7 +201,7 @@ public:
     *
     * @param[in] rhs
     */
-   bool
+   constexpr bool
    operator >= (
       const PeriodicId& rhs) const
    {
@@ -221,6 +223,10 @@ private:
     * @brief Numerical value of the identifier.
     */
    int d_value;
+
+   static constexpr int s_zero_val = 0;
+
+   static constexpr int s_invalid_val = -1;
 
    /*!
     * @brief PeriodicId with a numerical value of zero.

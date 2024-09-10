@@ -14,45 +14,9 @@
 namespace SAMRAI {
 namespace hier {
 
-const PeriodicId PeriodicId::s_invalid_id(-1);
-const PeriodicId PeriodicId::s_zero_id(0);
+const PeriodicId PeriodicId::s_invalid_id(s_invalid_val);
+const PeriodicId PeriodicId::s_zero_id(s_zero_val);
 
-/*
- ******************************************************************************
- ******************************************************************************
- */
-PeriodicId::PeriodicId():
-   d_value(invalidId().d_value) {
-}
-
-/*
- ******************************************************************************
- ******************************************************************************
- */
-PeriodicId::PeriodicId(
-   const PeriodicId& other):
-   d_value(other.d_value) {
-}
-
-/*
- ******************************************************************************
- ******************************************************************************
- */
-PeriodicId::PeriodicId(
-   const int& value):
-   d_value(value) {
-}
-
-/*
- ******************************************************************************
- ******************************************************************************
- */
-PeriodicId::~PeriodicId()
-{
-#ifdef DEBUG_CHECK_ASSERTIONS
-   d_value = s_invalid_id.d_value;
-#endif
-}
 
 /*
  ******************************************************************************

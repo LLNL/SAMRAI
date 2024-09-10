@@ -49,27 +49,35 @@ public:
     * The object can be initialized using the assignment operator or
     * the non-const versions of the getOwnerRank() and getLocalId() methods.
     */
-   GlobalId();
+   GlobalId() :
+      d_owner_rank(tbox::SAMRAI_MPI::getInvalidRank()),
+      d_local_id(LocalId::getInvalidId())
+   {
+   }
 
    /*!
     * @brief Initializing constructor.
     */
-   GlobalId(
+   constexpr GlobalId(
       const LocalId& local_id,
-      const int owner_rank);
+      const int owner_rank) :
+      d_owner_rank(owner_rank),
+      d_local_id(local_id)
+   {
+   }
 
    /*!
     * @brief Copy constructor.
     *
     * @param[in] other
     */
-   GlobalId(
-      const GlobalId& other);
+   constexpr GlobalId(
+      const GlobalId& other) = default;
 
    /*!
     * @brief Destructor.
     */
-   ~GlobalId();
+   ~GlobalId() = default;
 
    /*!
     * @brief Access the owner rank.
@@ -83,7 +91,7 @@ public:
    /*!
     * @brief Access the owner rank.
     */
-   const int&
+   constexpr const int&
    getOwnerRank() const
    {
       return d_owner_rank;
@@ -101,7 +109,7 @@ public:
    /*!
     * @brief Access the LocalId.
     */
-   const LocalId&
+   constexpr const LocalId&
    getLocalId() const
    {
       return d_local_id;
@@ -118,11 +126,11 @@ public:
     * owner values first; if they compare equal, compare the LocalId
     * next.
     */
-   GlobalId&
+   constexpr GlobalId&
    operator = (
       const GlobalId& r) = default;
 
-   bool
+   constexpr bool
    operator == (
       const GlobalId& r) const
    {
@@ -136,7 +144,7 @@ public:
     *
     * See note on comparison for operator==(const GlobalId&);
     */
-   bool
+   constexpr bool
    operator != (
       const GlobalId& r) const
    {
@@ -150,7 +158,7 @@ public:
     *
     * See note on comparison for operator==(const GlobalId&);
     */
-   bool
+   constexpr bool
    operator < (
       const GlobalId& r) const
    {
@@ -163,7 +171,7 @@ public:
     *
     * See note on comparison for operator==(const GlobalId&);
     */
-   bool
+   constexpr bool
    operator > (
       const GlobalId& r) const
    {
@@ -176,7 +184,7 @@ public:
     *
     * See note on comparison for operator==(const GlobalId&);
     */
-   bool
+   constexpr bool
    operator <= (
       const GlobalId& r) const
    {
@@ -190,7 +198,7 @@ public:
     *
     * See note on comparison for operator==(const GlobalId&);
     */
-   bool
+   constexpr bool
    operator >= (
       const GlobalId& r) const
    {
