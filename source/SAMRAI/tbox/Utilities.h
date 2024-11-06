@@ -119,6 +119,26 @@ typedef int mode_t;
 
 #endif
 
+#ifdef DEBUG_CHECK_ASSERTIONS
+
+#define TBOX_CONSTEXPR_ASSERT(EXP)                                 \
+   do {                                                            \
+      if (!(EXP)) {                                                \
+         printf("Failed assertion: ");                         \
+         printf( # EXP );                                                \
+         printf("\n");                                                   \
+         SAMRAI::tbox::Utilities::abort("", __FILE__, __LINE__); \
+      }                                                            \
+   } while (0)
+#else
+
+/*
+ * No assertion checking
+ */
+#define TBOX_CONSTEXPR_ASSERT(EXP)
+
+#endif
+
 /*!
  * Throw an error assertion from within any C++ source code if the
  * given expression is not true.  This is a parallel-friendly version
@@ -344,6 +364,27 @@ typedef int mode_t;
  * No dimensional assertion checking
  */
 #define TBOX_DIM_ASSERT(EXP)
+
+#endif
+
+#ifdef DEBUG_CHECK_DIM_ASSERTIONS
+
+#define TBOX_CONSTEXPR_DIM_ASSERT(EXP)                                   \
+   do {                                                                  \
+      if (!(EXP)) {                                                      \
+         printf("Failed dimension assertion: ");                         \
+         printf( # EXP );                                                \
+         printf("\n");                                                   \
+         SAMRAI::tbox::Utilities::abort("", __FILE__, __LINE__);         \
+      }                                                                  \
+   } while (0)
+
+#else
+
+/*
+ * No dimensional assertion checking
+ */
+#define TBOX_CONSTEXPR_DIM_ASSERT(EXP)
 
 #endif
 

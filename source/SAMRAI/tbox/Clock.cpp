@@ -15,7 +15,7 @@
 namespace SAMRAI {
 namespace tbox {
 
-#ifdef HAVE_SYS_TIMES_H
+#ifdef SAMRAI_HAVE_SYS_TIMES_H
 struct tms Clock::s_tms_buffer;
 #endif
 clock_t Clock::s_null_clock_t;

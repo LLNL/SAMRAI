@@ -19,11 +19,11 @@
 #include <ctime>
 #endif
 
-#ifdef HAVE_SYS_TIMES_H
+#ifdef SAMRAI_HAVE_SYS_TIMES_H
 #include <sys/times.h>
 #endif
 
-#ifdef HAVE_UNISTD_H
+#ifdef SAMRAI_HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
@@ -79,7 +79,7 @@ struct Clock {
    initialize(
       clock_t& clock)
    {
-#ifdef HAVE_SYS_TIMES_H
+#ifdef SAMRAI_HAVE_SYS_TIMES_H
       clock = times(&s_tms_buffer);
 #endif
    }
@@ -105,7 +105,7 @@ struct Clock {
       clock_t& sys,
       double& wall)
    {
-#ifdef HAVE_SYS_TIMES_H
+#ifdef SAMRAI_HAVE_SYS_TIMES_H
       s_null_clock_t = times(&s_tms_buffer);
       wall = SAMRAI_MPI::Wtime();
       sys = s_tms_buffer.tms_stime;
@@ -128,7 +128,7 @@ struct Clock {
    }
 
 private:
-#ifdef HAVE_SYS_TIMES_H
+#ifdef SAMRAI_HAVE_SYS_TIMES_H
    static struct tms s_tms_buffer;
 #endif
    static clock_t s_null_clock_t;

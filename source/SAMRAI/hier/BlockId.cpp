@@ -16,61 +16,9 @@
 namespace SAMRAI {
 namespace hier {
 
-const BlockId
-BlockId::s_invalid_id(
-   tbox::MathUtilities<int>::getMax());
-const BlockId BlockId::s_zero_id(0);
+const BlockId BlockId::s_invalid_id(s_invalid_val);
+const BlockId BlockId::s_zero_id(s_zero_val);
 
-/*
- *******************************************************************************
- *******************************************************************************
- */
-BlockId::BlockId():
-   d_value(invalidId().d_value)
-{
-}
-
-/*
- *******************************************************************************
- *******************************************************************************
- */
-BlockId::BlockId(
-   const BlockId& other):
-   d_value(other.d_value)
-{
-}
-
-/*
- *******************************************************************************
- *******************************************************************************
- */
-BlockId::BlockId(
-   const unsigned int& value):
-   d_value(value)
-{
-}
-
-/*
- *******************************************************************************
- *******************************************************************************
- */
-BlockId::BlockId(
-   const int& value):
-   d_value(static_cast<unsigned int>(value))
-{
-   TBOX_ASSERT(value >=0);
-}
-
-/*
- *******************************************************************************
- *******************************************************************************
- */
-BlockId::~BlockId()
-{
-#ifdef DEBUG_CHECK_ASSERTIONS
-   d_value = s_invalid_id.d_value;
-#endif
-}
 
 }
 }

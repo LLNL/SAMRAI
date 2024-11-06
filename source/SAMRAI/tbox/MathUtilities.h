@@ -15,6 +15,7 @@
 
 #include "SAMRAI/tbox/Complex.h"
 
+#include <limits>
 #include <vector>
 
 namespace SAMRAI {
@@ -138,8 +139,11 @@ public:
     * parts set to the POSIX max value for type double.  For
     * other types, will return the POSIX max value for the type.
     */
-   static TYPE
-   getMax();
+   constexpr static TYPE
+   getMax()
+   {
+      return std::numeric_limits<TYPE>::max();
+   }
 
    /*!
     * @brief Set vector entries to value given by getMax().

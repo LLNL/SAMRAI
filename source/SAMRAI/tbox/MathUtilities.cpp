@@ -155,13 +155,6 @@ MathUtilities<TYPE>::getSignalingNaN()
 
 template<class TYPE>
 TYPE
-MathUtilities<TYPE>::getMax()
-{
-   return std::numeric_limits<TYPE>::max();
-}
-
-template<class TYPE>
-TYPE
 MathUtilities<TYPE>::getMin()
 {
    return std::numeric_limits<TYPE>::min();

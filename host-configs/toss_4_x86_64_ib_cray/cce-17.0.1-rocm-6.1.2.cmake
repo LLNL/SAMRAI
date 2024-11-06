@@ -3,7 +3,7 @@
 # identify the location of the installed raja, umpire, camp libraries.
 
 # ml cce/17.0.1
-# ml rocm/6.0.2
+# ml rocm/6.1.2
 # export MPICH_GPU_SUPPORT_ENABLED=1
 # export LD_LIBRARY_PATH=/opt/cray/pe/lib64:${LD_LIBRARY_PATH}
 # export LD_LIBRARY_PATH=${CRAY_LD_LIBRARY_PATH}:${LD_LIBRARY_PATH}

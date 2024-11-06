@@ -48,11 +48,11 @@ check_function_exists(mallinfo HAVE_MALLINFO)
 #HAVE_MALLOC_H
 check_include_files(malloc.h HAVE_MALLOC_H)
 
-#HAVE_SYS_TIMES_H
-check_include_files(sys/times.h HAVE_SYS_TIMES_H)
+#SAMRAI_HAVE_SYS_TIMES_H
+check_include_files(sys/times.h SAMRAI_HAVE_SYS_TIMES_H)
 
-#HAVE_UNISTD_H
-check_include_files(unistd.h HAVE_UNISTD_H)
+#SAMRAI_HAVE_UNISTD_H
+check_include_files(unistd.h SAMRAI_HAVE_UNISTD_H)
 
 #IOMANIP_HEADER_FILE
 set(IOSTREAM_HEADER_FILE "<iomanip>")

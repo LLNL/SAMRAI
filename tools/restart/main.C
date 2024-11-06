@@ -25,7 +25,7 @@
 #include <string>
 #include <cstring>
 
-#ifdef HAVE_UNISTD_H
+#ifdef SAMRAI_HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 

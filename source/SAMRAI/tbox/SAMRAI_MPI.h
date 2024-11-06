@@ -176,7 +176,7 @@ public:
     * This value is intended to be used by other classes as an invalid rank
     * number rather than using a hard-coded "magic" negative integer value.
     */
-   static int
+   constexpr static int
    getInvalidRank()
    {
       return s_invalid_rank;
@@ -909,7 +909,7 @@ private:
    /*!
     * @brief Invalid (negative) rank number for getInvalidRank().
     */
-   static int s_invalid_rank;
+   static constexpr int s_invalid_rank = -1;
 
    //@{
    //@name Structs for passing arguments to MPI

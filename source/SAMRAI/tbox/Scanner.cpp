@@ -42,7 +42,7 @@
 #define YY_FLEX_MINOR_VERSION 5
 
 #include <stdio.h>
-#ifdef HAVE_UNISTD_H
+#ifdef SAMRAI_HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
