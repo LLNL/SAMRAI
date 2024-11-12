@@ -57,6 +57,11 @@ if (ENABLE_RAJA OR RAJA_DIR)
 endif ()
 
 if (ENABLE_CALIPER OR caliper_DIR)
+
+  if(ENABLE_CUDA)
+    find_package(CUDAToolkit REQUIRED)
+  endif()
+
   find_package(caliper REQUIRED)
 
   set (HAVE_CALIPER True)
