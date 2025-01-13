@@ -52,21 +52,21 @@ then
     ln -s ${camp_config}
     ln -s ${umpire_config}
 
-    if [[ ! -d /usr/WS1/samrai/tpl/raja/v2024.02.0 ]]
+    if [[ ! -d /usr/WS1/samrai/tpl/raja/v2024.07.0 ]]
     then
-        wget https://github.com/LLNL/RAJA/releases/download/v2024.02.0/RAJA-v2024.02.0.tar.gz
-        tar xvf RAJA-v2024.02.0.tar.gz
-        mv RAJA-v2024.02.0 raja
+        wget https://github.com/LLNL/RAJA/releases/download/v2024.07.0/RAJA-v2024.07.0.tar.gz
+        tar xvf RAJA-v2024.07.0.tar.gz
+        mv RAJA-v2024.07.0 raja
     else
-        cp -r /usr/WS1/samrai/tpl/raja/v2024.02.0 raja
+        cp -r /usr/WS1/samrai/tpl/raja/v2024.07.0 raja
     fi
-    if [[ ! -d /usr/WS1/samrai/tpl/umpire/v2024.02.0 ]]
+    if [[ ! -d /usr/WS1/samrai/tpl/umpire/v2024.07.0 ]]
     then
-        wget https://github.com/LLNL/umpire/releases/download/v2024.02.0/umpire-2024.02.0.tar.gz
-        tar xvf umpire-2024.02.0.tar.gz
-        mv umpire-2024.02.0 umpire
+        wget https://github.com/LLNL/umpire/releases/download/v2024.07.0/umpire-2024.07.0.tar.gz
+        tar xvf umpire-2024.07.0.tar.gz
+        mv umpire-2024.07.0 umpire
     else
-        cp -r /usr/WS1/samrai/tpl/umpire/v2024.02.0 umpire
+        cp -r /usr/WS1/samrai/tpl/umpire/v2024.07.0 umpire
     fi
 
     tpl_script="${project_dir}/source/scripts/gitlab/build_tpl.sh"

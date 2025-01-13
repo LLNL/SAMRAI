@@ -30,7 +30,7 @@ variables:
 
 # Lassen uses a different job scheduler (spectrum lsf) that does not allow
 # pre-allocation the same way slurm does. Arguments for job level allocation
-  LASSEN_JOB_ALLOC: "1 -W 50"
+  LASSEN_JOB_ALLOC: "1 -W 72"
 # Add variables that should apply to all the jobs on a machine:
 #  LASSEN_MY_VAR: "..."
 
