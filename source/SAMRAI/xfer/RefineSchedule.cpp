@@ -4738,14 +4738,11 @@ RefineSchedule::constructScheduleTransactions(
 
             hier::Box test_mask(dst_fill_box * transformed_src_box);
             if (test_mask.empty() && dst_pdf->dataLivesOnPatchBorder()) {
-               if ((dst_gcw == constant_zero_intvector) ||
-                   (dst_box.isSpatiallyEqual(fill_box))) {
 
                   test_mask = dst_fill_box;
                   test_mask.grow(constant_one_intvector);
                   test_mask = test_mask * transformed_src_box;
 
-               }
             }
 
             src_mask = test_mask;
