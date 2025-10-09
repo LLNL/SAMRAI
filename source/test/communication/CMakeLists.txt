@@ -22,6 +22,10 @@ if (ENABLE_CUDA)
   set(communication_depends ${communication_depends} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set(communication_depends ${communication_depends} blt::hip)
+endif ()
+
 set(communication_depends ${communication_depends} testlib)
 
 

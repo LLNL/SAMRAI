@@ -88,6 +88,10 @@ if (ENABLE_CUDA)
   set(geom_depends ${geom_depends} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set(geom_depends ${geom_depends} blt::hip)
+endif ()
+
 process_m4(NAME fortran/geom_cartcoarsen1d)
 process_m4(NAME fortran/geom_cartcoarsen2d)
 process_m4(NAME fortran/geom_cartcoarsen3d)

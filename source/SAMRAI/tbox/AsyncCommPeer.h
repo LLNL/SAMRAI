@@ -3,7 +3,7 @@
  * This file is part of the SAMRAI distribution.  For full copyright
  * information, see COPYRIGHT and LICENSE.
  *
- * Copyright:     (c) 1997-2024 Lawrence Livermore National Security, LLC
+ * Copyright:     (c) 1997-2025 Lawrence Livermore National Security, LLC
  * Description:   Staged peer-to-peer communication.
  *
  ************************************************************************/
@@ -14,6 +14,7 @@
 
 #include "SAMRAI/tbox/AllocatorDatabase.h"
 #include "SAMRAI/tbox/AsyncCommStage.h"
+#include "SAMRAI/tbox/MathUtilities.h"
 #include "SAMRAI/tbox/SAMRAI_MPI.h"
 #include "SAMRAI/tbox/Timer.h"
 #include "SAMRAI/tbox/TimerManager.h"
@@ -70,7 +71,7 @@ private:
                  send_check,
                  recv_start,
                  recv_check0,
-                 recv_check1,
+                 recv_check,
                  none };
 
 public:
@@ -160,7 +161,8 @@ public:
    limitFirstDataLength(
       size_t max_first_data_len)
    {
-      d_max_first_data_len = max_first_data_len;
+      d_max_first_data_len = s_int_max > max_first_data_len ?
+                             max_first_data_len : s_int_max;
    }
    //@}
 
@@ -292,7 +294,7 @@ public:
    bool
    beginSend(
       const TYPE* buffer,
-      int size,
+      size_t size,
       bool automatic_push_to_completion_queue = false);
 
    /*!
@@ -483,12 +485,13 @@ public:
       std::ostream& co) const;
 
 private:
+
    /*
     * @brief Data structure for combining integer overhead data along with
     * user data TYPE in the same MPI message.
     */
    union FlexData {
-      int d_i;
+      unsigned int d_uint;
       TYPE d_t;
       FlexData();
    };
@@ -617,21 +620,38 @@ private:
    size_t d_internal_buf_size;
    FlexData* d_internal_buf = nullptr;
 
+   /*!
+    * @brief Small buffer for count information only
+    *
+    * Buffer used in instances where MPI messages will only contain
+    * metadata information about the size of data and number of data
+    * buffers that will be sent in future messages.
+    */
    FlexData* d_count_buf = nullptr;
+
+   /*!
+    * @brief Buffer for the first receive
+    */
    FlexData* d_first_recv_buf = nullptr;
 
    /*!
-    *
+    * @brief The SAMRAI_MPI object
     */
    SAMRAI_MPI d_mpi;
+
    /*!
     * @brief Tag for the first message.
     */
    int d_tag0;
    /*!
-    * @brief Tag for the first message.
+    * @brief Tag for the second message.
     */
    int d_tag1;
+
+   /*!
+    * @brief Counter of the maximum number of sends that this object has sent.
+    */
+   unsigned int d_max_sends = 1;
 
    /*!
     * @brief Whether send completion should be reported when
@@ -639,10 +659,33 @@ private:
     *
     * This is non-essential data used in debugging.
     */
-   bool d_report_send_completion[2];
+   bool d_report_send_completion[SAMRAI_MAX_COMM_BUFFERS];
 
    // Make some temporary variable statuses to avoid repetitious allocations.
    int d_mpi_err;
+
+   /*
+    * These are static constexpr values used to handle cases where a
+    * buffer passed to beginSend is larger than the maximum value allowed by
+    * the int type.  Due to the MPI API using int to indicate the size of
+    * buffers, we cannot pass a buffer larger than the int maximum into
+    * MPI send/recv calls.  We compute s_int_max as the size at which this
+    * class does special operations to split beginSend's buffer into chunks
+    * that are passed in a series of MPI sends.
+    *
+    * First we set s_prelim_max as a value just short of the true INT_MAX,
+    * as a safety measure to not push all the way to the limit, and then
+    * to set s_int_max, we adjust it to be a multiple of 128, which may be
+    * helpful to align with byte sizes of typical data types.
+    */
+   static constexpr unsigned int s_prelim_max = MathUtilities<int>::getMax() - 256;
+   static constexpr unsigned int s_int_max = s_prelim_max - (s_prelim_max % (128*sizeof(FlexData)));
+
+   /*!
+    * A constant used as a signal value to indicate that a single MPI
+    * send/recv pair has communicated all needed data in one message.
+    */
+   static constexpr unsigned int s_onemsg_signal = MathUtilities<int>::getMax();
 
 #ifdef HAVE_UMPIRE
    umpire::TypedAllocator<char> d_allocator;

@@ -92,7 +92,7 @@ int main(
   // causes the kernel to thread on 3 dimensions. Output should show it
   // is 2023.0 everywhere, but the display will be unordered due to threading.
   hier::parallel_for_all(box, [=] SAMRAI_HOST_DEVICE(int i, int j, int k) {
-    printf("dst_view(%d,%d,%d) = %.8f\n", i, j, k, dst_view(i,j,k));
+    //printf("dst_view(%d,%d,%d) = %.8f\n", i, j, k, dst_view(i,j,k));
   });
 
   // Sum of dst + src should be 4046.0 for all entries
@@ -114,7 +114,7 @@ int main(
   // extents when treating this as an ordinary array.
   int n = box.size();
   hier::parallel_for_all(0, n, [=] SAMRAI_HOST_DEVICE(int i) {
-    printf("uniform sum_array[%d] = %.8f\n", i, sum_array[i]);
+    //printf("uniform sum_array[%d] = %.8f\n", i, sum_array[i]);
   });
 
   // Do something to make the array no longer have uniform values.
@@ -124,7 +124,7 @@ int main(
 
   // Print out the array again to see the new values.
   hier::parallel_for_all(0, n, [=] SAMRAI_HOST_DEVICE(int i) {
-    printf("nonuniform sum_array[%d] = %.8f\n", i, sum_array[i]);
+    //printf("nonuniform sum_array[%d] = %.8f\n", i, sum_array[i]);
   });
 
   // Ensure GPU operations conclude before CPU exits the program.

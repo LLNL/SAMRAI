@@ -67,6 +67,10 @@ if (ENABLE_CUDA)
   set (mesh_depends ${mesh_depends} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set (mesh_depends ${mesh_depends} blt::hip)
+endif ()
+
 blt_add_library(
   NAME SAMRAI_mesh
   SOURCES ${mesh_sources}

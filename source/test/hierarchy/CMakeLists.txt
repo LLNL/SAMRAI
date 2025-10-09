@@ -13,12 +13,18 @@ if (ENABLE_CUDA)
   set(hierarchy_depends ${hierarchy_depends} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set(hierarchy_depends ${hierarchy_depends} blt::hip)
+endif ()
+
 blt_add_executable(
   NAME hierarchy
   SOURCES ${hierarchy_sources}
   DEPENDS_ON ${hierarchy_depends})
 
 target_compile_definitions(hierarchy PUBLIC TESTING=1)
+
+set_target_properties(hierarchy PROPERTIES LINKER_LANGUAGE CXX)
 
 file (GLOB test_inputs ${CMAKE_CURRENT_SOURCE_DIR}/test_inputs/*.input)
 

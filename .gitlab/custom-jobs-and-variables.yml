@@ -7,18 +7,18 @@
 
 # We define the following GitLab pipeline variables:
 variables:
-# On LLNL's ruby, this pipeline creates only one allocation shared among jobs
+# On LLNL's dane, this pipeline creates only one allocation shared among jobs
 # in order to save time and resources. This allocation has to be uniquely named
 # so that we are sure to retrieve it and avoid collisions.
   ALLOC_NAME: ${CI_PROJECT_NAME}_ci_${CI_PIPELINE_ID}
 
-# Ruby
+# Dane
 # Arguments for top level allocation
-  RUBY_SHARED_ALLOC: "--exclusive --reservation=ci --time=21 --nodes=1"
+  DANE_SHARED_ALLOC: "--exclusive --reservation=ci --time=21 --nodes=1"
 # Arguments for job level allocation
-  RUBY_JOB_ALLOC: "--overlap --reservation=ci --time=20 --nodes=1"
+  DANE_JOB_ALLOC: "--overlap --reservation=ci --time=20 --nodes=1"
 # Add variables that should apply to all the jobs on a machine:
-#  RUBY_MY_VAR: "..."
+#  DANE_MY_VAR: "..."
 
 # Tioga
 # Arguments for top level allocation
@@ -27,13 +27,6 @@ variables:
   TIOGA_JOB_ALLOC: "--queue=pci --exclusive --time-limit=72m --nodes=1 --begin-time=+5s"
 # Add variables that should apply to all the jobs on a machine:
 #  TIOGA_MY_VAR: "..."
-
-# Lassen uses a different job scheduler (spectrum lsf) that does not allow
-# pre-allocation the same way slurm does. Arguments for job level allocation
-  LASSEN_JOB_ALLOC: "1 -W 50"
-# Add variables that should apply to all the jobs on a machine:
-#  LASSEN_MY_VAR: "..."
-
 
 # Configuration shared by build and test jobs specific to this project.
 # Not all configuration can be shared. Here projects can fine tune the
@@ -50,9 +43,8 @@ before_script:
   - date
   - echo $CI_COMMIT_BRANCH
   - echo $SAMRAI_ALL_TARGETS
-  - echo $SAMRAI_CI_RUBY
+  - echo $SAMRAI_CI_DANE
   - echo $SAMRAI_CI_QUARTZ
-  - echo $SAMRAI_CI_LASSEN
   - echo $SAMRAI_CI_TIOGA
   - echo $SAMRAI_ALLOC_NAME
 

@@ -16,6 +16,10 @@ if (ENABLE_CUDA)
   set(sparsedata_depends ${sparsedata_depends} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set(sparsedata_depends ${sparsedata_depends} blt::hip)
+endif ()
+
 blt_add_executable(
   NAME main-sparsedata
   SOURCES ${sparsedata_sources}
@@ -32,6 +36,9 @@ blt_add_executable(
   DEPENDS_ON ${sparsedata_depends})
 
 target_compile_definitions(sparse PUBLIC TESTING=1)
+
+set_target_properties(main-sparsedata PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(sparse PROPERTIES LINKER_LANGUAGE CXX)
 
 if(ENABLE_MPI)
   set(TASKS 1)

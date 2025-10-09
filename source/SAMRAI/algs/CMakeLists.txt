@@ -46,6 +46,10 @@ if (ENABLE_CUDA)
   set (algs_depends ${algs_depends} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set (algs_depends ${algs_depends} blt::hip)
+endif ()
+
 process_m4(NAME fortran/algs_nodeouternodeops2d)
 process_m4(NAME fortran/algs_nodeouternodeops3d)
 process_m4(NAME fortran/algs_upfluxsum1d)

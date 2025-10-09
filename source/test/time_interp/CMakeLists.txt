@@ -13,6 +13,10 @@ if (ENABLE_CUDA)
   set(time_interp_depends ${time_interp_depends} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set(time_interp_depends ${time_interp_depends} blt::hip)
+endif ()
+
 set(time_interp_depends ${time_interp_depends} testlib)
 
 
@@ -31,6 +35,8 @@ target_include_directories( time_interp
   PUBLIC ${PROJECT_SOURCE_DIR}/source/test/time_interp)
 
 target_compile_definitions(time_interp PUBLIC TESTING=1)
+
+set_target_properties(time_interp PROPERTIES LINKER_LANGUAGE CXX)
 
 file (GLOB test_inputs ${CMAKE_CURRENT_SOURCE_DIR}/test_inputs/*.input)
 

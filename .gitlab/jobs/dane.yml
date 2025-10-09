@@ -3,7 +3,7 @@
 # This file is part of the SAMRAI distribution.  For full copyright
 # information, see COPYRIGHT and LICENSE.
 #
-# Copyright:     (c) 1997-2024 Lawrence Livermore National Security, LLC
+# Copyright:     (c) 1997-2025 Lawrence Livermore National Security, LLC
 #
 #########################################################################
 
@@ -26,9 +26,9 @@ variables:
 # "./path/to/my_ci_script ${A_VARIABLE}"
 
 ####
-# Build and test jobs for specific compilers, extends generic ruby build and
+# Build and test jobs for specific compilers, extends generic dane build and
 # test job
 gcc_10_3_1:
   variables:
     COMPILER: "gcc_10_3_1"
-  extends: .job_on_ruby
+  extends: .job_on_dane

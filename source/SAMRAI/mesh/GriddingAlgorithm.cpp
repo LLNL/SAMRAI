@@ -3,7 +3,7 @@
  * This file is part of the SAMRAI distribution.  For full copyright
  * information, see COPYRIGHT and LICENSE.
  *
- * Copyright:     (c) 1997-2024 Lawrence Livermore National Security, LLC
+ * Copyright:     (c) 1997-2025 Lawrence Livermore National Security, LLC
  * Description:   AMR hierarchy generation and regridding routines.
  *
  ************************************************************************/
@@ -3464,8 +3464,6 @@ GriddingAlgorithm::findRefinementBoxes(
          bounding_container.pushBack(bounding_box);
       }
    }
-
-   hier::LocalId first_local_id(0);
 
    if (!bounding_container.empty()) {
       d_box_generator->setMinimumCellRequest(

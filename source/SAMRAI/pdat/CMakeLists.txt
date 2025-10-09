@@ -312,6 +312,10 @@ if (ENABLE_CUDA)
   set(pdat_depends ${pdat_depends} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set(pdat_depends ${pdat_depends} blt::hip)
+endif ()
+
 process_m4(NAME fortran/pdat_concoarsen1d)
 process_m4(NAME fortran/pdat_concoarsen2d)
 process_m4(NAME fortran/pdat_concoarsen3d)

@@ -37,7 +37,7 @@ if (ENABLE_RAJA OR RAJA_DIR)
   endif ()
 
   if (ENABLE_HIP)
-    list (APPEND raja_depends hip)
+    list (APPEND raja_depends blt::hip)
   endif ()
 
   if (ENABLE_OPENMP)
@@ -57,9 +57,14 @@ if (ENABLE_RAJA OR RAJA_DIR)
 endif ()
 
 if (ENABLE_CALIPER OR caliper_DIR)
+
+  if(ENABLE_CUDA)
+    find_package(CUDAToolkit REQUIRED)
+  endif()
+
   find_package(caliper REQUIRED)
 
-  set (HAVE_CALIPER True)
+  set (SAMRAI_HAVE_CALIPER True)
   set (ENABLE_CALIPER On)
 
   blt_register_library(

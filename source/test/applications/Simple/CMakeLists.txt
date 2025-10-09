@@ -12,6 +12,10 @@ if (ENABLE_CUDA)
   set(simple_depends ${simple_depends} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set(simple_depends ${simple_depends} blt::hip)
+endif ()
+
 blt_add_executable(
   NAME simple
   SOURCES ${simple_sources}

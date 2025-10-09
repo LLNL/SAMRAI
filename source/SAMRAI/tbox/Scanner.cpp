@@ -42,7 +42,7 @@
 #define YY_FLEX_MINOR_VERSION 5
 
 #include <stdio.h>
-#ifdef HAVE_UNISTD_H
+#ifdef SAMRAI_HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
@@ -490,7 +490,7 @@ char *yytext;
 //
 // File:	$URL$
 // Package:	SAMRAI toolbox
-// Copyright:	(c) 1997-2024 Lawrence Livermore National Security, LLC
+// Copyright:	(c) 1997-2025 Lawrence Livermore National Security, LLC
 
 // Description:	Lex scanner description for the SAMRAI input database
 //

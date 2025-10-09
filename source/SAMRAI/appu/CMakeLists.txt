@@ -39,6 +39,10 @@ if (ENABLE_CUDA)
   set (appu_depends ${appu_depends} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set (appu_depends ${appu_depends} blt::hip)
+endif ()
+
 process_m4(NAME fortran/appu_cartbdry2d)
 process_m4(NAME fortran/appu_cartbdry3d)
 

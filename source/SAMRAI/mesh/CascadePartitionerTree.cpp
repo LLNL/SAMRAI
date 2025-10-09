@@ -3,7 +3,7 @@
  * This file is part of the SAMRAI distribution.  For full copyright
  * information, see COPYRIGHT and LICENSE.
  *
- * Copyright:     (c) 1997-2024 Lawrence Livermore National Security, LLC
+ * Copyright:     (c) 1997-2025 Lawrence Livermore National Security, LLC
  * Description:   Scalable load balancer using tree algorithm.
  *
  ************************************************************************/
@@ -357,7 +357,7 @@ CascadePartitionerTree::combineChildren()
             CascadePartitionerTree_TAG_InfoExchange1);
          d_common->d_comm_peer[2 + i].limitFirstDataLength(send_msg.getCurrentSize());
          d_common->d_comm_peer[2 + i].beginSend(static_cast<const char *>(send_msg.getBufferStart()),
-            static_cast<int>(send_msg.getCurrentSize()), true);
+            send_msg.getCurrentSize(), true);
 
       }
    }
@@ -662,7 +662,7 @@ CascadePartitionerTree::sendShipment(int taker)
    d_common->d_comm_peer[0].setMPITag(CascadePartitionerTree_TAG_LoadTransfer0,
       CascadePartitionerTree_TAG_LoadTransfer1);
    d_common->d_comm_peer[0].beginSend(static_cast<const char *>(msg.getBufferStart()),
-      static_cast<int>(msg.getCurrentSize()), true);
+      msg.getCurrentSize(), true);
    d_common->d_shipment->clear();
 
    d_common->t_send_shipment->stop();

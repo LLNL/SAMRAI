@@ -95,6 +95,10 @@ if (ENABLE_CUDA)
   set(nonlinear_depends ${nonlinear_depends} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set(nonlinear_depends ${nonlinear_depends} blt::hip)
+endif ()
+
 blt_add_executable(
   NAME nonlinear
   SOURCES ${nonlinear_sources}
@@ -102,6 +106,8 @@ blt_add_executable(
     ${nonlinear_depends})
 
 target_compile_definitions(nonlinear PUBLIC TESTING=1)
+
+set_target_properties(nonlinear PROPERTIES LINKER_LANGUAGE CXX)
 
 file (GLOB test_inputs ${CMAKE_CURRENT_SOURCE_DIR}/test_inputs/*.input)
 

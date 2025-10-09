@@ -29,16 +29,16 @@
 # Comment the jobs for machines you don’t need.
 ###
 
-# RUBY
-ruby-up-check:
+# DANE
+dane-up-check:
   variables:
-    CI_MACHINE: "ruby"
+    CI_MACHINE: "dane"
   extends: [.machine-check]
 
-ruby-build-and-test:
+dane-build-and-test:
   variables:
-    CI_MACHINE: "ruby"
-  needs: [ruby-up-check]
+    CI_MACHINE: "dane"
+  needs: [dane-up-check]
   extends: [.build-and-test]
 
 # TIOGA
@@ -52,17 +52,4 @@ tioga-build-and-test:
     CI_MACHINE: "tioga"
   needs: [tioga-up-check]
   extends: [.build-and-test]
-
-# LASSEN
-lassen-up-check:
-  variables:
-    CI_MACHINE: "lassen"
-  extends: [.machine-check]
-
-lassen-build-and-test:
-  variables:
-    CI_MACHINE: "lassen"
-  needs: [lassen-up-check]
-  extends: [.build-and-test]
-
 

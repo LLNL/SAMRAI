@@ -12,6 +12,10 @@ if (ENABLE_CUDA)
   set(dataaccess_depends ${dataaccess_depends} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set(dataaccess_depends ${dataaccess_depends} blt::hip)
+endif ()
+
 blt_add_executable(
   NAME dataaccess
   SOURCES ${dataaccess_sources}
@@ -19,6 +23,8 @@ blt_add_executable(
 
 target_include_directories( dataaccess
   PUBLIC ${PROJECT_SOURCE_DIR}/source/test/dataaccess)
+
+set_target_properties(dataaccess PROPERTIES LINKER_LANGUAGE CXX)
 
 target_compile_definitions(dataaccess PUBLIC TESTING=1)
 

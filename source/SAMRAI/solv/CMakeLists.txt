@@ -86,6 +86,10 @@ if (ENABLE_CUDA)
   set (solv_depends ${solv_depends} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set (solv_depends ${solv_depends} blt::hip)
+endif ()
+
 if (ENABLE_HYPRE)
   list (APPEND solv_depends HYPRE)
 endif()

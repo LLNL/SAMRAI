@@ -18,6 +18,10 @@ if (ENABLE_CUDA)
   set(hypre_depends ${hypre_depends} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set(hypre_depends ${hypre_depends} blt::hip)
+endif ()
+
 if (HAVE_HYPRE)
   set (hypre_depends ${hypre_depends} hypre)
 endif ()
@@ -28,6 +32,8 @@ blt_add_executable(
   DEPENDS_ON ${hypre_depends})
 
 target_compile_definitions(hypre-test PUBLIC TESTING=1)
+
+set_target_properties(hypre-test PROPERTIES LINKER_LANGUAGE CXX)
 
 file (GLOB test_inputs ${CMAKE_CURRENT_SOURCE_DIR}/test_inputs/*.input)
 

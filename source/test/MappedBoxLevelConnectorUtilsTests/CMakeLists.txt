@@ -15,12 +15,18 @@ if (ENABLE_CUDA)
   set(mapped_boxlevel_depends ${mapped_boxlevel_depends} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set(mapped_boxlevel_depends ${mapped_boxlevel_depends} blt::hip)
+endif ()
+
 blt_add_executable(
   NAME mblcu
   SOURCES ${mapped_boxlevel_sources}
   DEPENDS_ON ${mapped_boxlevel_depends})
 
 target_compile_definitions(mblcu PUBLIC TESTING=1)
+
+set_target_properties(mblcu PROPERTIES LINKER_LANGUAGE CXX)
 
 file (GLOB test_inputs ${CMAKE_CURRENT_SOURCE_DIR}/test_inputs/*.input)
 

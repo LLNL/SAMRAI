@@ -3,7 +3,7 @@
  * This file is part of the SAMRAI distribution.  For full copyright
  * information, see COPYRIGHT and LICENSE.
  *
- * Copyright:     (c) 1997-2024 Lawrence Livermore National Security, LLC
+ * Copyright:     (c) 1997-2025 Lawrence Livermore National Security, LLC
  * Description:   Scalable load balancer using tree algorithm.
  *
  ************************************************************************/
@@ -1050,7 +1050,7 @@ TreeLoadBalancer::distributeLoadAcrossRankGroup(
       parent_send->setSendTimer(t_parent_send_wait);
       parent_send->setWaitTimer(t_parent_send_wait);
       parent_send->beginSend(static_cast<const char *>(mstream.getBufferStart()),
-         static_cast<int>(mstream.getCurrentSize()));
+         mstream.getCurrentSize());
 
    }
    t_send_load_to_parent->stop();
@@ -1159,7 +1159,7 @@ TreeLoadBalancer::distributeLoadAcrossRankGroup(
          child_sends[ichild].setSendTimer(t_child_send_wait);
          child_sends[ichild].setWaitTimer(t_child_send_wait);
          child_sends[ichild].beginSend(static_cast<const char *>(mstream.getBufferStart()),
-            static_cast<int>(mstream.getCurrentSize()));
+            mstream.getCurrentSize());
 
       }
 

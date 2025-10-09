@@ -3,7 +3,7 @@
  * This file is part of the SAMRAI distribution.  For full copyright
  * information, see COPYRIGHT and LICENSE.
  *
- * Copyright:     (c) 1997-2024 Lawrence Livermore National Security, LLC
+ * Copyright:     (c) 1997-2025 Lawrence Livermore National Security, LLC
  * Description:   Utility functions for error reporting, file manipulation, etc.
  *
  ************************************************************************/
@@ -21,7 +21,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#if defined(HAVE_CALIPER)
+#if defined(SAMRAI_HAVE_CALIPER)
 #include <caliper/cali.h>
 #endif
 
@@ -410,7 +410,7 @@ typedef int mode_t;
    } while (0)
 #endif
 
-#if defined(HAVE_CALIPER)
+#if defined(SAMRAI_HAVE_CALIPER)
 #define SAMRAI_CALI_CXX_MARK_FUNCTION CALI_CXX_MARK_FUNCTION
 #define SAMRAI_CALI_MARK_BEGIN(label) CALI_MARK_BEGIN(label)
 #define SAMRAI_CALI_MARK_END(label)   CALI_MARK_END(label)

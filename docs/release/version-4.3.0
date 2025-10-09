@@ -1,0 +1,97 @@
+*****************************************************************************
+  Copyright 1997-2025
+  Lawrence Livermore National Security, LLC.
+  All rights reserved.
+*****************************************************************************
+
+                     Release Notes for SAMRAI v4.3.0
+
+     (notes for previous releases may be found in /SAMRAI/docs/release)
+
+*****************************************************************************
+
+
+Where to report Bugs
+--------------------
+
+If a bug is found in the SAMRAI library, we ask that you kindly report
+it to us so that we may fix it.
+
+Please send email to samrai-bugs@llnl.gov or post an issue on github.
+https://github.com/LLNL/SAMRAI
+
+*****************************************************************************
+
+
+
+*****************************************************************************
+
+----------------------------------------------------------------------------
+                Significant bug fixes
+----------------------------------------------------------------------------
+
+1) A bug that caused pdat::ArrayData to request buffers from Umpire far
+larger than what was needed for its arrays has been fixed.  The bug had no
+effect on the functionality of the ArrayData class, but caused large
+allocations of unused memory space beyond the buffer size that ArrayData
+needed.
+
+
+
+*****************************************************************************
+
+
+
+----------------------------------------------------------------------------
+                Summary of what's new
+-----------------------------------------------------------------------------
+
+1) HIP Compilation using AMD ROCm is now supported.
+
+2) Support for compiling SAMRAI with Caliper (https://github.com/LLNL/Caliper)
+has been added.
+
+
+-----------------------------------------------------------------------------
+                Summary of what's changed
+-----------------------------------------------------------------------------
+
+1) The "minimum_patch_load" optional input parameter in load balancing classes
+CascadePartitioner and TreeLoadBalance has been changed to
+"artificial_minimum_load".
+
+
+*****************************************************************************
+
+-----------------------------------------------------------------------------
+                Details about what's new
+-----------------------------------------------------------------------------
+
+1) HIP Compilation using AMD ROCm is now supported.  Use -DENABLE_HIP in the
+CMake line to enable this.
+
+2) Support for compiling SAMRAI with Caliper (https://github.com/LLNL/Caliper)
+has been added.  Caliper can be used for code annotations to enable performance instrumentation and profiling
+
+-----------------------------------------------------------------------------
+                Details about what's changed
+----------------------------------------------------------------------------
+
+1) The "minimum_patch_load" optional input parameter in load balancing classes
+CascadePartitioner and TreeLoadBalance has been changed to
+"artificial_minimum_load".  This parameter, if used, sets a value that
+gives an artificially larger load value to small boxes that are provided
+to or created by the load balancer classes.  If a box's size is less than
+the value given by this parameter, the load balancer algorithm will treat
+it as if its size is the artificial minimum load value.
+
+The purpose of this parameter is to reduce the likelihood of gathering large
+numbers of small patches on individual ranks.  A user may use this parameter
+in situations when they may prefer a more equal balance of the patch count
+across ranks and are willing to create an unequal balance of the zone count
+to achieve that goal.
+
+
+
+=============================================================================
+=============================================================================

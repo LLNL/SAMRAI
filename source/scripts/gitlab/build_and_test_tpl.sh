@@ -4,7 +4,7 @@
 ## This file is part of the SAMRAI distribution.  For full copyright
 ## information, see COPYRIGHT and LICENSE.
 ##
-## Copyright:     (c) 1997-2024 Lawrence Livermore National Security, LLC
+## Copyright:     (c) 1997-2025 Lawrence Livermore National Security, LLC
 ##
 ########################################################################
 set -o errexit
@@ -39,6 +39,12 @@ project_dir="$(pwd)"
 build_dir="${build_root}/build_${sys_type}_${compiler}"
 option=${1:-""}
 
+raja_ver="2025.09.0"
+if [[ "${sys_type}" == "blueos_3_ppc64le_ib_p9" ]]
+then
+    raja_ver="2025.03.0"
+fi
+
 # Build
 if [[ "${option}" != "--test-only" ]]
 then
@@ -52,21 +58,21 @@ then
     ln -s ${camp_config}
     ln -s ${umpire_config}
 
-    if [[ ! -d /usr/WS1/samrai/tpl/raja/v2024.02.0 ]]
+    if [[ ! -d /usr/WS1/samrai/tpl/raja/v$raja_ver ]]
     then
-        wget https://github.com/LLNL/RAJA/releases/download/v2024.02.0/RAJA-v2024.02.0.tar.gz
-        tar xvf RAJA-v2024.02.0.tar.gz
-        mv RAJA-v2024.02.0 raja
+        wget https://github.com/LLNL/RAJA/releases/download/v$raja_ver/RAJA-v$raja_ver.tar.gz
+        tar xvf RAJA-v$raja_ver.tar.gz
+        mv RAJA-v$raja_ver raja
     else
-        cp -r /usr/WS1/samrai/tpl/raja/v2024.02.0 raja
+        cp -r /usr/WS1/samrai/tpl/raja/v$raja_ver raja
     fi
-    if [[ ! -d /usr/WS1/samrai/tpl/umpire/v2024.02.0 ]]
+    if [[ ! -d /usr/WS1/samrai/tpl/umpire/v$raja_ver ]]
     then
-        wget https://github.com/LLNL/umpire/releases/download/v2024.02.0/umpire-2024.02.0.tar.gz
-        tar xvf umpire-2024.02.0.tar.gz
-        mv umpire-2024.02.0 umpire
+        wget https://github.com/LLNL/umpire/releases/download/v$raja_ver/umpire-$raja_ver.tar.gz
+        tar xvf umpire-$raja_ver.tar.gz
+        mv umpire-$raja_ver umpire
     else
-        cp -r /usr/WS1/samrai/tpl/umpire/v2024.02.0 umpire
+        cp -r /usr/WS1/samrai/tpl/umpire/v$raja_ver umpire
     fi
 
     tpl_script="${project_dir}/source/scripts/gitlab/build_tpl.sh"

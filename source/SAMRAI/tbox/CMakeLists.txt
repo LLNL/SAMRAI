@@ -182,6 +182,10 @@ if (ENABLE_CUDA)
   endif ()
 endif ()
 
+IF (ENABLE_HIP)
+  set(tbox_depends ${tbox_depends} blt::hip)
+endif ()
+
 blt_add_library( NAME SAMRAI_tbox
   SOURCES ${tbox_sources}
   HEADERS ${tbox_headers}

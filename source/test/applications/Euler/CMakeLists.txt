@@ -50,6 +50,9 @@ endif ()
 if (ENABLE_CUDA)
   set(euler_depends ${euler_depends} cuda)
 endif ()
+if (ENABLE_HIP)
+  set(euler_depends ${euler_depends} blt::hip)
+endif ()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DTESTING=1") 
 
 blt_add_executable(
@@ -61,6 +64,8 @@ target_include_directories( euler
   PUBLIC ${PROJECT_SOURCE_DIR}/source/test/applications/Euler)
 
 set_target_properties(euler PROPERTIES LINKER_LANGUAGE CXX)
+
+target_compile_definitions(euler PRIVATE TESTING=1)
 
 file (GLOB test_inputs ${CMAKE_CURRENT_SOURCE_DIR}/test_inputs/*.input)
 file (GLOB test_baselines ${CMAKE_CURRENT_SOURCE_DIR}/test_inputs/*boxes*)

@@ -66,6 +66,10 @@ if (ENABLE_CUDA)
   set(xfer_depends ${xfer_depends} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set(xfer_depends ${xfer_depends} blt::hip)
+endif ()
+
 blt_add_library(
   NAME SAMRAI_xfer
   SOURCES ${xfer_sources}

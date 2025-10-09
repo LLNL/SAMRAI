@@ -3,7 +3,7 @@
  * This file is part of the SAMRAI distribution.  For full copyright
  * information, see COPYRIGHT and LICENSE.
  *
- * Copyright:     (c) 1997-2024 Lawrence Livermore National Security, LLC
+ * Copyright:     (c) 1997-2025 Lawrence Livermore National Security, LLC
  * Description:   Schedule of communication transactions between processors
  *
  ************************************************************************/
@@ -343,7 +343,7 @@ Schedule::postReceives()
       const int recv_rank = (*comm_peer).first;
       auto& comm = (*comm_peer).second;
       // Compute incoming message size, if possible.
-      unsigned int byte_count = 0;
+      size_t byte_count = 0;
       bool can_estimate_incoming_message_size = true;
 
       for (const auto& t : d_recv_sets[recv_rank] ) {
@@ -351,8 +351,7 @@ Schedule::postReceives()
             can_estimate_incoming_message_size = false;
             break;
          }
-         byte_count +=
-            static_cast<unsigned int>(t->computeIncomingMessageSize());
+         byte_count += t->computeIncomingMessageSize();
       }
 
       for (const auto& t: d_recv_sets_fuseable[recv_rank]) {
@@ -360,8 +359,7 @@ Schedule::postReceives()
             can_estimate_incoming_message_size = false;
             break;
          }
-         byte_count +=
-            static_cast<unsigned int>(t->computeIncomingMessageSize());
+         byte_count += t->computeIncomingMessageSize();
       }
 
       // Set AsyncCommPeer to receive known message length.
@@ -383,7 +381,7 @@ Schedule::postReceives()
       const int recv_rank = (*comm_peer).first;
       auto& comm = (*comm_peer).second;
       // Compute incoming message size, if possible.
-      unsigned int byte_count = 0;
+      size_t byte_count = 0;
       bool can_estimate_incoming_message_size = true;
 
       for (const auto& t : d_recv_sets[recv_rank] ) {
@@ -391,8 +389,7 @@ Schedule::postReceives()
             can_estimate_incoming_message_size = false;
             break;
          }
-         byte_count +=
-            static_cast<unsigned int>(t->computeIncomingMessageSize());
+         byte_count += t->computeIncomingMessageSize();
       }
 
       for (const auto& t: d_recv_sets_fuseable[recv_rank]) {
@@ -400,8 +397,7 @@ Schedule::postReceives()
             can_estimate_incoming_message_size = false;
             break;
          }
-         byte_count +=
-            static_cast<unsigned int>(t->computeIncomingMessageSize());
+         byte_count += t->computeIncomingMessageSize();
       }
 
       // Set AsyncCommPeer to receive known message length.
@@ -524,7 +520,7 @@ Schedule::postSends()
          // Begin non-blocking send operation.
          comm->beginSend(
             (const char *)outgoing_stream.getBufferStart(),
-            static_cast<int>(outgoing_stream.getCurrentSize()));
+            outgoing_stream.getCurrentSize());
          defer_stream[peer_rank] = false;
          if (comm->isDone()) {
             comm->pushToCompletionQueue();
@@ -567,7 +563,7 @@ Schedule::postSends()
          if (defer_stream[peer_rank]) {
             comm->beginSend(
                (const char *)outgoing_stream.getBufferStart(),
-                static_cast<int>(outgoing_stream.getCurrentSize()));
+               outgoing_stream.getCurrentSize());
             if (comm->isDone()) {
                comm->pushToCompletionQueue();
             }

@@ -48,6 +48,10 @@ if (ENABLE_CUDA)
   set(testlib_depends_on ${testlib_depends_on} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set(testlib_depends_on ${testlib_depends_on} blt::hip)
+endif ()
+
 process_m4(NAME fortran/skelbdry2d)
 process_m4(NAME fortran/skelbdry3d)
 process_m4(NAME fortran/upfluxsum2d)

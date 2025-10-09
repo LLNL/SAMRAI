@@ -3,8 +3,8 @@
 # identify the location of the installed raja, umpire, camp libraries.
 
 set(ENABLE_MPI On CACHE BOOL "")
-set(CMAKE_C_COMPILER "/usr/tce/packages/spectrum-mpi/spectrum-mpi-rolling-release-clang-ibm-14.0.5/bin/mpicc" CACHE PATH "")
-set(CMAKE_CXX_COMPILER "/usr/tce/packages/spectrum-mpi/spectrum-mpi-rolling-release-clang-ibm-14.0.5/bin/mpicxx" CACHE PATH "")
+set(CMAKE_CXX_COMPILER "/usr/tce/packages/clang/clang-ibm-14.0.5/bin/clang++" CACHE PATH "")
+set(CMAKE_C_COMPILER "/usr/tce/packages/clang/clang-ibm-14.0.5/bin/clang" CACHE PATH "")
 set(CMAKE_Fortran_COMPILER "/usr/tce/packages/gcc/gcc-8.3.1/bin/gfortran" CACHE PATH "")
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "")
 set(ENABLE_OPENMP Off CACHE BOOL "")

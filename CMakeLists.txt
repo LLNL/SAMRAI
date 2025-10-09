@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.1)
 project(SAMRAI C CXX Fortran)
 
 set(SAMRAI_VERSION_MAJOR 4)
-set(SAMRAI_VERSION_MINOR 3)
+set(SAMRAI_VERSION_MINOR 4)
 set(SAMRAI_VERSION_PATCHLEVEL 0)
 set(SAMRAI_VERSION
   "${SAMRAI_VERSION_MAJOR}.${SAMRAI_VERSION_MINOR}.${SAMRAI_VERSION_PATCHLEVEL}")
@@ -43,6 +43,14 @@ set(ENABLE_DOCS Off CACHE Bool "Enable Docs.")
 set(BLT_CXX_STD "c++14" CACHE STRING "Version of C++ standard")
 set(gtest_disable_pthreads ON CACHE BOOL "")
 
+# Set allow list for C++ standard.  C++ 14 is the recommended and default standard, but users may
+# try 17 or 20.  
+set(ALLOWED_CXX_STD "c++14;c++17;c++20")
+list(FIND ALLOWED_CXX_STD "${BLT_CXX_STD}" FOUND_INDEX)
+if (FOUND_INDEX EQUAL -1)
+    message(FATAL_ERROR "BLT_CXX_STD is set to '${BLT_CXX_STD}', which is not supported.  The recommended standard is C++ 14.")
+endif()
+
 message(STATUS "Enable Test Flag Top: ${ENABLE_TESTS} " )
 
 # Third party libraries
@@ -68,6 +76,7 @@ option(ENABLE_TIMERS "Enable SAMRAI timers." On)
 option(ENABLE_TOOLS "Turns on building of executable tools." Off)
 option(DEBUG_INITIALIZE_UNDEFINED "Initialize new memory to undefined values" Off)
 set(MAXDIM 3 CACHE INT "Maximum allowed dimension")
+set(SAMRAI_MAX_COMM_BUFFERS 10 CACHE INT "Max number of chunks allowed to split large buffers")
 option(ENABLE_NVTX_REGIONS "Enable NVTX regions with push/pop for NVVP." Off)
 set(CUDA_ARCH "sm_70" CACHE STRING "Compute architecture to pass to CUDA builds")
 set(CMAKE_CUDA_FLAGS "" CACHE STRING "")

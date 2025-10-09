@@ -43,6 +43,10 @@ if (ENABLE_CUDA)
   set(multiblock_depends ${multiblock_depends} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set(multiblock_depends ${multiblock_depends} blt::hip)
+endif ()
+
 
 blt_add_executable(
   NAME multiblock
@@ -50,6 +54,8 @@ blt_add_executable(
   DEPENDS_ON ${multiblock_depends})
 
 target_compile_definitions(multiblock PUBLIC TESTING=1)
+
+set_target_properties(multiblock PROPERTIES LINKER_LANGUAGE CXX)
 
 file (GLOB test_inputs ${CMAKE_CURRENT_SOURCE_DIR}/test_inputs/*.input)
 

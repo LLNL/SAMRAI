@@ -149,7 +149,7 @@
 #cmakedefine HAVE_UMPIRE
 
 /* Use Caliper */
-#cmakedefine HAVE_CALIPER
+#cmakedefine SAMRAI_HAVE_CALIPER
 
 /* PETSC library is available so use it */
 #cmakedefine HAVE_PETSC
@@ -191,7 +191,7 @@
 #cmakedefine HAVE_SYS_STAT_H
 
 /* Define to 1 if you have the <sys/times.h> header file. */
-#cmakedefine HAVE_SYS_TIMES_H
+#cmakedefine SAMRAI_HAVE_SYS_TIMES_H
 
 /* Define to 1 if you have the <sys/types.h> header file. */
 #cmakedefine HAVE_SYS_TYPES_H
@@ -206,7 +206,7 @@
 #undef HAVE_TEMPLATE_COMPLEX
 
 /* Define to 1 if you have the <unistd.h> header file. */
-#cmakedefine HAVE_UNISTD_H
+#cmakedefine SAMRAI_HAVE_UNISTD_H
 
 /* HAVE_VAMPIR */
 #undef HAVE_VAMPIR
@@ -348,6 +348,8 @@
 
 /* Maximum dimension allowed */
 #define SAMRAI_MAXIMUM_DIMENSION @SAMRAI_MAXIMUM_DIMENSION@
+
+#define SAMRAI_MAX_COMM_BUFFERS @SAMRAI_MAX_COMM_BUFFERS@
 
 #define SAMRAI_RAJA_WORKGROUP_THREADS @SAMRAI_RAJA_WORKGROUP_THREADS@
 

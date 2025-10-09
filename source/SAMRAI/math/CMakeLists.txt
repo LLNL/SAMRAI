@@ -161,6 +161,10 @@ if (ENABLE_CUDA)
   set (math_depends ${math_depends} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set (math_depends ${math_depends} blt::hip)
+endif ()
+
 blt_add_library(
   NAME SAMRAI_math
   SOURCES ${math_sources}

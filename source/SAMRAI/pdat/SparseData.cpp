@@ -3,7 +3,7 @@
  * This file is part of the SAMRAI distribution.  For full copyright
  * information, see COPYRIGHT and LICENSE.
  *
- * Copyright:     (c) 1997-2024 Lawrence Livermore National Security, LLC
+ * Copyright:     (c) 1997-2025 Lawrence Livermore National Security, LLC
  * Description:   pdat
  *
  ************************************************************************/
@@ -571,13 +571,13 @@ SparseData<BOX_GEOMETRY>::packStream(
          if (box.contains(index_map_iter->first)) {
 
             // first pack the Index
-            int index_buf[d_dim.getValue()];
+            std::unique_ptr<int[]> index_buf = std::make_unique<int[]>(d_dim.getValue());
 
             for (int i = 0; i < d_dim.getValue(); ++i) {
                index_buf[i] = index_map_iter->first(i);
             }
 
-            stream.pack<int>(index_buf, d_dim.getValue());
+            stream.pack<int>(index_buf.get(), d_dim.getValue());
 
             // pack the number of attributes
             int num_list_items =
@@ -683,8 +683,8 @@ SparseData<BOX_GEOMETRY>::unpackStream(
 
       int num_attrs = 0;
       // Unpack the Index
-      int index_buf[d_dim.getValue()];
-      stream.unpack<int>(index_buf, d_dim.getValue());
+      std::unique_ptr<int[]> index_buf = std::make_unique<int[]>(d_dim.getValue());
+      stream.unpack<int>(index_buf.get(), d_dim.getValue());
 
       hier::Index index(d_dim);
       for (int j = 0; j < d_dim.getValue(); ++j) {
@@ -695,12 +695,12 @@ SparseData<BOX_GEOMETRY>::unpackStream(
 
       // unpack the number of attributes
       stream >> num_attrs;
-      double dvals[static_cast<unsigned int>(d_dbl_attr_size)];
-      int ivals[static_cast<unsigned int>(d_int_attr_size)];
+      std::unique_ptr<double[]> dvals = std::make_unique<double[]>(d_dbl_attr_size);
+      std::unique_ptr<int[]> ivals = std::make_unique<int[]>(d_int_attr_size);
       for (int count = 0; count < num_attrs; ++count) {
-         stream.unpack<double>(dvals, d_dbl_attr_size);
-         stream.unpack<int>(ivals, d_int_attr_size);
-         map_iter.insert(dvals, ivals);
+         stream.unpack<double>(dvals.get(), d_dbl_attr_size);
+         stream.unpack<int>(ivals.get(), d_int_attr_size);
+         map_iter.insert(dvals.get(), ivals.get());
       }
    }
 }
@@ -815,14 +815,16 @@ SparseData<BOX_GEOMETRY>::getFromRestart(
             + tbox::Utilities::intToString(curr_item, 6);
 
          int dbl_ary_size = d_dbl_attr_size * list_size;
-         double dvalues[static_cast<unsigned int>(dbl_ary_size)];
+	 std::unique_ptr<double[]> dvalues =
+            std::make_unique<double[]>(static_cast<unsigned int>(dbl_ary_size));
 
          int int_ary_size = d_int_attr_size * list_size;
-         int ivalues[static_cast<unsigned int>(int_ary_size)];
+         std::unique_ptr<int[]> ivalues = 
+            std::make_unique<int[]>(static_cast<unsigned int>(int_ary_size));
 
-         item_db->getDoubleArray(dvalues_keyword, dvalues,
+         item_db->getDoubleArray(dvalues_keyword, dvalues.get(),
             (dbl_ary_size));
-         item_db->getIntegerArray(ivalues_keyword, ivalues,
+         item_db->getIntegerArray(ivalues_keyword, ivalues.get(),
             (int_ary_size));
 
          int doffset(0), ioffset(0);
@@ -960,8 +962,10 @@ SparseData<BOX_GEOMETRY>::putToRestart(
          + tbox::Utilities::intToString(curr_item, 6);
       item_db->putInteger(list_size_keyword, list_size);
 
-      double dvalues[static_cast<unsigned int>(d_dbl_attr_size * list_size)];
-      int ivalues[static_cast<unsigned int>(d_int_attr_size * list_size)];
+      std::unique_ptr<double[]> dvalues =
+         std::make_unique<double[]>(static_cast<unsigned int>(d_dbl_attr_size * list_size));
+      std::unique_ptr<int[]> ivalues =
+         std::make_unique<int[]>(static_cast<unsigned int>(d_int_attr_size * list_size));
 
       // pack all the data together.
       int doffset(0), ioffset(0);
@@ -982,12 +986,12 @@ SparseData<BOX_GEOMETRY>::putToRestart(
 
       std::string dvalues_keyword = "attr_dbl_values_"
          + tbox::Utilities::intToString(curr_item, 6);
-      item_db->putDoubleArray(dvalues_keyword, dvalues,
+      item_db->putDoubleArray(dvalues_keyword, dvalues.get(),
          (d_dbl_attr_size * list_size));
 
       std::string ivalues_keyword = "attr_int_values_"
          + tbox::Utilities::intToString(curr_item, 6);
-      item_db->putIntegerArray(ivalues_keyword, ivalues,
+      item_db->putIntegerArray(ivalues_keyword, ivalues.get(),
          (d_int_attr_size * list_size));
 
       ++curr_item;

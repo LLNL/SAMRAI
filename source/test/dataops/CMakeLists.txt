@@ -13,6 +13,10 @@ if (ENABLE_CUDA)
   set(dataops_depends ${dataops_depends} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set(dataops_depends ${dataops_depends} blt::hip)
+endif ()
+
 blt_add_executable(
   NAME indx_dataops
   SOURCES ${indx_dataops_sources}
@@ -110,6 +114,20 @@ blt_add_executable(
     ${dataops_depends})
 
 
+set_target_properties(indx_dataops PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(cell_fillall PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(cell_patchtest PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(cell_hiertest PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(cell_hiertest3d PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(edge_hiertest PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(face_hiertest PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(side_hiertest PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(node_hiertest PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(cell_cplxtest PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(edge_cplxtest PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(node_cplxtest PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(face_cplxtest PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(side_cplxtest PROPERTIES LINKER_LANGUAGE CXX)
 
 target_compile_definitions(indx_dataops PUBLIC DISPLAY TESTING=1)
 target_compile_definitions(cell_patchtest PUBLIC DISPLAY TESTING=1)

@@ -3,7 +3,7 @@
  * This file is part of the SAMRAI distribution.  For full copyright
  * information, see COPYRIGHT and LICENSE.
  *
- * Copyright:     (c) 1997-2024 Lawrence Livermore National Security, LLC
+ * Copyright:     (c) 1997-2025 Lawrence Livermore National Security, LLC
  * Description:   Tile clustering algorithm.
  *
  ************************************************************************/
@@ -1392,8 +1392,6 @@ TileClustering::coalesceClusters(
    if (!tile_box_level.getBoxes().empty()) {
 
       d_object_timers->t_coalesce->start();
-
-      hier::LocalId local_id(0);
 
       const int nblocks =
          static_cast<int>(tile_box_level.getGridGeometry()->getNumberBlocks());

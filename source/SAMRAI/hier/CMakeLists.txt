@@ -144,6 +144,10 @@ if (ENABLE_CUDA)
   set (hier_depends ${hier_depends} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set (hier_depends ${hier_depends} blt::hip)
+endif ()
+
 blt_add_library(
   NAME SAMRAI_hier
   SOURCES ${hier_sources}

@@ -24,6 +24,10 @@ if (ENABLE_CUDA)
   set(facadaptive_depends ${facadaptive_depends} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set(facadaptive_depends ${facadaptive_depends} blt::hip)
+endif ()
+
 blt_add_executable(
   NAME facadaptive
   SOURCES ${facadaptive_sources}
@@ -31,6 +35,8 @@ blt_add_executable(
     ${facadaptive_depends})
 
 target_compile_definitions(facadaptive PUBLIC TESTING=1)
+
+set_target_properties(facadaptive PROPERTIES LINKER_LANGUAGE CXX)
 
 file (GLOB test_inputs ${CMAKE_CURRENT_SOURCE_DIR}/test_inputs/*.input)
 

@@ -3,7 +3,7 @@
  * This file is part of the SAMRAI distribution.  For full copyright
  * information, see COPYRIGHT and LICENSE.
  *
- * Copyright:     (c) 1997-2024 Lawrence Livermore National Security, LLC
+ * Copyright:     (c) 1997-2025 Lawrence Livermore National Security, LLC
  * Description:   Algorithms for working with overlap Connectors.
  *
  ************************************************************************/
@@ -1562,7 +1562,7 @@ OverlapConnectorAlgorithm::privateBridge_discoverAndSend(
       tbox::AsyncCommPeer<int>& outgoing_comm = all_comms[comm_offset];
       outgoing_comm.beginSend(
          &send_mesg[0],
-         static_cast<int>(send_mesg.size()));
+         send_mesg.size());
       ++comm_offset;
       ++outgoing_ranks_itr;
       TBOX_ASSERT((outgoing_ranks_itr == outgoing_ranks.end()) ==

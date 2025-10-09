@@ -13,6 +13,10 @@ if (ENABLE_CUDA)
   set(boundary_depends ${boundary_depends} cuda)
 endif ()
 
+if (ENABLE_HIP)
+  set(boundary_depends ${boundary_depends} blt::hip)
+endif ()
+
 set(boundary_depends ${boundary_depends} testlib)
 
 blt_add_executable(

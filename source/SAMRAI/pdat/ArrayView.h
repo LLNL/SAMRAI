@@ -3,7 +3,7 @@
  * This file is part of the SAMRAI distribution.  For full copyright
  * information, see COPYRIGHT and LICENSE.
  *
- * Copyright:     (c) 1997-2024 Lawrence Livermore National Security, LLC
+ * Copyright:     (c) 1997-2025 Lawrence Livermore National Security, LLC
  * Description:   Templated class providing RAJA indexing into data
  *
  ************************************************************************/
@@ -65,7 +65,7 @@ struct ArrayView<1, TYPE> : public RAJA::View<TYPE, detail::layout_traits::Layou
 {
    using Layout = detail::layout_traits::Layout1d;
 
-   ArrayView<1, TYPE>(TYPE* data, const hier::Box& box) :
+   ArrayView(TYPE* data, const hier::Box& box) :
       RAJA::View<TYPE, Layout>(
          data,
          RAJA::make_permuted_offset_layout(
@@ -79,7 +79,7 @@ struct ArrayView<2, TYPE> : public RAJA::View<TYPE, detail::layout_traits::Layou
 {
    using Layout = detail::layout_traits::Layout2d;
 
-   SAMRAI_INLINE ArrayView<2, TYPE>(TYPE* data, const hier::Box& box) :
+   SAMRAI_INLINE ArrayView(TYPE* data, const hier::Box& box) :
       RAJA::View<TYPE, Layout>(
          data,
          RAJA::make_permuted_offset_layout(
@@ -93,7 +93,7 @@ struct ArrayView<3, TYPE> : public RAJA::View<TYPE, detail::layout_traits::Layou
 {
    using Layout = detail::layout_traits::Layout3d;
 
-   SAMRAI_INLINE ArrayView<3, TYPE>(TYPE* data, const hier::Box& box) :
+   SAMRAI_INLINE ArrayView(TYPE* data, const hier::Box& box) :
       RAJA::View<TYPE, Layout>(
          data,
          RAJA::make_permuted_offset_layout(
@@ -107,7 +107,7 @@ struct ArrayView<1, const TYPE> : public RAJA::View<const TYPE, detail::layout_t
 {
    using Layout = detail::layout_traits::Layout1d;
 
-   ArrayView<1, const TYPE>(const TYPE* data, const hier::Box& box) :
+   ArrayView(const TYPE* data, const hier::Box& box) :
       RAJA::View<const TYPE, Layout>(
          data,
          RAJA::make_permuted_offset_layout(
@@ -121,7 +121,7 @@ struct ArrayView<2, const TYPE> : public RAJA::View<const TYPE, detail::layout_t
 {
    using Layout = detail::layout_traits::Layout2d;
 
-   SAMRAI_INLINE ArrayView<2, const TYPE>(const TYPE* data, const hier::Box& box) :
+   SAMRAI_INLINE ArrayView(const TYPE* data, const hier::Box& box) :
       RAJA::View<const TYPE, Layout>(
          data,
          RAJA::make_permuted_offset_layout(
@@ -136,7 +136,7 @@ struct ArrayView<3, const TYPE> : public RAJA::View<const TYPE, detail::layout_t
 {
    using Layout = detail::layout_traits::Layout3d;
 
-   SAMRAI_INLINE ArrayView<3, const TYPE>(const TYPE* data, const hier::Box& box) :
+   SAMRAI_INLINE ArrayView(const TYPE* data, const hier::Box& box) :
       RAJA::View<const TYPE, Layout>(
          data,
          RAJA::make_permuted_offset_layout(
