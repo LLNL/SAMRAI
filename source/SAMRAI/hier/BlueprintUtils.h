@@ -101,6 +101,12 @@ public:
       const FlattenedHierarchy& flat_hierarchy,
       const std::string& topology_name) const;
 
+   void putFieldsToDatabase(
+      const std::shared_ptr<tbox::Database>& blueprint_db,
+      const PatchHierarchy& hierarchy,
+      const FlattenedHierarchy& flat_hierarchy,
+      const std::string& topology_name) const;
+
    /*!
     * @brief Write blueprint to files.
     *

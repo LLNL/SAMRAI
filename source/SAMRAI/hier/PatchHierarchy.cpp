@@ -1321,6 +1321,7 @@ PatchHierarchy::makeFlattenedBlueprintDatabase(
    makeAdjacencySets(blueprint_db, flat_hier, flat_box_level, "mesh");
 
    bp_utils.putTopologyAndCoordinatesToDatabase(blueprint_db, *this, flat_hier,  "mesh");
+   bp_utils.putFieldsToDatabase(blueprint_db, *this, flat_hier, "mesh");
 }
 #endif
 

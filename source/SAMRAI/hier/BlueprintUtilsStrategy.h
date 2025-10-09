@@ -62,6 +62,13 @@ public:
       const Patch& patch,
       const Box& box) = 0;
 
+   /* Implementation needed!!!!! */
+   virtual void putFieldsToDomainDatabase(
+      std::shared_ptr<tbox::Database>& domain_db,
+      const Patch& patch,
+      const Box& box,
+      const std::string& topology_name) {}
+
 private:
 
 
