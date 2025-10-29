@@ -2042,7 +2042,7 @@ PatchHierarchy::makeAdjacencySets(
                               b_width[d] += partial_lo;
                            }
                            const int& ovlp_hi = tnode_ovlp.upper(d);
-                           int partial_hi = ovlp_hi % b_ratio[d];
+                           partial_hi = ovlp_hi % b_ratio[d];
                            if (partial_hi) {
                               partial_hi = b_ratio[d] - partial_hi;
                               tnode_ovlp.setUpper(d, ovlp_hi + partial_hi);
@@ -2293,7 +2293,7 @@ PatchHierarchy::makeAdjacencySets(
                               a_width[d] += partial_lo;
                            }
                            const int& ovlp_hi = node_ovlp.upper(d);
-                           int partial_hi = ovlp_hi % a_ratio[d];
+                           partial_hi = ovlp_hi % a_ratio[d];
                            if (partial_hi) {
                               partial_hi = a_ratio[d] - partial_hi;
                               node_ovlp.setUpper(d, ovlp_hi + partial_hi);
