@@ -75,6 +75,7 @@ CascadePartitioner::CascadePartitioner(
    d_reset_obligations(true),
    d_flexible_load_tol(0.05),
    d_artificial_minimum(1,1.0),
+   d_artificial_factor(1,1.0),
    d_use_vouchers(false),
    d_mca(),
    // Shared data.
@@ -207,6 +208,14 @@ CascadePartitioner::loadBalanceBoxLevel(
          artificial_minimum = d_artificial_minimum.back();
       }
       TBOX_ASSERT(artificial_minimum >= 0.0);
+   }
+
+   if (d_artificial_factor.size() < level_number + 1) {
+      d_artificial_factor.resize(level_number + 1, 1.0);
+   }
+
+   if (artificial_minimum > 1.0) {
+      artificial_minimum *= d_artificial_factor[level_number];
    }
 
    if (d_mpi_is_dupe) {
@@ -503,6 +512,23 @@ CascadePartitioner::loadBalanceBoxLevel(
     */
 
    d_pparams.reset();
+
+   if (artificial_minimum > 1.0) {
+      int max_boxes = balance_box_level.getMaxNumberOfBoxes();
+      int min_boxes = balance_box_level.getMinNumberOfBoxes();
+      if (min_boxes == 0) min_boxes = 1;
+
+      /* Increase if box_ration >= 4, decrease if == 1 */
+      int box_ratio = max_boxes / min_boxes;
+      if (box_ratio >= 10) {
+         d_artificial_factor[level_number] *= 1.1;
+      } else if (box_ratio > 3) {
+         d_artificial_factor[level_number] *=
+            1.0 + static_cast<double>(box_ratio)/100.0;
+      } else if (box_ratio == 1) {
+         d_artificial_factor[level_number] *= 0.99;
+      }
+   }
 
    local_load = computeLocalLoad(balance_box_level);
    d_load_stat.push_back(local_load);

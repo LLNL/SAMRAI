@@ -450,6 +450,8 @@ private:
 
    std::vector<double> d_artificial_minimum;
 
+   mutable std::vector<double> d_artificial_factor;
+
    /*!
     * @brief Boolean to determine whether to use vouchers for transferring load.
     */
