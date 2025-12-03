@@ -223,7 +223,7 @@ public:
    /*!
     * @brief default destructor
     */
-   ~IntVector() noexcept = default;
+   virtual ~IntVector() noexcept = default;
 
    /*!
     * @brief Return the number of blocks for this IntVector
