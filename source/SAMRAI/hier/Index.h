@@ -17,6 +17,9 @@
 #include "SAMRAI/tbox/Dimension.h"
 #include "SAMRAI/tbox/Utilities.h"
 
+#include <array>
+#include <optional>
+
 namespace SAMRAI {
 namespace hier {
 
@@ -42,29 +45,29 @@ public:
     * @brief Creates an uninitialized Index.
     */
    explicit Index(
-      const tbox::Dimension& dim);
+      const tbox::Dimension& dim) noexcept;
 
    /**
     * @brief Construct an Index with all components equal to the argument.
     */
    Index(
       const tbox::Dimension& dim,
-      const int value);
+      int value) noexcept;
 
    /**
     * @brief Construct a two-dimensional Index with the value (i,j).
     */
    Index(
-      const int i,
-      const int j);
+      int i,
+      int j) noexcept;
 
    /**
     * @brief Construct a three-dimensional Index with the value (i,j,k).
     */
    Index(
-      const int i,
-      const int j,
-      const int k);
+      int i,
+      int j,
+      int k) noexcept;
 
    /**
     * @brief Construct an n-dimensional Index with the values copied
@@ -76,13 +79,13 @@ public:
     * @pre i.size() > 0
     */
    explicit Index(
-      const std::vector<int>& i);
+      const std::vector<int>& i) noexcept;
 
    /**
     * @brief The copy constructor creates an Index equal to the argument.
     */
    Index(
-      const Index& rhs);
+      const Index& rhs) noexcept;
 
    /**
     * @brief Construct an Index equal to the argument IntVector.
@@ -90,14 +93,14 @@ public:
     * @pre rhs.getNumBlocks() == 1
     */
    explicit Index(
-      const IntVector& rhs);
+      const IntVector& rhs) noexcept;
 
    /**
     * @brief Construct an Index equal to the argument array.
     */
    Index(
       const tbox::Dimension& dim,
-      const int array[]);
+      const int array[]) noexcept;
 
    /**
     * @brief The assignment operator sets the Index equal to the argument.
@@ -106,7 +109,7 @@ public:
     */
    Index&
    operator = (
-      const Index& rhs)
+      const Index& rhs) noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       for (unsigned int i = 0; i < d_dim.getValue(); ++i) {
@@ -124,7 +127,7 @@ public:
     */
    Index&
    operator = (
-      const IntVector& rhs)
+      const IntVector& rhs) noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       TBOX_ASSERT(rhs.getNumBlocks() == 1);
@@ -137,14 +140,14 @@ public:
    /**
     * @brief The Index destructor does nothing interesting.
     */
-   virtual ~Index();
+   virtual ~Index() noexcept = default;
 
    /**
-    * @brief Returns true if all components are equal to a given integer.
+    * @brief Returns true if all components are equal.
     */
-   bool
+   constexpr bool
    operator == (
-      const Index& rhs) const
+      const Index& rhs) const noexcept
    {
       bool result = true;
       for (unsigned int i = 0; result && (i < getDim().getValue()); ++i) {
@@ -154,11 +157,11 @@ public:
    }
 
    /**
-    * @brief Returns true if some components are not equal to a given integer.
+    * @brief Returns true if one or more components are not equal.
     */
-   bool
+   constexpr bool
    operator != (
-      const Index& rhs) const
+      const Index& rhs) const noexcept
    {
       return !(*this == rhs);
    }
@@ -171,7 +174,7 @@ public:
     */
    Index&
    operator += (
-      const IntVector& rhs)
+      const IntVector& rhs) noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       TBOX_ASSERT(rhs.getNumBlocks() == 1);
@@ -189,7 +192,7 @@ public:
     */
    Index
    operator + (
-      const IntVector& rhs) const
+      const IntVector& rhs) const noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       TBOX_ASSERT(rhs.getNumBlocks() == 1);
@@ -203,11 +206,11 @@ public:
     *
     * @pre getDim() == rhs.getDim()
     */
-   Index&
+   constexpr Index&
    operator += (
-      const Index& rhs)
+      const Index& rhs) noexcept
    {
-      TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
+      TBOX_CONSTEXPR_ASSERT(getDim() == rhs.getDim());
       for (unsigned int i = 0; i < d_dim.getValue(); ++i) {
          d_index[i] += rhs.d_index[i];
       }
@@ -221,7 +224,7 @@ public:
     */
    Index
    operator + (
-      const Index& rhs) const
+      const Index& rhs) const noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       Index tmp = *this;
@@ -232,9 +235,9 @@ public:
    /**
     * @brief Plus-equals operator for an Index and an integer.
     */
-   Index&
+   constexpr Index&
    operator += (
-      const int rhs)
+      int rhs) noexcept
    {
       for (unsigned int i = 0; i < d_dim.getValue(); ++i) {
          d_index[i] += rhs;
@@ -247,7 +250,7 @@ public:
     */
    Index
    operator + (
-      const int rhs) const
+      int rhs) const noexcept
    {
       Index tmp = *this;
       tmp += rhs;
@@ -259,11 +262,11 @@ public:
     *
     * @pre getDim() == rhs.getDim()
     */
-   Index&
+   constexpr Index&
    operator -= (
-      const Index& rhs)
+      const Index& rhs) noexcept
    {
-      TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
+      TBOX_CONSTEXPR_ASSERT(getDim() == rhs.getDim());
       for (unsigned int i = 0; i < d_dim.getValue(); ++i) {
          d_index[i] -= rhs.d_index[i];
       }
@@ -277,7 +280,7 @@ public:
     */
    Index
    operator - (
-      const Index& rhs) const
+      const Index& rhs) const noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       Index tmp = *this;
@@ -293,7 +296,7 @@ public:
     */
    Index&
    operator -= (
-      const IntVector& rhs)
+      const IntVector& rhs) noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       TBOX_ASSERT(rhs.getNumBlocks() == 1);
@@ -311,7 +314,7 @@ public:
     */
    Index
    operator - (
-      const IntVector& rhs) const
+      const IntVector& rhs) const noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       TBOX_ASSERT(rhs.getNumBlocks() == 1);
@@ -323,9 +326,9 @@ public:
    /**
     * @brief Minus-equals operator for an Index and an integer.
     */
-   Index&
+   constexpr Index&
    operator -= (
-      const int rhs)
+      int rhs) noexcept
    {
       for (unsigned int i = 0; i < d_dim.getValue(); ++i) {
          d_index[i] -= rhs;
@@ -338,7 +341,7 @@ public:
     */
    Index
    operator - (
-      const int rhs) const
+      int rhs) const noexcept
    {
       Index tmp = *this;
       tmp -= rhs;
@@ -353,7 +356,7 @@ public:
     */
    Index&
    operator *= (
-      const IntVector& rhs)
+      const IntVector& rhs) noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       TBOX_ASSERT(rhs.getNumBlocks() == 1);
@@ -371,7 +374,7 @@ public:
     */
    Index
    operator * (
-      const IntVector& rhs) const
+      const IntVector& rhs) const noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       TBOX_ASSERT(rhs.getNumBlocks() == 1);
@@ -383,9 +386,9 @@ public:
    /**
     * @brief Times-equals operator for an Index and an integer.
     */
-   Index&
+   constexpr Index&
    operator *= (
-      const int rhs)
+      int rhs) noexcept
    {
       for (unsigned int i = 0; i < getDim().getValue(); ++i) {
          d_index[i] *= rhs;
@@ -398,7 +401,7 @@ public:
     */
    Index
    operator * (
-      const int rhs) const
+      int rhs) const noexcept
    {
       Index tmp = *this;
       tmp *= rhs;
@@ -413,7 +416,7 @@ public:
     */
    Index&
    operator /= (
-      const IntVector& rhs)
+      const IntVector& rhs) noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       TBOX_ASSERT(rhs.getNumBlocks() == 1);
@@ -431,7 +434,7 @@ public:
     */
    Index
    operator / (
-      const IntVector& rhs) const
+      const IntVector& rhs) const noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       TBOX_ASSERT(rhs.getNumBlocks() == 1);
@@ -443,9 +446,9 @@ public:
    /**
     * @brief Assign-quotient operator for an Index and an integer.
     */
-   Index&
+   constexpr Index&
    operator /= (
-      const int rhs)
+      int rhs) noexcept
    {
       for (unsigned int i = 0; i < getDim().getValue(); ++i) {
          d_index[i] /= rhs;
@@ -458,7 +461,7 @@ public:
     */
    Index
    operator / (
-      const int rhs) const
+      int rhs) const noexcept
    {
       Index tmp = *this;
       tmp /= rhs;
@@ -468,52 +471,52 @@ public:
    /**
     * @brief Return the specified component of the Index.
     *
-    * @pre (i >= 0) && (i < getDim().getValue())
+    * @pre (i < getDim().getValue())
     */
-   int&
+   constexpr int&
    operator [] (
-      const unsigned int i)
+      const unsigned int i) noexcept
    {
-      TBOX_ASSERT(i < getDim().getValue());
+      TBOX_CONSTEXPR_ASSERT(i < getDim().getValue());
       return d_index[i];
    }
 
    /**
     * @brief Return the specified component of the vector as a const reference.
     *
-    * @pre (i >= 0) && (i < getDim().getValue())
+    * @pre (i < getDim().getValue())
     */
-   const int&
+   constexpr const int&
    operator [] (
-      const unsigned int i) const
+      const unsigned int i) const noexcept
    {
-      TBOX_ASSERT(i < getDim().getValue());
+      TBOX_CONSTEXPR_ASSERT(i < getDim().getValue());
       return d_index[i];
    }
 
    /**
     * @brief Return the specified component of the Index.
     *
-    * @pre (i >= 0) && (i < getDim().getValue())
+    * @pre (i < getDim().getValue())
     */
-   int&
+   constexpr int&
    operator () (
-      const unsigned int i)
+      const unsigned int i) noexcept
    {
-      TBOX_ASSERT(i < getDim().getValue());
+      TBOX_CONSTEXPR_ASSERT(i < getDim().getValue());
       return d_index[i];
    }
 
    /**
     * @brief Return the specified component of the Index as a const reference.
     *
-    * @pre (i >= 0) && (i < getDim().getValue())
+    * @pre (i < getDim().getValue())
     */
-   const int&
+   constexpr const int&
    operator () (
-      const unsigned int i) const
+      const unsigned int i) const noexcept
    {
-      TBOX_ASSERT(i < getDim().getValue());
+      TBOX_CONSTEXPR_ASSERT(i < getDim().getValue());
       return d_index[i];
    }
 
@@ -523,11 +526,11 @@ public:
     *
     * @pre getDim() == rhs.getDim()
     */
-   bool
+   constexpr bool
    operator > (
-      const Index& rhs) const
+      const Index& rhs) const noexcept
    {
-      TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
+      TBOX_CONSTEXPR_ASSERT(getDim() == rhs.getDim());
       bool result = true;
       for (unsigned int i = 0; result && (i < getDim().getValue()); ++i) {
          result = result && (d_index[i] > rhs.d_index[i]);
@@ -541,11 +544,11 @@ public:
     *
     * @pre getDim() == rhs.getDim()
     */
-   bool
+   constexpr bool
    operator >= (
-      const Index& rhs) const
+      const Index& rhs) const noexcept
    {
-      TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
+      TBOX_CONSTEXPR_ASSERT(getDim() == rhs.getDim());
       bool result = true;
       for (unsigned int i = 0; result && (i < getDim().getValue()); ++i) {
          result = result && (d_index[i] >= rhs.d_index[i]);
@@ -559,11 +562,11 @@ public:
     *
     * @pre getDim() == rhs.getDim()
     */
-   bool
+   constexpr bool
    operator < (
-      const Index& rhs) const
+      const Index& rhs) const noexcept
    {
-      TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
+      TBOX_CONSTEXPR_ASSERT(getDim() == rhs.getDim());
       bool result = true;
       for (unsigned int i = 0; result && (i < getDim().getValue()); ++i) {
          result = result && (d_index[i] < rhs.d_index[i]);
@@ -577,11 +580,11 @@ public:
     *
     * @pre getDim() == rhs.getDim()
     */
-   bool
+   constexpr bool
    operator <= (
-      const Index& rhs) const
+      const Index& rhs) const noexcept
    {
-      TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
+      TBOX_CONSTEXPR_ASSERT(getDim() == rhs.getDim());
       bool result = true;
       for (unsigned int i = 0; result && (i < getDim().getValue()); ++i) {
          result = result && (d_index[i] <= rhs.d_index[i]);
@@ -594,11 +597,11 @@ public:
     *
     * @pre getDim() == rhs.getDim()
     */
-   void
+   constexpr void
    min(
-      const Index& rhs)
+      const Index& rhs) noexcept
    {
-      TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
+      TBOX_CONSTEXPR_ASSERT(getDim() == rhs.getDim());
       for (dir_t i = 0; i < getDim().getValue(); ++i) {
          if (rhs.d_index[i] < d_index[i]) {
             d_index[i] = rhs.d_index[i];
@@ -611,11 +614,11 @@ public:
     *
     * @pre getDim() == rhs.getDim()
     */
-   void
+   constexpr void
    max(
-      const Index& rhs)
+      const Index& rhs) noexcept
    {
-      TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
+      TBOX_CONSTEXPR_ASSERT(getDim() == rhs.getDim());
       for (unsigned int i = 0; i < getDim().getValue(); ++i) {
          if (rhs.d_index[i] > d_index[i]) {
             d_index[i] = rhs.d_index[i];
@@ -633,7 +636,7 @@ public:
     */
    Index&
    coarsen(
-      const IntVector& ratio)
+      const IntVector& ratio) noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, ratio);
       TBOX_ASSERT(ratio.getNumBlocks() == 1);
@@ -652,7 +655,8 @@ public:
    getZeroIndex(
       const tbox::Dimension& dim)
    {
-      return *(s_zeros[dim.getValue() - 1]);
+      TBOX_ASSERT(s_zeros[dim.getValue() - 1].has_value());
+      return (s_zeros[dim.getValue() - 1].value());
    }
 
    /*!
@@ -664,7 +668,8 @@ public:
    getOneIndex(
       const tbox::Dimension& dim)
    {
-      return *(s_ones[dim.getValue() - 1]);
+      TBOX_ASSERT(s_ones[dim.getValue() - 1].has_value());
+      return (s_ones[dim.getValue() - 1].value());
    }
 
    /*!
@@ -677,7 +682,8 @@ public:
    getMinIndex(
       const tbox::Dimension& dim)
    {
-      return *(s_mins[dim.getValue() - 1]);
+      TBOX_ASSERT(s_mins[dim.getValue() - 1].has_value());
+      return (s_mins[dim.getValue() - 1].value());
    }
 
    /*!
@@ -690,7 +696,8 @@ public:
    getMaxIndex(
       const tbox::Dimension& dim)
    {
-      return *(s_maxs[dim.getValue() - 1]);
+      TBOX_ASSERT(s_maxs[dim.getValue() - 1].has_value());
+      return (s_maxs[dim.getValue() - 1].value());
    }
 
    /*!
@@ -704,7 +711,7 @@ public:
    static Index
    coarsen(
       const Index& index,
-      const IntVector& ratio)
+      const IntVector& ratio) noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(index, ratio);
       TBOX_ASSERT(ratio.getNumBlocks() == 1);
@@ -719,8 +726,8 @@ public:
    /*!
     * @brief Get the Dimension of the Index
     */
-   const tbox::Dimension&
-   getDim() const
+   constexpr const tbox::Dimension&
+   getDim() const noexcept
    {
       return d_dim;
    }
@@ -751,7 +758,7 @@ public:
    static Index
    min(
       const Index& a,
-      const Index& b)
+      const Index& b) noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(a, b);
       Index tmp = a;
@@ -763,12 +770,12 @@ private:
    /*
     * Unimplemented default constructor
     */
-   Index();
+   Index() = delete;
 
-   static int
+   static constexpr int
    coarsen(
-      const int index,
-      const int ratio)
+      int index,
+      int ratio) noexcept
    {
       return index < 0 ? (index + 1) / ratio - 1 : index / ratio;
    }
@@ -791,18 +798,17 @@ private:
    static void
    finalizeCallback();
 
-   static Index* s_zeros[SAMRAI::MAX_DIM_VAL];
-   static Index* s_ones[SAMRAI::MAX_DIM_VAL];
-
-   static Index* s_maxs[SAMRAI::MAX_DIM_VAL];
-   static Index* s_mins[SAMRAI::MAX_DIM_VAL];
+   static std::array<std::optional<Index>, SAMRAI::MAX_DIM_VAL> s_zeros;
+   static std::array<std::optional<Index>, SAMRAI::MAX_DIM_VAL> s_ones;
+   static std::array<std::optional<Index>, SAMRAI::MAX_DIM_VAL> s_maxs;
+   static std::array<std::optional<Index>, SAMRAI::MAX_DIM_VAL> s_mins;
 
    static tbox::StartupShutdownManager::Handler
       s_initialize_finalize_handler;
 
    tbox::Dimension d_dim;
 
-   int d_index[SAMRAI::MAX_DIM_VAL];
+   std::array<int, SAMRAI::MAX_DIM_VAL> d_index;
 
 
 };

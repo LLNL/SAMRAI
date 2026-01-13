@@ -44,7 +44,7 @@ public:
     *
     * The object can be changed using initialize() or by assignment.
     */
-   BoxId() = default;
+   BoxId() noexcept = default;
 
    /*!
     * @brief Initializing constructor.
@@ -60,7 +60,7 @@ public:
    constexpr BoxId(
       const LocalId& local_id,
       const int owner_rank,
-      const PeriodicId& periodic_id = PeriodicId::zero()) :
+      const PeriodicId& periodic_id = PeriodicId::zero()) noexcept :
       d_global_id(local_id, owner_rank),
       d_periodic_id(periodic_id)
    {
@@ -78,7 +78,7 @@ public:
     */
    constexpr explicit BoxId(
       const GlobalId& id,
-      const PeriodicId& periodic_id = PeriodicId::zero()) :
+      const PeriodicId& periodic_id = PeriodicId::zero()) noexcept :
       d_global_id(id),
       d_periodic_id(periodic_id)
    {
@@ -93,19 +93,19 @@ public:
     * @pre other.periodic_id.isValid()
     */
    constexpr BoxId(
-      const BoxId& other) = default;
+      const BoxId& other) noexcept = default;
 
    /*!
     * @brief Assignment operator
     */
    constexpr BoxId&
    operator = (
-      const BoxId& r) = default;
+      const BoxId& r) noexcept = default;
 
    /*!
     * @brief Destructor.
     */
-   ~BoxId() = default;
+   ~BoxId() noexcept = default;
 
    /*!
     * @brief Set all the attributes to given values.
@@ -120,7 +120,7 @@ public:
    initialize(
       const LocalId& local_id,
       const int owner_rank,
-      const PeriodicId& periodic_id = PeriodicId::zero())
+      const PeriodicId& periodic_id = PeriodicId::zero()) noexcept
    {
       TBOX_CONSTEXPR_ASSERT(periodic_id.isValid());
       d_global_id.getLocalId() = local_id;
@@ -132,7 +132,7 @@ public:
     * @brief Access the GlobalId.
     */
    constexpr const GlobalId&
-   getGlobalId() const
+   getGlobalId() const noexcept
    {
       return d_global_id;
    }
@@ -141,7 +141,7 @@ public:
     * @brief Access the owner rank.
     */
    constexpr int
-   getOwnerRank() const
+   getOwnerRank() const noexcept
    {
       return d_global_id.getOwnerRank();
    }
@@ -150,7 +150,7 @@ public:
     * @brief Access the LocalId.
     */
    constexpr const LocalId&
-   getLocalId() const
+   getLocalId() const noexcept
    {
       return d_global_id.getLocalId();
    }
@@ -159,7 +159,7 @@ public:
     * @brief Access the PeriodicId.
     */
    constexpr const PeriodicId&
-   getPeriodicId() const
+   getPeriodicId() const noexcept
    {
       return d_periodic_id;
    }
@@ -169,7 +169,7 @@ public:
     * image.
     */
    bool
-   isPeriodicImage() const
+   isPeriodicImage() const noexcept
    {
       return d_periodic_id != PeriodicId::zero();
    }
@@ -179,7 +179,7 @@ public:
     * GlobalId and PeriodicId.
     */
    constexpr bool
-   isValid() const
+   isValid() const noexcept
    {
       return d_periodic_id.isValid() &&
              d_global_id.getLocalId() != LocalId::getInvalidId() &&
@@ -199,7 +199,7 @@ public:
 
    constexpr bool
    operator == (
-      const BoxId& r) const
+      const BoxId& r) const noexcept
    {
       bool rval = d_global_id == r.d_global_id &&
          d_periodic_id == r.d_periodic_id;
@@ -214,7 +214,7 @@ public:
     */
    constexpr bool
    operator != (
-      const BoxId& r) const
+      const BoxId& r) const noexcept
    {
       TBOX_CONSTEXPR_ASSERT(d_periodic_id.isValid() && r.d_periodic_id.isValid());
       bool rval = d_global_id != r.d_global_id ||
@@ -230,7 +230,7 @@ public:
     */
    constexpr bool
    operator < (
-      const BoxId& r) const
+      const BoxId& r) const noexcept
    {
       TBOX_CONSTEXPR_ASSERT(d_periodic_id.isValid() && r.d_periodic_id.isValid());
       return d_global_id.getOwnerRank() < r.d_global_id.getOwnerRank() ||
@@ -248,7 +248,7 @@ public:
     */
    constexpr bool
    operator > (
-      const BoxId& r) const
+      const BoxId& r) const noexcept
    {
       TBOX_CONSTEXPR_ASSERT(d_periodic_id.isValid() && r.d_periodic_id.isValid());
       return d_global_id.getOwnerRank() > r.d_global_id.getOwnerRank() ||
@@ -263,7 +263,7 @@ public:
     */
    constexpr bool
    operator <= (
-      const BoxId& r) const
+      const BoxId& r) const noexcept
    {
       TBOX_CONSTEXPR_ASSERT(d_periodic_id.isValid() && r.d_periodic_id.isValid());
       return *this < r || *this == r;
@@ -274,7 +274,7 @@ public:
     */
    constexpr bool
    operator >= (
-      const BoxId& r) const
+      const BoxId& r) const noexcept
    {
       TBOX_CONSTEXPR_ASSERT(d_periodic_id.isValid() && r.d_periodic_id.isValid());
       return *this > r || *this == r;
@@ -293,7 +293,7 @@ public:
     * @see putToIntBuffer(), getFromIntBuffer().
     */
    constexpr static int
-   commBufferSize()
+   commBufferSize() noexcept
    {
       return 3;
    }
@@ -306,7 +306,7 @@ public:
     */
    void
    putToIntBuffer(
-      int* buffer) const
+      int* buffer) const noexcept
    {
       buffer[0] = getOwnerRank();
       buffer[1] = getLocalId().getValue();

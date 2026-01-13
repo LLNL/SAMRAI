@@ -19,6 +19,7 @@
 #include "SAMRAI/tbox/TimerManager.h"
 
 #include <algorithm>
+#include <random>
 #include <vector>
 #include <iomanip>
 
@@ -169,7 +170,8 @@ int main(
       bool randomize_order = main_db->getBoolWithDefault("randomize_order",
             false);
       if (randomize_order) {
-         std::random_shuffle(boxes.begin(), boxes.end());
+         std::shuffle(boxes.begin(), boxes.end(),
+            std::mt19937{std::random_device{}()});
       }
 
       /*

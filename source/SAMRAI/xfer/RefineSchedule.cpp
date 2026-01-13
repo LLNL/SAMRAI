@@ -2810,7 +2810,7 @@ RefineSchedule::refineScratchData(
             d_nbr_blk_fill_level->getPatch(unfilled_id));
 
          if (d_refine_patch_strategy) {
-	    d_refine_patch_strategy->preprocessRefineBoxes(*nbr_fill_patch,
+            d_refine_patch_strategy->preprocessRefineBoxes(*nbr_fill_patch,
                *crse_patch,
                fill_boxes,
                local_ratio);
@@ -4738,14 +4738,11 @@ RefineSchedule::constructScheduleTransactions(
 
             hier::Box test_mask(dst_fill_box * transformed_src_box);
             if (test_mask.empty() && dst_pdf->dataLivesOnPatchBorder()) {
-               if ((dst_gcw == constant_zero_intvector) ||
-                   (dst_box.isSpatiallyEqual(fill_box))) {
 
-                  test_mask = dst_fill_box;
-                  test_mask.grow(constant_one_intvector);
-                  test_mask = test_mask * transformed_src_box;
+               test_mask = dst_fill_box;
+               test_mask.grow(constant_one_intvector);
+               test_mask = test_mask * transformed_src_box;
 
-               }
             }
 
             src_mask = test_mask;
@@ -4772,15 +4769,12 @@ RefineSchedule::constructScheduleTransactions(
             transformation.inverseTransform(test_mask);
             test_mask = test_mask * src_box;
             if (test_mask.empty() && dst_pdf->dataLivesOnPatchBorder()) {
-               if ((dst_gcw == constant_zero_intvector) ||
-                   (dst_box.isSpatiallyEqual(fill_box))) {
 
-                  test_mask = dst_fill_box;
-                  test_mask.grow(constant_one_intvector);
-                  transformation.inverseTransform(test_mask);
-                  test_mask = test_mask * src_box;
+               test_mask = dst_fill_box;
+               test_mask.grow(constant_one_intvector);
+               transformation.inverseTransform(test_mask);
+               test_mask = test_mask * src_box;
 
-               }
             }
 
             src_mask = test_mask;

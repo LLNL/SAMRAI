@@ -215,7 +215,7 @@ AssumedPartitionBox::getBox(const IntVector& position) const
             LocalId(box_index),
             owner);
    part.refine(d_uniform_partition_size);
-   part.shift(d_box.lower());
+   part.shift(IntVector(d_box.lower()));
    part *= d_box;
    return part;
 }
@@ -267,7 +267,7 @@ AssumedPartitionBox::findOverlaps(
          Index(d_partition_grid_size - IntVector::getOne(d_box.getDim())),
          d_box.getBlockId());
    for (Box::iterator ci = coarsened_box.begin(); ci != coarsened_box.end(); ++ci) {
-      overlapping_boxes.insert(getBox(*ci));
+      overlapping_boxes.insert(getBox(IntVector(*ci)));
    }
    return !coarsened_box.empty();
 }
@@ -308,7 +308,7 @@ AssumedPartitionBox::selfCheck() const
                             d_box.getBlockId());
    BoxContainer all_parts_by_grid;
    for (Box::iterator gi = partition_grid.begin(); gi != partition_grid.end(); ++gi) {
-      all_parts_by_grid.pushBack(getBox(*gi));
+      all_parts_by_grid.pushBack(getBox(IntVector(*gi)));
    }
    // all_parts_by_grid may be in different order, so sort before comparing.
    all_parts.order();

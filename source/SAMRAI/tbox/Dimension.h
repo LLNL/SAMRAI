@@ -44,7 +44,7 @@ class Dimension
 {
 public:
    //! @brief Primitive type for direction or dimension.
-   typedef unsigned short int dir_t;
+   using dir_t = unsigned short int; 
 
    /**
     * Constructor for Dimension, object is built using the specified dimension
@@ -56,7 +56,7 @@ public:
     * @pre (dim > 0) && (dim <= SAMRAI::MAX_DIM_VAL)
     */
    constexpr explicit Dimension(
-      const unsigned short& dim) : d_dim(dim)
+      const unsigned short& dim) noexcept : d_dim(dim)
    {
       TBOX_CONSTEXPR_DIM_ASSERT(dim > 0 && dim <= SAMRAI::MAX_DIM_VAL);
    }
@@ -64,17 +64,14 @@ public:
    /**
     * Construct a dimension equal to the argument.
     */
-   constexpr Dimension(
-      const Dimension& dimension) : d_dim(dimension.d_dim)
-   {
-   }
+   constexpr Dimension(const Dimension& dimension) noexcept = default;
 
    /**
     * Equality operator.
     */
    constexpr bool
    operator == (
-      const Dimension& rhs) const
+      const Dimension& rhs) const noexcept
    {
       return d_dim == rhs.d_dim;
    }
@@ -84,7 +81,7 @@ public:
     */
    constexpr bool
    operator != (
-      const Dimension& rhs) const
+      const Dimension& rhs) const noexcept
    {
       return d_dim != rhs.d_dim;
    }
@@ -94,7 +91,7 @@ public:
     */
    constexpr bool
    operator > (
-      const Dimension& rhs) const
+      const Dimension& rhs) const noexcept
    {
       return d_dim > rhs.d_dim;
    }
@@ -104,7 +101,7 @@ public:
     */
    constexpr bool
    operator >= (
-      const Dimension& rhs) const
+      const Dimension& rhs) const noexcept
    {
       return d_dim >= rhs.d_dim;
    }
@@ -114,7 +111,7 @@ public:
     */
    constexpr bool
    operator < (
-      const Dimension& rhs) const
+      const Dimension& rhs) const noexcept
    {
       return d_dim < rhs.d_dim;
    }
@@ -124,7 +121,7 @@ public:
     */
    constexpr bool
    operator <= (
-      const Dimension& rhs) const
+      const Dimension& rhs) const noexcept
    {
       return d_dim <= rhs.d_dim;
    }
@@ -138,7 +135,7 @@ public:
     * better suited for that purpose.
     */
    constexpr unsigned short
-   getValue() const
+   getValue() const noexcept
    {
       return d_dim;
    }
@@ -153,7 +150,7 @@ public:
     *
     */
    static const Dimension&
-   getMaxDimension()
+   getMaxDimension() noexcept
    {
       static Dimension dim(SAMRAI::MAX_DIM_VAL);
       return dim;
@@ -171,7 +168,7 @@ private:
    /*
     * Unimplemented default constructor.
     */
-   Dimension();
+   Dimension() = delete;
 
    /**
     * Assignment operator is private to prevent dimensions
@@ -180,11 +177,7 @@ private:
     */
    Dimension&
    operator = (
-      const Dimension& rhs)
-   {
-      d_dim = rhs.d_dim;
-      return *this;
-   }
+      const Dimension& rhs) = delete;
 
    dir_t d_dim;
 };

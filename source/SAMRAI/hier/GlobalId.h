@@ -49,7 +49,7 @@ public:
     * The object can be initialized using the assignment operator or
     * the non-const versions of the getOwnerRank() and getLocalId() methods.
     */
-   GlobalId() :
+   GlobalId() noexcept :
       d_owner_rank(tbox::SAMRAI_MPI::getInvalidRank()),
       d_local_id(LocalId::getInvalidId())
    {
@@ -60,7 +60,7 @@ public:
     */
    constexpr GlobalId(
       const LocalId& local_id,
-      const int owner_rank) :
+      const int owner_rank) noexcept :
       d_owner_rank(owner_rank),
       d_local_id(local_id)
    {
@@ -72,18 +72,18 @@ public:
     * @param[in] other
     */
    constexpr GlobalId(
-      const GlobalId& other) = default;
+      const GlobalId& other) noexcept = default;
 
    /*!
     * @brief Destructor.
     */
-   ~GlobalId() = default;
+   ~GlobalId() noexcept = default;
 
    /*!
     * @brief Access the owner rank.
     */
    int&
-   getOwnerRank()
+   getOwnerRank() noexcept
    {
       return d_owner_rank;
    }
@@ -92,7 +92,7 @@ public:
     * @brief Access the owner rank.
     */
    constexpr const int&
-   getOwnerRank() const
+   getOwnerRank() const noexcept
    {
       return d_owner_rank;
    }
@@ -101,7 +101,7 @@ public:
     * @brief Access the LocalId.
     */
    LocalId&
-   getLocalId()
+   getLocalId() noexcept
    {
       return d_local_id;
    }
@@ -110,7 +110,7 @@ public:
     * @brief Access the LocalId.
     */
    constexpr const LocalId&
-   getLocalId() const
+   getLocalId() const noexcept
    {
       return d_local_id;
    }
@@ -128,15 +128,14 @@ public:
     */
    constexpr GlobalId&
    operator = (
-      const GlobalId& r) = default;
+      const GlobalId& r) noexcept = default;
 
    constexpr bool
    operator == (
-      const GlobalId& r) const
+      const GlobalId& r) const noexcept
    {
-      bool rval = (d_owner_rank == r.d_owner_rank) &&
-         (d_local_id == r.d_local_id);
-      return rval;
+      return (d_owner_rank == r.d_owner_rank) &&
+             (d_local_id == r.d_local_id);
    }
 
    /*!
@@ -146,11 +145,10 @@ public:
     */
    constexpr bool
    operator != (
-      const GlobalId& r) const
+      const GlobalId& r) const noexcept
    {
-      bool rval = (d_owner_rank != r.d_owner_rank) ||
-         (d_local_id != r.d_local_id);
-      return rval;
+      return (d_owner_rank != r.d_owner_rank) ||
+             (d_local_id != r.d_local_id);
    }
 
    /*!
@@ -160,7 +158,7 @@ public:
     */
    constexpr bool
    operator < (
-      const GlobalId& r) const
+      const GlobalId& r) const noexcept
    {
       return (d_owner_rank < r.d_owner_rank) ||
              ((d_owner_rank == r.d_owner_rank) && (d_local_id < r.d_local_id));
@@ -173,7 +171,7 @@ public:
     */
    constexpr bool
    operator > (
-      const GlobalId& r) const
+      const GlobalId& r) const noexcept
    {
       return (d_owner_rank > r.d_owner_rank) ||
              ((d_owner_rank == r.d_owner_rank) && (d_local_id > r.d_local_id));
@@ -186,7 +184,7 @@ public:
     */
    constexpr bool
    operator <= (
-      const GlobalId& r) const
+      const GlobalId& r) const noexcept
    {
       return (d_owner_rank < r.d_owner_rank) ||
              ((d_owner_rank == r.d_owner_rank) &&
@@ -200,7 +198,7 @@ public:
     */
    constexpr bool
    operator >= (
-      const GlobalId& r) const
+      const GlobalId& r) const noexcept
    {
       return (d_owner_rank > r.d_owner_rank) ||
              ((d_owner_rank == r.d_owner_rank) &&

@@ -16,8 +16,8 @@
 namespace SAMRAI {
 namespace hier {
 
-IntVector * IntVector::s_zeros[SAMRAI::MAX_DIM_VAL];
-IntVector * IntVector::s_ones[SAMRAI::MAX_DIM_VAL];
+std::array<std::optional<IntVector>, SAMRAI::MAX_DIM_VAL> IntVector::s_zeros{};
+std::array<std::optional<IntVector>, SAMRAI::MAX_DIM_VAL> IntVector::s_ones{};
 
 tbox::StartupShutdownManager::Handler
 IntVector::s_initialize_finalize_handler(
@@ -106,15 +106,6 @@ IntVector::IntVector(
 }
 
 IntVector::IntVector(
-   const IntVector& rhs):
-   d_dim(rhs.getDim()),
-   d_num_blocks(rhs.d_num_blocks),
-   d_vector(rhs.d_vector)
-{
-   TBOX_ASSERT(d_num_blocks >= 1);
-}
-
-IntVector::IntVector(
    const IntVector& rhs,
    size_t num_blocks):
    d_dim(rhs.getDim()),
@@ -149,15 +140,6 @@ IntVector::IntVector(
          d_vector[offset + i] = rhs[i];
       } 
    }
-}
-
-/*
- * *************************************************************************
- * Destructor 
- * *************************************************************************
- */
-IntVector::~IntVector()
-{
 }
 
 /*
@@ -264,6 +246,10 @@ void
 IntVector::sortIntVector(
    const IntVector& values)
 {
+   TBOX_ASSERT(d_dim == values.getDim());
+   d_num_blocks = values.getNumBlocks();
+   d_vector.resize(values.d_vector.size());
+
    for (BlockId::block_t b = 0; b < d_num_blocks; ++b ) {
       unsigned int offset = b*d_dim.getValue();
       for (unsigned int d = 0; d < d_dim.getValue(); ++d) {
@@ -274,7 +260,7 @@ IntVector::sortIntVector(
          for (unsigned int d1 = d0 + 1; d1 < d_dim.getValue(); ++d1) {
             unsigned int v0 = static_cast<unsigned int>(d_vector[offset + d0]);
             unsigned int v1 = static_cast<unsigned int>(d_vector[offset + d1]);
-            if (values(v0) > values(v1)) {
+            if (values(b, v0) > values(b, v1)) {
                int tmp_d = d_vector[offset + d0];
                d_vector[offset + d0] = d_vector[offset + d1];
                d_vector[offset + d1] = tmp_d;
@@ -286,7 +272,7 @@ IntVector::sortIntVector(
            d < static_cast<unsigned int>(d_dim.getValue() - 1); ++d) {
          unsigned int v0 = static_cast<unsigned int>(d_vector[offset + d]);
          unsigned int v1 = static_cast<unsigned int>(d_vector[offset + d + 1]);
-         TBOX_ASSERT(values(v0) <= values(v1));
+         TBOX_ASSERT(values(b, v0) <= values(b, v1));
       }
 #endif
    }
@@ -301,8 +287,9 @@ void
 IntVector::initializeCallback()
 {
    for (unsigned short d = 0; d < SAMRAI::MAX_DIM_VAL; ++d) {
-      s_zeros[d] = new IntVector(tbox::Dimension(static_cast<unsigned short>(d + 1)), 0);
-      s_ones[d] = new IntVector(tbox::Dimension(static_cast<unsigned short>(d + 1)), 1);
+      tbox::Dimension dim(d + 1);
+      s_zeros[d].emplace(dim, 0);
+      s_ones[d].emplace(dim, 1);
    }
 }
 
@@ -310,8 +297,8 @@ void
 IntVector::finalizeCallback()
 {
    for (int d = 0; d < SAMRAI::MAX_DIM_VAL; ++d) {
-      delete s_zeros[d];
-      delete s_ones[d];
+      s_zeros[d].reset();
+      s_ones[d].reset();
    }
 }
 

@@ -31,7 +31,7 @@ public:
    /*!
     * @brief Default constructor.
     */
-   constexpr PeriodicId() :
+   constexpr PeriodicId() noexcept :
       d_value(s_invalid_val)
    {
    }
@@ -40,7 +40,7 @@ public:
     * @brief Copy constructor.
     */
    constexpr PeriodicId(
-      const PeriodicId& other) = default;
+      const PeriodicId& other) noexcept = default;
 
    /*!
     * @brief Construct from a numerical value.
@@ -48,7 +48,7 @@ public:
     * This method is explicit to prevent automatic conversion.
     */
    constexpr explicit PeriodicId(
-      const int& value) :
+      int value) noexcept :
       d_value(value)
    {
    }
@@ -78,7 +78,7 @@ public:
     */
    constexpr PeriodicId&
    operator = (
-      const int& rhs)
+      int rhs) noexcept
    {
       d_value = rhs;
       return *this;
@@ -88,7 +88,7 @@ public:
     * @brief Access the numerical value.
     */
    constexpr const int&
-   getPeriodicValue() const
+   getPeriodicValue() const noexcept
    {
       return d_value;
    }
@@ -97,7 +97,7 @@ public:
     * @brief Get the PeriodicId with a numerical value of zero.
     */
    static const PeriodicId&
-   zero()
+   zero() noexcept
    {
       return s_zero_id;
    }
@@ -106,7 +106,7 @@ public:
     * @brief Return the invalid value for PeriodicId.
     */
    static const PeriodicId&
-   invalidId()
+   invalidId() noexcept
    {
       return s_invalid_id;
    }
@@ -115,7 +115,7 @@ public:
     * @brief Returns True if the value is valid.
     */
    constexpr bool
-   isValid() const
+   isValid() const noexcept
    {
       return d_value >= 0;
    }
@@ -133,7 +133,7 @@ public:
     */
    constexpr bool
    operator == (
-      const PeriodicId& rhs) const
+      const PeriodicId& rhs) const noexcept
    {
       return d_value == rhs.d_value;
    }
@@ -147,7 +147,7 @@ public:
     */
    constexpr bool
    operator != (
-      const PeriodicId& rhs) const
+      const PeriodicId& rhs) const noexcept
    {
       return d_value != rhs.d_value;
    }
@@ -161,7 +161,7 @@ public:
     */
    constexpr bool
    operator < (
-      const PeriodicId& rhs) const
+      const PeriodicId& rhs) const noexcept
    {
       return d_value < rhs.d_value;
    }
@@ -175,7 +175,7 @@ public:
     */
    constexpr bool
    operator > (
-      const PeriodicId& rhs) const
+      const PeriodicId& rhs) const noexcept
    {
       return d_value > rhs.d_value;
    }
@@ -189,7 +189,7 @@ public:
     */
    constexpr bool
    operator <= (
-      const PeriodicId& rhs) const
+      const PeriodicId& rhs) const noexcept
    {
       return d_value <= rhs.d_value;
    }
@@ -203,7 +203,7 @@ public:
     */
    constexpr bool
    operator >= (
-      const PeriodicId& rhs) const
+      const PeriodicId& rhs) const noexcept
    {
       return d_value >= rhs.d_value;
    }
@@ -224,9 +224,9 @@ private:
     */
    int d_value;
 
-   static constexpr int s_zero_val = 0;
+   inline static constexpr int s_zero_val = 0;
 
-   static constexpr int s_invalid_val = -1;
+   inline static constexpr int s_invalid_val = -1;
 
    /*!
     * @brief PeriodicId with a numerical value of zero.

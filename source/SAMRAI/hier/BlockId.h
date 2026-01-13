@@ -32,12 +32,12 @@ class BlockId
 public:
 
    //! @brief Primitive type for the number associated with a block.
-   typedef unsigned int block_t;
+   using block_t = unsigned int;
 
    /*!
     * @brief Default constructor sets the value to invalid.
     */
-   constexpr BlockId() :
+   constexpr BlockId() noexcept :
       d_value(s_invalid_val)
    {
    }
@@ -46,7 +46,7 @@ public:
     * @brief Copy constructor.
     */
    constexpr BlockId(
-      const BlockId& other) = default;
+      const BlockId& other) noexcept = default;
 
    /*!
     * @brief Construct from an unsigned int. 
@@ -54,7 +54,7 @@ public:
     * This method is explicit to prevent automatic conversion.
     */
    constexpr explicit BlockId(
-      const unsigned int& value) :
+      const unsigned int& value) noexcept :
       d_value(value)
    {
    }
@@ -67,16 +67,16 @@ public:
     * @pre value >= 0
     */
    constexpr explicit BlockId(
-      const int& value) :
+      const int& value) noexcept :
       d_value(static_cast<unsigned int>(value))
    {
       TBOX_CONSTEXPR_ASSERT(value >=0);
    }
 
    /*!
-    * @brief Default constructor.
+    * @brief Default destructor.
     */
-   ~BlockId() = default;
+   ~BlockId() noexcept = default;
 
    /*!
     * @brief Assignment operator.
@@ -87,7 +87,7 @@ public:
     */
    constexpr BlockId&
    operator = (
-      const BlockId& rhs) = default;
+      const BlockId& rhs) noexcept = default;
 
    /*!
     * @brief Set to an int value.
@@ -96,7 +96,7 @@ public:
     */
    constexpr void
    setId(
-      const int& rhs)
+      const int& rhs) noexcept
    {
       TBOX_CONSTEXPR_ASSERT(rhs >= 0); 
       d_value = static_cast<block_t>(rhs);
@@ -104,7 +104,7 @@ public:
 
    constexpr void
    setId(
-      const unsigned int& rhs)
+      const unsigned int& rhs) noexcept
    {
       d_value = rhs;
    }
@@ -113,7 +113,7 @@ public:
     * @brief Whether the value is valid.
     */
    constexpr bool
-   isValid() const
+   isValid() const noexcept
    {
       return d_value != s_invalid_val;
    }
@@ -122,7 +122,7 @@ public:
     * @brief Access the numerical value.
     */
    constexpr const block_t&
-   getBlockValue() const
+   getBlockValue() const noexcept
    {
       return d_value;
    }
@@ -130,8 +130,8 @@ public:
    /*!
     * @brief Get the BlockId with a numerical value of zero.
     */
-   static const BlockId&
-   zero()
+   static constexpr const BlockId&
+   zero() noexcept
    {
       return s_zero_id;
    }
@@ -139,8 +139,8 @@ public:
    /*!
     * @brief Get the designated invalid value for this class.
     */
-   static const BlockId&
-   invalidId()
+   static constexpr const BlockId&
+   invalidId() noexcept
    {
       return s_invalid_id;
    }
@@ -158,7 +158,7 @@ public:
     */
    constexpr bool
    operator == (
-      const BlockId& rhs) const
+      const BlockId& rhs) const noexcept
    {
       return d_value == rhs.d_value;
    }
@@ -172,7 +172,7 @@ public:
     */
    constexpr bool
    operator != (
-      const BlockId& rhs) const
+      const BlockId& rhs) const noexcept
    {
       return d_value != rhs.d_value;
    }
@@ -186,7 +186,7 @@ public:
     */
    constexpr bool
    operator < (
-      const BlockId& rhs) const
+      const BlockId& rhs) const noexcept
    {
       return d_value < rhs.d_value;
    }
@@ -200,7 +200,7 @@ public:
     */
    constexpr bool
    operator > (
-      const BlockId& rhs) const
+      const BlockId& rhs) const noexcept
    {
       return d_value > rhs.d_value;
    }
@@ -214,7 +214,7 @@ public:
     */
    constexpr bool
    operator <= (
-      const BlockId& rhs) const
+      const BlockId& rhs) const noexcept
    {
       return d_value <= rhs.d_value;
    }
@@ -228,7 +228,7 @@ public:
     */
    constexpr bool
    operator >= (
-      const BlockId& rhs) const
+      const BlockId& rhs) const noexcept
    {
       return d_value >= rhs.d_value;
    }
@@ -248,7 +248,7 @@ public:
     */
    constexpr bool
    operator == (
-      const block_t& rhs) const
+      const block_t& rhs) const noexcept
    {
       return d_value == rhs;
    }
@@ -262,7 +262,7 @@ public:
     */
    constexpr bool
    operator != (
-      const block_t& rhs) const
+      const block_t& rhs) const noexcept
    {
       return d_value != rhs;
    }
@@ -276,7 +276,7 @@ public:
     */
    constexpr bool
    operator < (
-      const block_t& rhs) const
+      const block_t& rhs) const noexcept
    {
       return d_value < rhs;
    }
@@ -290,7 +290,7 @@ public:
     */
    constexpr bool
    operator > (
-      const block_t& rhs) const
+      const block_t& rhs) const noexcept
    {
       return d_value > rhs;
    }
@@ -304,7 +304,7 @@ public:
     */
    constexpr bool
    operator <= (
-      const block_t& rhs) const
+      const block_t& rhs) const noexcept
    {
       return d_value <= rhs;
    }
@@ -318,7 +318,7 @@ public:
     */
    constexpr bool
    operator >= (
-      const block_t& rhs) const
+      const block_t& rhs) const noexcept
    {
       return d_value >= rhs;
    }
@@ -341,10 +341,10 @@ private:
    /*!
     * @brief Numerical value of the identifier.
     */
-   unsigned int d_value;
+   block_t d_value;
 
-   static constexpr unsigned int s_zero_val = 0;
-   static constexpr unsigned int s_invalid_val =
+   static inline constexpr unsigned int s_zero_val = 0;
+   static inline constexpr unsigned int s_invalid_val =
       tbox::MathUtilities<int>::getMax();
 
    /*!

@@ -36,14 +36,14 @@ public:
    /*!
     * @brief Default constructor.
     */
-   constexpr LocalId() : d_value(s_invalid_val)
+   constexpr LocalId() noexcept : d_value(s_invalid_val)
    {
    }
 
    /*!
     * @brief Copy constructor.
     */
-   constexpr LocalId(const LocalId& other) = default;
+   constexpr LocalId(const LocalId& other) noexcept = default;
 
    /*!
     * @brief Construct from a numerical value.
@@ -51,14 +51,14 @@ public:
     * This method is explicit to prevent automatic conversion.
     */
    constexpr explicit LocalId(
-      const int& value) : d_value(value)
+      int value) noexcept : d_value(value)
    {
    }
 
    /*!
     * @brief Default destructor.
     */
-   ~LocalId() = default;
+   ~LocalId() noexcept = default;
 
    /*!
     * @brief Assignment operator.
@@ -69,11 +69,7 @@ public:
     */
    constexpr LocalId&
    operator = (
-      const LocalId& rhs)
-   {
-      d_value = rhs.d_value;
-      return *this;
-   }
+      const LocalId& rhs) noexcept = default;
 
    /*!
     * @brief Assignment operator.
@@ -84,7 +80,7 @@ public:
     */
    constexpr LocalId&
    operator = (
-      const int& rhs)
+      int rhs) noexcept
    {
       d_value = rhs;
       return *this;
@@ -94,7 +90,7 @@ public:
     * @brief Access the numerical value.
     */
    int&
-   getValue()
+   getValue() noexcept
    {
       return d_value;
    }
@@ -103,16 +99,16 @@ public:
     * @brief Access the numerical value.
     */
    constexpr const int&
-   getValue() const
+   getValue() const noexcept
    {
-      return d_value;
+    return d_value;
    }
 
    /*!
     * @brief Whether value is a valid one (not equal to getInvalidId()).
     */
    constexpr bool
-   isValid() const
+   isValid() const noexcept
    {
       return d_value != s_invalid_val;
    }
@@ -121,7 +117,7 @@ public:
     * @brief Get the LocalId with a numerical value of zero.
     */
    static const LocalId&
-   getZero()
+   getZero() noexcept
    {
       return s_zero_id;
    }
@@ -130,7 +126,7 @@ public:
     * @brief Get the designated invalid value for this class.
     */
    static const LocalId&
-   getInvalidId()
+   getInvalidId() noexcept
    {
       return s_invalid_id;
    }
@@ -146,7 +142,7 @@ public:
     * state.
     */
    constexpr LocalId
-   operator ++ ()
+   operator ++ () noexcept
    {
       ++d_value;
       return *this;
@@ -160,7 +156,7 @@ public:
     */
    constexpr LocalId
    operator ++ (
-      int)
+      int) noexcept
    {
       int saved = d_value;
       ++d_value;
@@ -174,7 +170,7 @@ public:
     */
    constexpr LocalId
    operator + (
-      const LocalId& rhs) const
+      const LocalId& rhs) const noexcept
    {
       return LocalId(d_value + rhs.d_value);
    }
@@ -186,7 +182,7 @@ public:
     */
    constexpr LocalId
    operator - (
-      const LocalId& rhs) const
+      const LocalId& rhs) const noexcept
    {
       return LocalId(d_value - rhs.d_value);
    }
@@ -198,7 +194,7 @@ public:
     */
    constexpr LocalId
    operator * (
-      const LocalId& rhs) const
+      const LocalId& rhs) const noexcept
    {
       return LocalId(d_value * rhs.d_value);
    }
@@ -210,7 +206,7 @@ public:
     */
    constexpr LocalId
    operator / (
-      const LocalId& rhs) const
+      const LocalId& rhs) const noexcept
    {
       return LocalId(d_value / rhs.d_value);
    }
@@ -222,7 +218,7 @@ public:
     */
    constexpr LocalId
    operator % (
-      const LocalId& rhs) const
+      const LocalId& rhs) const noexcept
    {
       return LocalId(d_value % rhs.d_value);
    }
@@ -234,7 +230,7 @@ public:
     */
    constexpr LocalId&
    operator += (
-      const LocalId& rhs)
+      const LocalId& rhs) noexcept
    {
       d_value += rhs.d_value;
       return *this;
@@ -247,7 +243,7 @@ public:
     */
    constexpr LocalId&
    operator -= (
-      const LocalId& rhs)
+      const LocalId& rhs) noexcept
    {
       d_value -= rhs.d_value;
       return *this;
@@ -260,7 +256,7 @@ public:
     */
    constexpr LocalId
    operator + (
-      const int& rhs) const
+      int rhs) const noexcept
    {
       return LocalId(d_value + rhs);
    }
@@ -272,7 +268,7 @@ public:
     */
    constexpr LocalId
    operator - (
-      const int& rhs) const
+      int rhs) const noexcept
    {
       return LocalId(d_value - rhs);
    }
@@ -284,7 +280,7 @@ public:
     */
    constexpr LocalId
    operator * (
-      const int& rhs) const
+      int rhs) const noexcept
    {
       return LocalId(d_value * rhs);
    }
@@ -296,7 +292,7 @@ public:
     */
    constexpr LocalId
    operator / (
-      const int& rhs) const
+      int rhs) const noexcept
    {
       return LocalId(d_value / rhs);
    }
@@ -308,7 +304,7 @@ public:
     */
    constexpr LocalId
    operator % (
-      const int& rhs) const
+      int rhs) const noexcept
    {
       return LocalId(d_value % rhs);
    }
@@ -320,7 +316,7 @@ public:
     */
    constexpr LocalId&
    operator += (
-      const int& rhs)
+      int rhs) noexcept
    {
       d_value += rhs;
       return *this;
@@ -333,7 +329,7 @@ public:
     */
    constexpr LocalId&
    operator -= (
-      const int& rhs)
+      int rhs) noexcept
    {
       d_value -= rhs;
       return *this;
@@ -354,7 +350,7 @@ public:
     */
    constexpr bool
    operator == (
-      const LocalId& rhs) const
+      const LocalId& rhs) const noexcept
    {
       return d_value == rhs.d_value;
    }
@@ -368,7 +364,7 @@ public:
     */
    constexpr bool
    operator != (
-      const LocalId& rhs) const
+      const LocalId& rhs) const noexcept
    {
       return d_value != rhs.d_value;
    }
@@ -382,7 +378,7 @@ public:
     */
    constexpr bool
    operator < (
-      const LocalId& rhs) const
+      const LocalId& rhs) const noexcept
    {
       return d_value < rhs.d_value;
    }
@@ -396,7 +392,7 @@ public:
     */
    constexpr bool
    operator > (
-      const LocalId& rhs) const
+      const LocalId& rhs) const noexcept
    {
       return d_value > rhs.d_value;
    }
@@ -410,7 +406,7 @@ public:
     */
    constexpr bool
    operator <= (
-      const LocalId& rhs) const
+      const LocalId& rhs) const noexcept
    {
       return d_value <= rhs.d_value;
    }
@@ -424,7 +420,7 @@ public:
     */
    constexpr bool
    operator >= (
-      const LocalId& rhs) const
+      const LocalId& rhs) const noexcept
    {
       return d_value >= rhs.d_value;
    }
@@ -444,7 +440,7 @@ public:
     */
    constexpr bool
    operator == (
-      const int& rhs) const
+      int rhs) const noexcept
    {
       return d_value == rhs;
    }
@@ -458,7 +454,7 @@ public:
     */
    constexpr bool
    operator != (
-      const int& rhs) const
+      int rhs) const noexcept
    {
       return d_value != rhs;
    }
@@ -472,7 +468,7 @@ public:
     */
    constexpr bool
    operator < (
-      const int& rhs) const
+      int rhs) const noexcept
    {
       return d_value < rhs;
    }
@@ -486,7 +482,7 @@ public:
     */
    constexpr bool
    operator > (
-      const int& rhs) const
+      int rhs) const noexcept
    {
       return d_value > rhs;
    }
@@ -500,7 +496,7 @@ public:
     */
    constexpr bool
    operator <= (
-      const int& rhs) const
+      int rhs) const noexcept
    {
       return d_value <= rhs;
    }
@@ -514,7 +510,7 @@ public:
     */
    constexpr bool
    operator >= (
-      const int& rhs) const
+      int rhs) const noexcept
    {
       return d_value >= rhs;
    }
@@ -535,8 +531,8 @@ private:
     */
    int d_value;
 
-   static constexpr int s_zero_val = 0;
-   static constexpr int s_invalid_val = tbox::MathUtilities<int>::getMax();
+   inline static constexpr int s_zero_val = 0;
+   inline static constexpr int s_invalid_val = tbox::MathUtilities<int>::getMax();
 
    /*!
     * @brief LocalId with a numerical value of zero.
