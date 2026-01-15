@@ -76,6 +76,7 @@ CascadePartitioner::CascadePartitioner(
    d_flexible_load_tol(0.05),
    d_artificial_minimum(1,1.0),
    d_artificial_factor(1,1.0),
+   d_minimum_cell_factor(1,1.0),
    d_use_vouchers(false),
    d_mca(),
    // Shared data.
@@ -208,6 +209,18 @@ CascadePartitioner::loadBalanceBoxLevel(
          artificial_minimum = d_artificial_minimum.back();
       }
       TBOX_ASSERT(artificial_minimum >= 0.0);
+   }
+
+   if (d_minimum_cell_factor.size() < level_number + 1) {
+      d_minimum_cell_factor.resize(level_number + 1, 1.0);
+   }
+
+   if (minimum_cells > 0) {
+      const double scaled_min_cells =
+         static_cast<double>(minimum_cells) * d_minimum_cell_factor[level_number];
+      const size_t effective_min_cells =
+         static_cast<size_t>(std::max(1.0, std::floor(scaled_min_cells + 0.5)));
+      minimum_cells = effective_min_cells;
    }
 
    if (d_artificial_factor.size() < level_number + 1) {
@@ -513,20 +526,106 @@ CascadePartitioner::loadBalanceBoxLevel(
 
    d_pparams.reset();
 
-   if (artificial_minimum > 1.0) {
-      int max_boxes = balance_box_level.getMaxNumberOfBoxes();
-      int min_boxes = balance_box_level.getMinNumberOfBoxes();
-      if (min_boxes == 0) min_boxes = 1;
+   int max_boxes = balance_box_level.getMaxNumberOfBoxes();
+   int min_boxes = balance_box_level.getMinNumberOfBoxes();
+   if (min_boxes == 0) min_boxes = 1;
 
-      /* Increase if box_ration >= 4, decrease if == 1 */
-      int box_ratio = max_boxes / min_boxes;
-      if (box_ratio >= 10) {
+   const double box_ratio =
+      static_cast<double>(max_boxes) / static_cast<double>(min_boxes);
+#if 1
+   if (artificial_minimum > 1.0) {
+      /* Increase when box_ratio >= 4, decrease when near 1 */
+      if (box_ratio >= 10.0) {
          d_artificial_factor[level_number] *= 1.1;
-      } else if (box_ratio > 3) {
+      } else if (box_ratio > 3.0) {
          d_artificial_factor[level_number] *=
-            1.0 + static_cast<double>(box_ratio)/100.0;
-      } else if (box_ratio == 1) {
+            1.0 + box_ratio / 100.0;
+      } else if (box_ratio < 1.6) {
          d_artificial_factor[level_number] *= 0.99;
+      } else if (box_ratio < 1.99) {
+         d_artificial_factor[level_number] *= 0.999;
+      } else if (box_ratio < 2.0001) {
+         d_artificial_factor[level_number] *= 0.9995;
+      }
+   }
+#endif
+   /*
+    * Feedback for minimum_cell_request: if the box count is highly
+    * imbalanced and there exists a rank on which more than half of
+    * the boxes are smaller than 1.25 times the current effective
+    * minimum cell request, increase the per-level factor applied to
+    * minimum_cell_request for the next load balance.  When the box
+    * counts are well balanced and only a small fraction of boxes are
+    * this small globally, gently decrease the factor.
+    */
+   if (hierarchy) {
+      const size_t base_min_cells =
+         hierarchy->getMinimumCellRequest(level_number);
+      if (base_min_cells > 0) { 
+        //  balance_box_level.getLocalNumberOfBoxes() > 0) {
+
+         const double current_min_cells =
+            static_cast<double>(base_min_cells) *
+            d_minimum_cell_factor[level_number];
+         const double threshold_cells = 1.25 * current_min_cells;
+
+         const hier::BoxContainer& boxes = balance_box_level.getBoxes();
+         int local_total_boxes = 0;
+         int local_small_boxes = 0;
+
+         for (hier::BoxContainer::const_iterator bi = boxes.begin();
+              bi != boxes.end(); ++bi) {
+            const hier::Box& box = *bi;
+            const double box_cells =
+               static_cast<double>(box.size());
+            ++local_total_boxes;
+            if (box_cells < threshold_cells) {
+               ++local_small_boxes;
+            }
+         }
+
+         int local_flag = 0;
+         if ((local_total_boxes > 0) &&
+             (2 * local_small_boxes > local_total_boxes)) {
+            local_flag = 1;
+         }
+         int global_vals[3] = { local_total_boxes,
+                                local_small_boxes,
+                                local_flag };
+         if (d_mpi.getSize() > 1) {
+            int tmp_vals[3] = { local_total_boxes,
+                                local_small_boxes,
+                                local_flag };
+            d_mpi.Allreduce(tmp_vals,
+                            global_vals,
+                            3,
+                            MPI_INT,
+                            MPI_SUM);
+         }
+
+         const int global_total_boxes = global_vals[0];
+         const int global_small_boxes = global_vals[1];
+         const int global_flag = global_vals[2];
+
+         double small_ratio = static_cast<double>(global_small_boxes) /
+                              static_cast<double>(global_total_boxes);
+
+
+         if (box_ratio >= 10.0 || (box_ratio >= 5.0 && global_flag > 0)) {
+            d_minimum_cell_factor[level_number] *= 1.05;
+         } else if (box_ratio > 3.0 && small_ratio > 0.24) {
+            d_minimum_cell_factor[level_number] *= (1.0 + small_ratio/20.0);
+         } else if (box_ratio <= 2.0) {
+            d_minimum_cell_factor[level_number] *= 0.99;
+            if (d_minimum_cell_factor[level_number] < 0.5) {
+               d_minimum_cell_factor[level_number] = 0.5;
+            }
+         }
+
+         if (level_number == 2) {
+            d_num_balances += 1.0;
+            d_ratio_sum += box_ratio;
+         }
       }
    }
 

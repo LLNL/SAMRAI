@@ -445,12 +445,21 @@ private:
     * the ideal.
     *
     * See input parameter "flexible_load_tolerance".
-    */
+   */
    double d_flexible_load_tol;
 
    std::vector<double> d_artificial_minimum;
 
    mutable std::vector<double> d_artificial_factor;
+
+   mutable double d_num_balances = 0.0;
+   mutable double d_ratio_sum = 0.0;
+
+   /*!
+    * @brief Per-level factor applied to minimum_cell_request when
+    *        constructing partitioning parameters.
+    */
+   mutable std::vector<double> d_minimum_cell_factor;
 
    /*!
     * @brief Boolean to determine whether to use vouchers for transferring load.
