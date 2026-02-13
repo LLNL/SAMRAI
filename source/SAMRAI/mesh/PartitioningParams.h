@@ -86,6 +86,39 @@ public:
       return d_load_comparison_tol;
    }
 
+   const bool& usingLinearLoad() const {
+      return d_using_linear_load;
+   }
+
+   void setUsingLinearLoad(bool using_linear_load) {
+      d_using_linear_load = using_linear_load;
+   }
+
+   const double& getLoadSlope() const {
+      return d_load_slope;
+   }
+
+   void setLoadSlope(double load_slope) {
+      d_load_slope = load_slope;
+   }
+
+   const double& getLoadIntercept() const {
+      return d_load_intercept;
+   }
+
+   void setLoadIntercept(double load_intercept) {
+      d_load_intercept = load_intercept;
+   }
+
+   double computeLinearLoad(double size) const {
+      return d_load_slope * size + d_load_intercept;
+   }
+
+   double getSizeFromLinearLoad(double load) const {
+      TBOX_ASSERT(d_load_slope != 0.0);
+      return (load - d_load_intercept) / d_load_slope;
+   }
+
    const bool& usingVouchers() const {
       return d_using_vouchers;
    }
@@ -136,6 +169,10 @@ private:
     * load balancing operations.
     */
    double d_artificial_minimum_load;
+
+   bool d_using_linear_load;
+   double d_load_slope;
+   double d_load_intercept; 
 
    /*!
     * @brief Fraction of ideal load a process can accept over and

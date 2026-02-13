@@ -129,6 +129,12 @@ void BoxTransitSet::insertAll(const hier::BoxContainer& other)
    size_t old_size = d_set.size();
    for (hier::BoxContainer::const_iterator bi = other.begin(); bi != other.end(); ++bi) {
       BoxInTransit new_box(*bi);
+      const double box_size = new_box.getSize();
+      double box_load = box_size;
+      if (d_pparams && d_pparams->usingLinearLoad()) {
+         box_load = d_pparams->computeLinearLoad(box_size);
+      }
+      new_box.setLoad(box_load);
       d_set.insert(new_box);
       d_sumload += new_box.getLoad();
       d_sumsize += new_box.getSize();
@@ -143,10 +149,20 @@ void BoxTransitSet::insertAllWithArtificialMinimum(
    double minimum_load)
 {
    size_t old_size = d_set.size();
+   double effective_minimum = minimum_load;
+   if (d_pparams && d_pparams->usingLinearLoad()) {
+      effective_minimum = d_pparams->computeLinearLoad(minimum_load);
+   }
+
    for (hier::BoxContainer::const_iterator bi = other.begin(); bi != other.end(); ++bi) {
       BoxInTransit new_box(*bi);
-      new_box.setLoad(
-         tbox::MathUtilities<double>::Max(new_box.getLoad(), minimum_load));
+      const double box_size = new_box.getSize();
+      double box_load = box_size;
+      if (d_pparams && d_pparams->usingLinearLoad()) {
+         box_load = d_pparams->computeLinearLoad(box_size);
+      }
+      box_load = tbox::MathUtilities<double>::Max(box_load, effective_minimum);
+      new_box.setLoad(box_load);
       d_set.insert(new_box);
       d_sumload += new_box.getLoad();
       d_sumsize += new_box.getSize();

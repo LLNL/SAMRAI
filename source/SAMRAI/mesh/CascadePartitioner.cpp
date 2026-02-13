@@ -75,6 +75,9 @@ CascadePartitioner::CascadePartitioner(
    d_reset_obligations(true),
    d_flexible_load_tol(0.05),
    d_artificial_minimum(1,1.0),
+   d_using_linear_load(1,false),
+   d_linear_load_slope(1,1.0),
+   d_linear_load_intercept(1,0.0),
    d_use_vouchers(false),
    d_mca(),
    // Shared data.
@@ -198,15 +201,47 @@ CascadePartitioner::loadBalanceBoxLevel(
 
    size_t minimum_cells = 1;
    double artificial_minimum = 1.0;
+   bool using_linear_load = false;
+   double linear_load_slope = 1.0;
+   double linear_load_intercept = 0.0;
 
    if (hierarchy) {
       minimum_cells = hierarchy->getMinimumCellRequest(level_number);
-      if (static_cast<unsigned int>(level_number) < d_artificial_minimum.size()) {
-         artificial_minimum = d_artificial_minimum[level_number];
-      } else {
-         artificial_minimum = d_artificial_minimum.back();
+
+      const unsigned int ln = static_cast<unsigned int>(level_number);
+
+      if (!d_artificial_minimum.empty()) {
+         if (ln < d_artificial_minimum.size()) {
+            artificial_minimum = d_artificial_minimum[ln];
+         } else {
+            artificial_minimum = d_artificial_minimum.back();
+         }
       }
       TBOX_ASSERT(artificial_minimum >= 0.0);
+
+      if (!d_using_linear_load.empty()) {
+         if (ln < d_using_linear_load.size()) {
+            using_linear_load = d_using_linear_load[ln];
+         } else {
+            using_linear_load = d_using_linear_load.back();
+         }
+      }
+
+      if (!d_linear_load_slope.empty()) {
+         if (ln < d_linear_load_slope.size()) {
+            linear_load_slope = d_linear_load_slope[ln];
+         } else {
+            linear_load_slope = d_linear_load_slope.back();
+         }
+      }
+
+      if (!d_linear_load_intercept.empty()) {
+         if (ln < d_linear_load_intercept.size()) {
+            linear_load_intercept = d_linear_load_intercept[ln];
+         } else {
+            linear_load_intercept = d_linear_load_intercept.back();
+         }
+      }
    }
 
    if (d_mpi_is_dupe) {
@@ -297,6 +332,10 @@ CascadePartitioner::loadBalanceBoxLevel(
          minimum_cells,
          artificial_minimum,
          d_flexible_load_tol);
+
+   d_pparams->setUsingLinearLoad(using_linear_load);
+   d_pparams->setLoadSlope(linear_load_slope);
+   d_pparams->setLoadIntercept(linear_load_intercept);
 
    LoadType local_load = computeLocalLoad(balance_box_level);
 
@@ -843,14 +882,22 @@ CascadePartitioner::computeLocalLoad(
    if (d_pparams) {
       artificial_load = d_pparams->getArtificialMinimumLoad();
    }
+   double effective_minimum = artificial_load;
+   if (d_pparams && d_pparams->usingLinearLoad()) {
+      effective_minimum = d_pparams->computeLinearLoad(artificial_load);
+   }
    double load = 0.0;
    const hier::BoxContainer& boxes = box_level.getBoxes();
    for (hier::BoxContainer::const_iterator ni = boxes.begin();
         ni != boxes.end();
         ++ni) {
-      double box_load = static_cast<double>(ni->size());
-      if (box_load < artificial_load) {
-         box_load = artificial_load;
+      const double box_size = static_cast<double>(ni->size());
+      double box_load = box_size;
+      if (d_pparams && d_pparams->usingLinearLoad()) {
+         box_load = d_pparams->computeLinearLoad(box_size);
+      }
+      if (box_load < effective_minimum) {
+         box_load = effective_minimum;
       }
       load += box_load;
    }
@@ -944,6 +991,21 @@ CascadePartitioner::getFromInput(
       if (input_db->isDouble("artificial_minimum_load")) {
          d_artificial_minimum =
             input_db->getDoubleVector("artificial_minimum_load");
+      }
+
+      if (input_db->keyExists("using_linear_load")) {
+         d_using_linear_load =
+            input_db->getBoolVector("using_linear_load");
+      }
+
+      if (input_db->isDouble("linear_load_slope")) {
+         d_linear_load_slope =
+            input_db->getDoubleVector("linear_load_slope");
+      }
+
+      if (input_db->isDouble("linear_load_intercept")) {
+         d_linear_load_intercept =
+            input_db->getDoubleVector("linear_load_intercept");
       }
    }
 }

@@ -117,7 +117,12 @@ VoucherTransitLoad *VoucherTransitLoad::clone() const
 void VoucherTransitLoad::insertAll(const hier::BoxContainer& other)
 {
    for (hier::BoxContainer::const_iterator bi = other.begin(); bi != other.end(); ++bi) {
-      insertCombine(Voucher(LoadType(bi->size()), bi->getOwnerRank()));
+      const double box_size = static_cast<double>(bi->size());
+      double box_load = box_size;
+      if (d_pparams && d_pparams->usingLinearLoad()) {
+         box_load = d_pparams->computeLinearLoad(box_size);
+      }
+      insertCombine(Voucher(static_cast<LoadType>(box_load), bi->getOwnerRank()));
    }
 }
 
@@ -129,12 +134,21 @@ void VoucherTransitLoad::insertAllWithArtificialMinimum(
    const hier::BoxContainer& other,
    double minimum_load)
 {
+   double effective_minimum = minimum_load;
+   if (d_pparams && d_pparams->usingLinearLoad()) {
+      effective_minimum = d_pparams->computeLinearLoad(minimum_load);
+   }
+
    for (hier::BoxContainer::const_iterator bi = other.begin(); bi != other.end(); ++bi) {
-      LoadType load = static_cast<LoadType>(bi->size());
-      if (load < minimum_load) {
-         load = static_cast<LoadType>(minimum_load);
+      const double box_size = static_cast<double>(bi->size());
+      double box_load = box_size;
+      if (d_pparams && d_pparams->usingLinearLoad()) {
+         box_load = d_pparams->computeLinearLoad(box_size);
       }
-      insertCombine(Voucher(load, bi->getOwnerRank()));
+      if (box_load < effective_minimum) {
+         box_load = effective_minimum;
+      }
+      insertCombine(Voucher(static_cast<LoadType>(box_load), bi->getOwnerRank()));
    }
 }
 

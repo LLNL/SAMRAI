@@ -79,6 +79,14 @@ namespace mesh {
  *   load balancing always uses the voucher method regardless of this
  *   parameter's value.
  *
+ *   - \b artificial_minimum_load
+ *   Optional artificial minimum load applied to boxes when computing
+ *   their contribution to the workload.  If a box's load would be
+ *   smaller than this value, the artificial minimum is used instead.
+ *   This can be specified as a scalar or as a vector with one value
+ *   per level; if the vector is shorter than the number of levels,
+ *   the last value is used for all finer levels.
+ *
  * <b> Details: </b> <br>
  * <table>
  *   <tr>
@@ -118,6 +126,38 @@ namespace mesh {
  *     <td>bool</td>
  *     <td>FALSE</td>
  *     <td>TRUE or FALSE</td>
+ *     <td>opt</td>
+ *     <td>Not written to restart. Value in input db used.</td>
+ *   </tr>
+ *   <tr>
+ *     <td>artificial_minimum_load</td>
+ *     <td>DoubleVector</td>
+ *     <td>1.0</td>
+ *     <td>>= 0</td>
+ *     <td>opt</td>
+ *     <td>Not written to restart. Value in input db used.</td>
+ *   </tr>
+ *   <tr>
+ *     <td>using_linear_load</td>
+ *     <td>BoolVector</td>
+ *     <td>FALSE</td>
+     <td>TRUE or FALSE</td>
+ *     <td>opt</td>
+ *     <td>Not written to restart. Value in input db used.</td>
+ *   </tr>
+ *   <tr>
+ *     <td>linear_load_slope</td>
+ *     <td>DoubleVector</td>
+ *     <td>1.0</td>
+ *     <td>any</td>
+ *     <td>opt</td>
+ *     <td>Not written to restart. Value in input db used.</td>
+ *   </tr>
+ *   <tr>
+ *     <td>linear_load_intercept</td>
+ *     <td>DoubleVector</td>
+ *     <td>0.0</td>
+ *     <td>any</td>
  *     <td>opt</td>
  *     <td>Not written to restart. Value in input db used.</td>
  *   </tr>
@@ -444,11 +484,52 @@ private:
     * @brief Fraction of ideal load a process can accept over and above
     * the ideal.
     *
-    * See input parameter "flexible_load_tolerance".
-    */
+   * See input parameter "flexible_load_tolerance".
+   */
    double d_flexible_load_tol;
 
+   /*!
+    * @brief Per-level artificial minimum load values.
+    *
+    * When computing box workloads, a box whose load would be less
+    * than the artificial minimum for its level is treated as having
+    * the artificial minimum load instead.  If fewer values are
+    * provided than hierarchy levels, the last value is used for all
+    * finer levels.
+    *
+    * See input parameter "artificial_minimum_load".
+    */
    std::vector<double> d_artificial_minimum;
+
+   /*!
+    * @brief Per-level flags for using the linear load model.
+    *
+    * If fewer values are provided than hierarchy levels, the last
+    * value is used for all finer levels.
+    *
+    * See input parameter "using_linear_load".
+    */
+   std::vector<bool> d_using_linear_load;
+
+   /*!
+    * @brief Per-level slopes for the linear load model.
+    *
+    * If fewer values are provided than hierarchy levels, the last
+    * value is used for all finer levels.
+    *
+    * See input parameter "linear_load_slope".
+    */
+   std::vector<double> d_linear_load_slope;
+
+   /*!
+    * @brief Per-level intercepts for the linear load model.
+    *
+    * If fewer values are provided than hierarchy levels, the last
+    * value is used for all finer levels.
+    *
+    * See input parameter "linear_load_intercept".
+    */
+   std::vector<double> d_linear_load_intercept;
 
    /*!
     * @brief Boolean to determine whether to use vouchers for transferring load.
