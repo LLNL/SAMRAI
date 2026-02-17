@@ -541,12 +541,12 @@ CascadePartitioner::loadBalanceBoxLevel(
     * Finished load balancing.  Clean up and wrap up.
     */
 
-   d_pparams.reset();
-
    local_load = computeLocalLoad(balance_box_level);
    d_load_stat.push_back(local_load);
    d_box_count_stat.push_back(
       static_cast<int>(balance_box_level.getBoxes().size()));
+
+   d_pparams.reset();
 
    if (d_print_steps) {
       tbox::plog << "Post balanced:\n" << balance_box_level.format("", 2)
