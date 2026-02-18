@@ -361,13 +361,21 @@ VoucherTransitLoad::assignToLocalAndPopulateMaps(
          for (hier::BoxContainer::const_iterator bi = boxes.begin();
               bi != boxes.end(); ++bi) {
             double load = static_cast<double>(bi->size());
+            if (d_pparams && d_pparams->usingLinearLoad()) {
+               load = d_pparams->computeLinearLoad(load);
+            }
             if (load < artificial_minimum) {
                load = artificial_minimum;
             }
             original_work += static_cast<LoadType>(load);
          }
       } else {
-         original_work = LoadType(unbalanced_box_level.getLocalNumberOfCells());
+         double total_cells = static_cast<double>(unbalanced_box_level.getLocalNumberOfCells());
+         if (d_pparams && d_pparams->usingLinearLoad()) {
+            original_work = LoadType(d_pparams->computeLinearLoad(total_cells));
+         } else {
+            original_work = LoadType(total_cells);
+         }
       }
    } else {
       original_work = d_reserve.getSumLoad();
