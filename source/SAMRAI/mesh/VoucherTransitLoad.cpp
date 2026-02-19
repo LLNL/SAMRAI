@@ -195,8 +195,12 @@ void VoucherTransitLoad::setWorkload(
             work_data_id,
             new_transit_box.getBox());
       const double artificial_minimum = d_pparams->getArtificialMinimumLoad();
-      if (load < artificial_minimum) {
-         load = artificial_minimum;
+      double effective_minimum = artificial_minimum;
+      if (d_pparams && d_pparams->usingLinearLoad()) {
+         effective_minimum = d_pparams->computeLinearLoad(artificial_minimum);
+      }
+      if (load < effective_minimum) {
+         load = effective_minimum;
       }
       new_transit_box.setLoad(load);
       new_transit_box.setCornerWeights(corner_weights);
@@ -358,14 +362,18 @@ VoucherTransitLoad::assignToLocalAndPopulateMaps(
       if (artificial_minimum > 1.0) {
          original_work = 0.0;
          const hier::BoxContainer& boxes = unbalanced_box_level.getBoxes();
+         double effective_minimum = artificial_minimum;
+         if (d_pparams && d_pparams->usingLinearLoad()) {
+            effective_minimum = d_pparams->computeLinearLoad(artificial_minimum);
+         }
          for (hier::BoxContainer::const_iterator bi = boxes.begin();
               bi != boxes.end(); ++bi) {
             double load = static_cast<double>(bi->size());
             if (d_pparams && d_pparams->usingLinearLoad()) {
                load = d_pparams->computeLinearLoad(load);
             }
-            if (load < artificial_minimum) {
-               load = artificial_minimum;
+            if (load < effective_minimum) {
+               load = effective_minimum;
             }
             original_work += static_cast<LoadType>(load);
          }
