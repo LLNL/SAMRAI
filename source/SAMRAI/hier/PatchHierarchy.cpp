@@ -1218,7 +1218,7 @@ PatchHierarchy::makeBlueprintDatabase(
             domain_db->putDatabase("topologies"));
 
          std::shared_ptr<tbox::Database> topo_db(
-            topologies_db->putDatabase("mesh"));
+            topologies_db->putDatabase(bp_utils.getTopologyName()));
 
          std::shared_ptr<tbox::Database> elem_db(
             topo_db->putDatabase("elements"));
@@ -1235,13 +1235,13 @@ PatchHierarchy::makeBlueprintDatabase(
    }
 
    if (d_number_levels > 1) {
-      makeNestingSets(blueprint_db, "mesh");
+      makeNestingSets(blueprint_db, bp_utils.getTopologyName());
    }
 
    // AMR Adjacency sets not supported in current Conduit release
-   //makeAdjacencySets(blueprint_db, "mesh");
+   //makeAdjacencySets(blueprint_db, bp_utils.getTopologyName());
 
-   bp_utils.putTopologyAndCoordinatesToDatabase(blueprint_db, *this, "mesh");
+   bp_utils.putTopologyAndCoordinatesToDatabase(blueprint_db, *this, bp_utils.getTopologyName());
 }
 
 void
@@ -1298,7 +1298,7 @@ PatchHierarchy::makeFlattenedBlueprintDatabase(
                domain_db->putDatabase("topologies"));
 
             std::shared_ptr<tbox::Database> topo_db(
-               topologies_db->putDatabase("mesh"));
+               topologies_db->putDatabase(bp_utils.getTopologyName()));
 
             std::shared_ptr<tbox::Database> elem_db(
                topo_db->putDatabase("elements"));
@@ -1318,10 +1318,10 @@ PatchHierarchy::makeFlattenedBlueprintDatabase(
       flat_box_level[i]->finalize();
    }
 
-   makeAdjacencySets(blueprint_db, flat_hier, flat_box_level, "mesh");
+   makeAdjacencySets(blueprint_db, flat_hier, flat_box_level, bp_utils.getTopologyName());
 
-   bp_utils.putTopologyAndCoordinatesToDatabase(blueprint_db, *this, flat_hier,  "mesh");
-   bp_utils.putFieldsToDatabase(blueprint_db, *this, flat_hier, "mesh");
+   bp_utils.putTopologyAndCoordinatesToDatabase(blueprint_db, *this, flat_hier,  bp_utils.getTopologyName());
+   bp_utils.putFieldsToDatabase(blueprint_db, *this, flat_hier, bp_utils.getTopologyName());
 }
 #endif
 

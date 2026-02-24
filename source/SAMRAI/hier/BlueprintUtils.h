@@ -138,9 +138,21 @@ public:
       const std::string& rootfile_name,
       const std::string& io_protocol) const;
 
+   void setTopologyName(const std::string& topo_name)
+   {
+      m_topology_name = topo_name;
+   }
+
+   const std::string& getTopologyName() const
+   {
+      return m_topology_name;
+   }
+
 private:
 
    BlueprintUtilsStrategy* d_strategy;
+
+   std::string m_topology_name = "mesh";
 
 };
 
