@@ -79,6 +79,13 @@ public:
    insertAll(
       const hier::BoxContainer& box_container);
 
+   //! @copydoc TransitLoad::insertAllWithArtificialMinimum(
+   //!           const hier::BoxContainer&, double)
+   void
+   insertAllWithArtificialMinimum(
+      const hier::BoxContainer& box_container,
+      double minimum_load);
+
    //! @copydoc TransitLoad::insertAll( TransitLoad & )
    void
    insertAll(

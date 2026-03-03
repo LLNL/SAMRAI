@@ -4485,7 +4485,7 @@ RefineSchedule::constructScheduleTransactions(
    if (d_src_masks.size() < max_overlap_array_size) {
       for (int i = d_src_masks.size();
            i < max_overlap_array_size; ++i) {
-         d_src_masks.pushBack(hier::Box(dim));
+         d_src_masks.emplaceBack(dim);
       }
    }
 

@@ -125,6 +125,23 @@ void VoucherTransitLoad::insertAll(const hier::BoxContainer& other)
  *************************************************************************
  *************************************************************************
  */
+void VoucherTransitLoad::insertAllWithArtificialMinimum(
+   const hier::BoxContainer& other,
+   double minimum_load)
+{
+   for (hier::BoxContainer::const_iterator bi = other.begin(); bi != other.end(); ++bi) {
+      LoadType load = static_cast<LoadType>(bi->size());
+      if (load < minimum_load) {
+         load = static_cast<LoadType>(minimum_load);
+      }
+      insertCombine(Voucher(load, bi->getOwnerRank()));
+   }
+}
+
+/*
+ *************************************************************************
+ *************************************************************************
+ */
 void VoucherTransitLoad::insertAll(TransitLoad& other_transit_load)
 {
    const VoucherTransitLoad& other = recastTransitLoad(other_transit_load);
@@ -158,11 +175,16 @@ void VoucherTransitLoad::setWorkload(
       const hier::BoxId& box_id = patch->getBox().getBoxId();
       BoxInTransit new_transit_box(patch->getBox());
       std::vector<double> corner_weights;
-      new_transit_box.setLoad(
+      double load =
          BalanceUtilities::computeNonUniformWorkloadOnCorners(corner_weights,
             patch,
             work_data_id,
-            new_transit_box.getBox()));
+            new_transit_box.getBox());
+      const double artificial_minimum = d_pparams->getArtificialMinimumLoad();
+      if (load < artificial_minimum) {
+         load = artificial_minimum;
+      }
+      new_transit_box.setLoad(load);
       new_transit_box.setCornerWeights(corner_weights);
       sumload += new_transit_box.getLoad();
       d_reserve.insert(new_transit_box);
@@ -318,7 +340,21 @@ VoucherTransitLoad::assignToLocalAndPopulateMaps(
     */
    LoadType original_work;
    if (d_reserve.empty()) {
-      original_work = LoadType(unbalanced_box_level.getLocalNumberOfCells());
+      const double artificial_minimum = d_pparams->getArtificialMinimumLoad();
+      if (artificial_minimum > 1.0) {
+         original_work = 0.0;
+         const hier::BoxContainer& boxes = unbalanced_box_level.getBoxes();
+         for (hier::BoxContainer::const_iterator bi = boxes.begin();
+              bi != boxes.end(); ++bi) {
+            double load = static_cast<double>(bi->size());
+            if (load < artificial_minimum) {
+               load = artificial_minimum;
+            }
+            original_work += static_cast<LoadType>(load);
+         }
+      } else {
+         original_work = LoadType(unbalanced_box_level.getLocalNumberOfCells());
+      }
    } else {
       original_work = d_reserve.getSumLoad();
    }
@@ -358,7 +394,14 @@ VoucherTransitLoad::assignToLocalAndPopulateMaps(
       d_reserve.clear();
       d_reserve.setAllowBoxBreaking(getAllowBoxBreaking());
       d_reserve.setThresholdWidth(getThresholdWidth());
-      d_reserve.insertAll(unbalanced_box_level.getBoxes());
+      const double artificial_minimum = d_pparams->getArtificialMinimumLoad();
+      if (artificial_minimum > 1.0) {
+         d_reserve.insertAllWithArtificialMinimum(
+            unbalanced_box_level.getBoxes(),
+            artificial_minimum);
+      } else {
+         d_reserve.insertAll(unbalanced_box_level.getBoxes());
+      }
    }
    if (d_print_edge_steps) {
       tbox::plog << "VoucherTransitLoad::assignToLocalAndPopulateMaps:"

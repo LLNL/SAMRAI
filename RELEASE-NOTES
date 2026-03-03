@@ -4,7 +4,7 @@
   All rights reserved.
 *****************************************************************************
 
-                     Release Notes for SAMRAI v4.4.0
+                     Release Notes for SAMRAI v4.6.0
 
      (notes for previous releases may be found in /SAMRAI/docs/release)
 
@@ -29,30 +29,63 @@ Please post an issue on github https://github.com/LLNL/SAMRAI
                 Significant bug fixes
 ----------------------------------------------------------------------------
 
-1) The artificial_minimum_load option in CascadePartitioner caused an edge-case
-behavior where patches much smaller than expected could be produced by the
-load balancing algorithm.  This behavior has been fixed.  The fix may change
-load balancing results in problems using the artificial_minimum_load option.
+1) A fix was implemented to remove logic that was too restrictive in
+RefineSchedule when deciding to compute overlaps between source and
+destination patches that touch on their boundaries but do not overlap on
+their interiors.  These overlaps need to be computed for patch data types
+that are centered on the boundaries of cells (node, face, side, edge, etc.).
+The GitHub pull request for this bug fix is at
+https://github.com/llnl/SAMRAI/pull/312
+
+This fix may cause changes to numerical results.  These changes should be
+improvements to accuracy due to adding necessary overlaps that were missed
+before the fix.
 
 
 *****************************************************************************
 
 
 *****************************************************************************
+
+----------------------------------------------------------------------------
+                Summary of what's new
+-----------------------------------------------------------------------------
+
+1)
+
+
+-----------------------------------------------------------------------------
+                Summary of what's changed
+-----------------------------------------------------------------------------
+
+1) There have been some incremental additions of modern C++ features in
+some of the important low-level classes in tbox and hier.
+
+2) 
 
 -----------------------------------------------------------------------------
                 Details about what's new
 -----------------------------------------------------------------------------
 
-1) A significant performace slowdown on certain GPU platforms during the
-enforcement of the tag_buffer value in GriddingAlgorithm's generation of
-new levels has been fixed. 
+1) 
 
-2) This release keeps SAMRAI up to date with the most recent releases of
-RAJA and Umpire, v2025.03.0 for both libraries.
+-----------------------------------------------------------------------------
+                Details about what's changed
+-----------------------------------------------------------------------------
 
-3) The build system support has been upgraded to work with BLT v0.7.0. 
+1) There have been some incremental additions of modern C++ features in
+some of the important low-level classes in tbox and hier.  This includes
+adding of constexpr and noexcept keywords in appropriate places, and
+explicit defaulting of a number of constructors and destructors. 
+
+An API change related to these changes is the removal of implicit converstion
+from Index to IntVector via the IntVector constructor that takes an Index.
+This constructor still exists, but is now declared explicit.  This removes
+the implicit conversion that occured when an Index was passed into a function
+that requires an IntVector.
 
 
-=============================================================================
+
+
+============================================================================
 =============================================================================

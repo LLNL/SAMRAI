@@ -1,0 +1,93 @@
+*****************************************************************************
+  Copyright 1997-2025
+  Lawrence Livermore National Security, LLC.
+  All rights reserved.
+*****************************************************************************
+
+                     Release Notes for SAMRAI v4.5.0
+
+     (notes for previous releases may be found in /SAMRAI/docs/release)
+
+*****************************************************************************
+
+
+Where to report Bugs
+--------------------
+
+If a bug is found in the SAMRAI library, we ask that you kindly report
+it to us so that we may fix it.
+
+Please post an issue on github https://github.com/LLNL/SAMRAI
+
+*****************************************************************************
+
+
+
+*****************************************************************************
+
+----------------------------------------------------------------------------
+                Significant bug fixes
+----------------------------------------------------------------------------
+
+1) Some internal calls to AsyncCommPeer::beginSend() were casting the value
+passed in the second argument, 'size_t size', to type int.  This was exposed
+as a bug in cases where the size_t value was larger than the maximum value
+of the int type, causing an integer wraparound and an incorrect value to be
+used inside the function.  In particular this may happen during communication
+in a regrid step when the mesh size and total data to communicate are very
+large.  These casts have been removed from calls throughout the library, so
+that the correct size_t values are preserved.
+
+
+
+*****************************************************************************
+
+
+*****************************************************************************
+
+----------------------------------------------------------------------------
+                Summary of what's new
+-----------------------------------------------------------------------------
+
+1) The message-passing capability of AsycCommPeer has been extended to
+handle much larger buffer sizes.
+
+-----------------------------------------------------------------------------
+                Summary of what's changed
+-----------------------------------------------------------------------------
+
+1) The recommended minimum C++ standard is now C++ 17.
+
+2) If SAMRAI is configured to use Caliper, the #define macro created in
+the generated header SAMRAI_config.h is changed from HAVE_CALIPER to
+SAMRAI_HAVE_CALIPER.
+
+-----------------------------------------------------------------------------
+                Details about what's new
+-----------------------------------------------------------------------------
+
+1) The message-passing capability in AsyncCommPeer, where the MPI calls for
+parallel SAMRAI algorithms such as the communication schedules are located,
+has been extended to handle much larger buffer sizes.  The existing limitation
+was due the use of the int type in the MPI API for the "count" argument
+in functions such as MPI_Isend and MPI_Irecv.  If the buffer passed into
+AsyncCommPeer had a byte length greater than the maximum value of int, then
+the length could not be passed accurately as the "count" argument in those
+functions.  To solve this, AsyncCommPeer now detects if the buffer will be
+too large, and if it is, it will break the buffer into chunks of sizes a
+small amount smaller than the maximum int value, and those chunks will be
+passed in a series of calls to MPI send and receive functions.  The chunks
+received by the receiving rank will be contiguous in memory, so there is no
+change to the results that the calling code should expect from calling
+AsyncCommPeer methods.
+
+The number of chunks that are able to be used is a constant set at compile
+time.  The default number is 10, and users can change it by setting the
+CMake variable SAMRAI_MAX_COMM_BUFFERS.
+
+
+
+
+
+=============================================================================
+=============================================================================

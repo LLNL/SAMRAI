@@ -1038,7 +1038,7 @@ ChopAndPackLoadBalancer::exchangeBoxContainersAndWeightArrays(
    int curr_box_list_out_size = box_list_out.size();
    if (size_out > curr_box_list_out_size) {
       for (int i = curr_box_list_out_size; i < size_out; ++i) {
-         box_list_out.pushBack(hier::Box(d_dim));
+         box_list_out.emplaceBack(d_dim);
       }
    } else if (size_out < curr_box_list_out_size) {
       for (int i = size_out; i < curr_box_list_out_size; ++i) {

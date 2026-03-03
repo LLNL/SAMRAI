@@ -1,0 +1,58 @@
+*****************************************************************************
+  Copyright 1997-2025
+  Lawrence Livermore National Security, LLC.
+  All rights reserved.
+*****************************************************************************
+
+                     Release Notes for SAMRAI v4.4.0
+
+     (notes for previous releases may be found in /SAMRAI/docs/release)
+
+*****************************************************************************
+
+
+Where to report Bugs
+--------------------
+
+If a bug is found in the SAMRAI library, we ask that you kindly report
+it to us so that we may fix it.
+
+Please post an issue on github https://github.com/LLNL/SAMRAI
+
+*****************************************************************************
+
+
+
+*****************************************************************************
+
+----------------------------------------------------------------------------
+                Significant bug fixes
+----------------------------------------------------------------------------
+
+1) The artificial_minimum_load option in CascadePartitioner caused an edge-case
+behavior where patches much smaller than expected could be produced by the
+load balancing algorithm.  This behavior has been fixed.  The fix may change
+load balancing results in problems using the artificial_minimum_load option.
+
+
+*****************************************************************************
+
+
+*****************************************************************************
+
+-----------------------------------------------------------------------------
+                Details about what's new
+-----------------------------------------------------------------------------
+
+1) A significant performace slowdown on certain GPU platforms during the
+enforcement of the tag_buffer value in GriddingAlgorithm's generation of
+new levels has been fixed. 
+
+2) This release keeps SAMRAI up to date with the most recent releases of
+RAJA and Umpire, v2025.03.0 for both libraries.
+
+3) The build system support has been upgraded to work with BLT v0.7.0. 
+
+
+=============================================================================
+=============================================================================
