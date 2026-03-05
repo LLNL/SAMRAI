@@ -161,6 +161,14 @@ namespace mesh {
  *     <td>opt</td>
  *     <td>Not written to restart. Value in input db used.</td>
  *   </tr>
+ *   <tr>
+ *     <td>linear_load_ghost_width</td>
+ *     <td>IntegerVector</td>
+ *     <td>0</td>
+ *     <td>>= 0</td>
+ *     <td>opt</td>
+ *     <td>Not written to restart. Value in input db used.</td>
+ *   </tr>
  * </table>
  *
  * @internal The following are developer inputs.  Defaults listed
@@ -530,6 +538,16 @@ private:
     * See input parameter "linear_load_intercept".
     */
    std::vector<double> d_linear_load_intercept;
+
+   /*!
+    * @brief Per-level ghost widths for the linear load model.
+    *
+    * If fewer values are provided than hierarchy levels, the last
+    * value is used for all finer levels.
+    *
+    * See input parameter "linear_load_ghost_width".
+    */
+   std::vector<int> d_linear_load_ghost_width;
 
    /*!
     * @brief Boolean to determine whether to use vouchers for transferring load.

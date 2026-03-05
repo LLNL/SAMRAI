@@ -35,6 +35,7 @@ PartitioningParams::PartitioningParams(
    d_using_linear_load(false),
    d_load_slope(1.0),
    d_load_intercept(0.0),
+   d_load_ghost_width(0),
    d_flexible_load_tol(flexible_load_tol),
    d_load_comparison_tol(1e-6),
    d_using_vouchers(false),
@@ -58,6 +59,7 @@ PartitioningParams::PartitioningParams(
    d_using_linear_load(other.d_using_linear_load),
    d_load_slope(other.d_load_slope),
    d_load_intercept(other.d_load_intercept),
+   d_load_ghost_width(other.d_load_ghost_width),
    d_flexible_load_tol(other.d_flexible_load_tol),
    d_load_comparison_tol(other.d_load_comparison_tol),
    d_using_vouchers(other.d_using_vouchers),
@@ -79,6 +81,7 @@ std::ostream& operator << (
    << "  using_linear_load=" << pp.d_using_linear_load
    << "  load_slope=" << pp.d_load_slope
    << "  load_intercept=" << pp.d_load_intercept
+   << "  load_ghost_width=" << pp.d_load_ghost_width
    << "  load_comparison_tol=" << pp.d_load_comparison_tol
    << "  work_data_id=" << pp.d_work_data_id;
    for (std::map<hier::BlockId, hier::BoxContainer>::const_iterator mi =

@@ -15,6 +15,7 @@
 
 #include "SAMRAI/hier/BaseGridGeometry.h"
 
+#include <cmath>
 #include <map>
 
 namespace SAMRAI {
@@ -110,8 +111,28 @@ public:
       d_load_intercept = load_intercept;
    }
 
+   const int& getLoadGhostWidth() const {
+      return d_load_ghost_width;
+   }
+
+   void setLoadGhostWidth(int load_ghost_width) {
+      TBOX_ASSERT(load_ghost_width >= 0);
+      d_load_ghost_width = load_ghost_width;
+   }
+
    double computeLinearLoad(double size) const {
-      return d_load_slope * size + d_load_intercept;
+       
+      if (d_load_ghost_width == 0) {
+         return d_load_slope * size + d_load_intercept;
+      } else {
+         const double dim = static_cast<double>(getDim().getValue());
+         TBOX_ASSERT(dim > 0.0);
+         const double base_width = std::pow(size, 1.0 / dim);
+         const double new_width =
+            base_width + 2.0 * static_cast<double>(d_load_ghost_width);
+         const double new_size = std::pow(new_width, dim);
+         return d_load_slope * new_size + d_load_intercept;
+      } 
    }
 
    double getSizeFromLinearLoad(double load) const {
@@ -173,6 +194,7 @@ private:
    bool d_using_linear_load;
    double d_load_slope;
    double d_load_intercept; 
+   int d_load_ghost_width = 0;
 
    /*!
     * @brief Fraction of ideal load a process can accept over and

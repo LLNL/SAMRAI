@@ -1,0 +1,39 @@
+sent tapfd=5 for tap0
+received tapfd=5
+read JSON allowlist: {"ipv4_allow": [
+  "192.168.255.1",
+  "128.15.130.110",
+  "134.9.45.5"
+]}
+
+adding 192.168.255.1 as 1ffa8c0
+adding 128.15.130.110 as 6e820f80
+adding 134.9.45.5 as 52d0986
+deny: ipv6
+deny: ipv6
+deny: ipv6
+deny: 856fc7b9 (185.199.111.133): please thoroughly review any ip addresses you intend to add to your allowlist otherwise you may compromise your sandbox
+deny: 856ec7b9 (185.199.110.133): please thoroughly review any ip addresses you intend to add to your allowlist otherwise you may compromise your sandbox
+deny: 856dc7b9 (185.199.109.133): please thoroughly review any ip addresses you intend to add to your allowlist otherwise you may compromise your sandbox
+deny: 856cc7b9 (185.199.108.133): please thoroughly review any ip addresses you intend to add to your allowlist otherwise you may compromise your sandbox
+deny: f58c9fa2 (162.159.140.245): please thoroughly review any ip addresses you intend to add to your allowlist otherwise you may compromise your sandbox
+deny: f30042ac (172.66.0.243): please thoroughly review any ip addresses you intend to add to your allowlist otherwise you may compromise your sandbox
+deny: f58c9fa2 (162.159.140.245): please thoroughly review any ip addresses you intend to add to your allowlist otherwise you may compromise your sandbox
+deny: f30042ac (172.66.0.243): please thoroughly review any ip addresses you intend to add to your allowlist otherwise you may compromise your sandbox
+deny: ipv6
+deny: ipv6
+deny: f30042ac (172.66.0.243): please thoroughly review any ip addresses you intend to add to your allowlist otherwise you may compromise your sandbox
+deny: f58c9fa2 (162.159.140.245): please thoroughly review any ip addresses you intend to add to your allowlist otherwise you may compromise your sandbox
+deny: ipv6
+deny: f58c9fa2 (162.159.140.245): please thoroughly review any ip addresses you intend to add to your allowlist otherwise you may compromise your sandbox
+deny: f30042ac (172.66.0.243): please thoroughly review any ip addresses you intend to add to your allowlist otherwise you may compromise your sandbox
+deny: f30042ac (172.66.0.243): please thoroughly review any ip addresses you intend to add to your allowlist otherwise you may compromise your sandbox
+deny: f58c9fa2 (162.159.140.245): please thoroughly review any ip addresses you intend to add to your allowlist otherwise you may compromise your sandbox
+deny: ipv6
+deny: ipv6
+deny: ipv6
+deny: ipv6
+deny: ipv6
+deny: ipv6
+deny: ipv6
+deny: ipv6

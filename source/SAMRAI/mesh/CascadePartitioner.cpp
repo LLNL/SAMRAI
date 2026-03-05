@@ -78,6 +78,7 @@ CascadePartitioner::CascadePartitioner(
    d_using_linear_load(1,false),
    d_linear_load_slope(1,1.0),
    d_linear_load_intercept(1,0.0),
+   d_linear_load_ghost_width(1,0),
    d_use_vouchers(false),
    d_mca(),
    // Shared data.
@@ -204,6 +205,7 @@ CascadePartitioner::loadBalanceBoxLevel(
    bool using_linear_load = false;
    double linear_load_slope = 1.0;
    double linear_load_intercept = 0.0;
+   int linear_load_ghost_width = 0;
 
    if (hierarchy) {
       minimum_cells = hierarchy->getMinimumCellRequest(level_number);
@@ -241,6 +243,20 @@ CascadePartitioner::loadBalanceBoxLevel(
          } else {
             linear_load_intercept = d_linear_load_intercept.back();
          }
+      }
+
+      if (!d_linear_load_ghost_width.empty()) {
+         int ghost_width = 0;
+         if (ln < d_linear_load_ghost_width.size()) {
+            ghost_width = d_linear_load_ghost_width[ln];
+         } else {
+            ghost_width = d_linear_load_ghost_width.back();
+         }
+         if (ghost_width < 0) {
+            TBOX_ERROR("CascadePartitioner input error: linear_load_ghost_width must be >= 0.\n"
+               << "Value is " << ghost_width << " on level " << level_number);
+         }
+         linear_load_ghost_width = ghost_width;
       }
    }
 
@@ -336,6 +352,7 @@ CascadePartitioner::loadBalanceBoxLevel(
    d_pparams->setUsingLinearLoad(using_linear_load);
    d_pparams->setLoadSlope(linear_load_slope);
    d_pparams->setLoadIntercept(linear_load_intercept);
+   d_pparams->setLoadGhostWidth(linear_load_ghost_width);
 
    LoadType local_load = computeLocalLoad(balance_box_level);
 
@@ -1006,6 +1023,11 @@ CascadePartitioner::getFromInput(
       if (input_db->isDouble("linear_load_intercept")) {
          d_linear_load_intercept =
             input_db->getDoubleVector("linear_load_intercept");
+      }
+
+      if (input_db->isInteger("linear_load_ghost_width")) {
+         d_linear_load_ghost_width =
+            input_db->getIntegerVector("linear_load_ghost_width");
       }
    }
 }
