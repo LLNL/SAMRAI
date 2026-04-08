@@ -132,6 +132,39 @@ CascadePartitioner::getLoadBalanceDependsOnPatchData(
    return getWorkloadDataId(level_number) < 0 ? false : true;
 }
 
+double
+CascadePartitioner::getArtificialFactor(
+   int level_number) const
+{
+   if (level_number < 0) {
+      return 1.0;
+   }
+   if (static_cast<size_t>(level_number) < d_artificial_factor.size()) {
+      return d_artificial_factor[level_number];
+   }
+   return 1.0;
+}
+
+void
+CascadePartitioner::setArtificialMinimumLoad(
+   const std::vector<double>& artificial_minimum_load)
+{
+   d_artificial_minimum = artificial_minimum_load;
+   if (d_artificial_minimum.empty()) {
+      d_artificial_minimum.resize(1, 1.0);
+   }
+}
+
+void
+CascadePartitioner::setArtificialFactors(
+   const std::vector<double>& artificial_factors)
+{
+   d_artificial_factor = artificial_factors;
+   if (d_artificial_factor.empty()) {
+      d_artificial_factor.resize(1, 1.0);
+   }
+}
+
 /*
  **************************************************************************
  **************************************************************************
@@ -228,7 +261,7 @@ CascadePartitioner::loadBalanceBoxLevel(
    }
 
    if (artificial_minimum > 1.0) {
-      artificial_minimum *= d_artificial_factor[level_number];
+//      artificial_minimum *= d_artificial_factor[level_number];
    }
 
    if (d_mpi_is_dupe) {
@@ -525,30 +558,66 @@ CascadePartitioner::loadBalanceBoxLevel(
     */
 
    d_pparams.reset();
-
+#if 1
    int max_boxes = balance_box_level.getMaxNumberOfBoxes();
    int min_boxes = balance_box_level.getMinNumberOfBoxes();
    if (min_boxes == 0) min_boxes = 1;
 
    const double box_ratio =
       static_cast<double>(max_boxes) / static_cast<double>(min_boxes);
-#if 1
+
    if (artificial_minimum > 1.0) {
       /* Increase when box_ratio >= 4, decrease when near 1 */
       if (box_ratio >= 10.0) {
          d_artificial_factor[level_number] *= 1.1;
-      } else if (box_ratio > 3.0) {
+      } else if (box_ratio > 3.6) {
          d_artificial_factor[level_number] *=
             1.0 + box_ratio / 100.0;
-      } else if (box_ratio < 1.6) {
-         d_artificial_factor[level_number] *= 0.99;
-      } else if (box_ratio < 1.99) {
-         d_artificial_factor[level_number] *= 0.999;
-      } else if (box_ratio < 2.0001) {
-         d_artificial_factor[level_number] *= 0.9995;
+      } else if (d_artificial_factor[level_number] > 0.2) {
+         if (box_ratio < 1.6) {
+            d_artificial_factor[level_number] *= 0.99;
+         } else if (box_ratio < 1.99) {
+            d_artificial_factor[level_number] *= 0.995;
+         } else if (box_ratio < 2.0001) {
+            d_artificial_factor[level_number] *= 0.9975;
+         } else if (box_ratio < 3.0001) {
+            if (d_artificial_factor[level_number] > 0.75) {
+               d_artificial_factor[level_number] *= 0.999;
+            }
+         }
       }
    }
+
+   if (d_artificial_factor[level_number] > 5.0) {
+      if (d_mpi.getRank() == 0) std::cout << "At 5.0\n";
+      d_artificial_factor[level_number] = 5.0;
+   } else {
+      if (d_mpi.getRank() == 0) std::cout << d_artificial_factor[level_number] << " factor\n";
+   } 
+
+   if (d_artificial_factor[level_number] > 2.0) {
+      size_t max_cells = balance_box_level.getMaxNumberOfCells();
+      size_t avg_cells = balance_box_level.getGlobalNumberOfCells() /
+                            static_cast<size_t>(d_mpi.getSize());
+      if (d_mpi.getRank() == 0) std::cout << max_cells << " max " << avg_cells << " avg\n";
+
+      if (static_cast<double>(max_cells) > 1.25 * static_cast<double>(avg_cells)) {
+         d_artificial_factor[level_number] *= 0.9;
+	 if (d_mpi.getRank() == 0) std::cout << "reduced\n";
+      }
+   } else {
+      size_t max_cells = balance_box_level.getMaxNumberOfCells();
+      if (d_mpi.getRank() == 0) std::cout << max_cells << " max\n";
+   }
+
+   if (level_number == 3 && d_mpi.getRank() == 0 && d_artificial_minimum.size() >= 3) {
+      std::cout << "artificial minimum = " << d_artificial_minimum[level_number] * d_artificial_factor[level_number] << "\n";
+   }
+#else
+   d_artificial_factor[level_number] = 1.0;
 #endif
+
+#if 0
    /*
     * Feedback for minimum_cell_request: if the box count is highly
     * imbalanced and there exists a rank on which more than half of
@@ -628,6 +697,7 @@ CascadePartitioner::loadBalanceBoxLevel(
          }
       }
    }
+#endif
 
    local_load = computeLocalLoad(balance_box_level);
    d_load_stat.push_back(local_load);
