@@ -1,10 +1,10 @@
 *****************************************************************************
-  Copyright 1997-2026
+  Copyright 1997-2025
   Lawrence Livermore National Security, LLC.
   All rights reserved.
 *****************************************************************************
 
-                     Release Notes for SAMRAI v4.5.1
+                     Release Notes for SAMRAI v4.5.0
 
      (notes for previous releases may be found in /SAMRAI/docs/release)
 
@@ -21,31 +21,9 @@ Please post an issue on github https://github.com/LLNL/SAMRAI
 
 *****************************************************************************
 
-SAMRAI v4.5.1 is a bugfix patch release to fix a divide-by-zero bug in
-CascadePartitionerTree.
+
 
 *****************************************************************************
-
-----------------------------------------------------------------------------
-                Significant bug fixes
-----------------------------------------------------------------------------
-
-1) CascadePartitionerTree::computeConnectorUpdateInterval had a potential
-divide-by-zero that could only happen if the input BoxLevel passed to
-CascadePartitioner::loadBalanceLevel was already perfectly balanced to
-double precision equality on all processors.  This divide-by-zero was
-happening in sequential runs, since those BoxLevels are trivially
-perfectly balanced on input, but the result of the divide was not used
-in that case and runs would proceed without error if floating-point
-exceptions were not enabled.  The divide could happen in rare cases in
-parallel runs, so it was necessary to fix the bug for those runs, as well
-as to avoid sequential floating-point exceptions.
-
-****************************************************************************
-
-The remainder of this file repeats the content of the v4.5.0 release notes.
-
-****************************************************************************
 
 ----------------------------------------------------------------------------
                 Significant bug fixes
