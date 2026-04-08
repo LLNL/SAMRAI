@@ -331,6 +331,57 @@ public:
    getLoadBalanceDependsOnPatchData(
       int level_number) const;
 
+   /*!
+    * @brief Get the current artificial factor used to scale the
+    * "artificial_minimum_load" value for a given level.
+    *
+    * If the factor has not yet been initialized for @p level_number,
+    * this returns 1.0.
+    */
+   double
+   getArtificialFactor(
+      int level_number) const;
+
+   /*!
+    * @brief Get the current per-level artificial factors.
+    *
+    * @note The returned vector may be shorter than the number of levels
+    * in the hierarchy; callers should treat missing entries as 1.0.
+    */
+   const std::vector<double>&
+   getArtificialFactors() const
+   {
+      return d_artificial_factor;
+   }
+
+   /*!
+    * @brief Get the current per-level "artificial_minimum_load" values.
+    */
+   const std::vector<double>&
+   getArtificialMinimumLoad() const
+   {
+      return d_artificial_minimum;
+   }
+
+   /*!
+    * @brief Override the per-level "artificial_minimum_load" values.
+    *
+    * This updates the values that would otherwise come from the input
+    * database parameter "artificial_minimum_load".
+    */
+   void
+   setArtificialMinimumLoad(
+      const std::vector<double>& artificial_minimum_load);
+
+   /*!
+    * @brief Override the per-level artificial factors.
+    *
+    * This can be used to seed or reset the internal tuning state.
+    */
+   void
+   setArtificialFactors(
+      const std::vector<double>& artificial_factors);
+
 private:
    typedef double LoadType;
 
@@ -492,8 +543,8 @@ private:
     * @brief Fraction of ideal load a process can accept over and above
     * the ideal.
     *
-   * See input parameter "flexible_load_tolerance".
-   */
+    * See input parameter "flexible_load_tolerance".
+    */
    double d_flexible_load_tol;
 
    /*!
@@ -508,6 +559,17 @@ private:
     * See input parameter "artificial_minimum_load".
     */
    std::vector<double> d_artificial_minimum;
+
+   mutable std::vector<double> d_artificial_factor;
+
+   mutable double d_num_balances = 0.0;
+   mutable double d_ratio_sum = 0.0;
+
+   /*!
+    * @brief Per-level factor applied to minimum_cell_request when
+    *        constructing partitioning parameters.
+    */
+   mutable std::vector<double> d_minimum_cell_factor;
 
    /*!
     * @brief Per-level flags for using the linear load model.

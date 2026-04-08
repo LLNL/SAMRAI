@@ -79,6 +79,8 @@ CascadePartitioner::CascadePartitioner(
    d_linear_load_slope(1,1.0),
    d_linear_load_intercept(1,0.0),
    d_linear_load_ghost_width(1,0),
+   d_artificial_factor(1,1.0),
+   d_minimum_cell_factor(1,1.0),
    d_use_vouchers(false),
    d_mca(),
    // Shared data.
@@ -132,6 +134,39 @@ CascadePartitioner::getLoadBalanceDependsOnPatchData(
    int level_number) const
 {
    return getWorkloadDataId(level_number) < 0 ? false : true;
+}
+
+double
+CascadePartitioner::getArtificialFactor(
+   int level_number) const
+{
+   if (level_number < 0) {
+      return 1.0;
+   }
+   if (static_cast<size_t>(level_number) < d_artificial_factor.size()) {
+      return d_artificial_factor[level_number];
+   }
+   return 1.0;
+}
+
+void
+CascadePartitioner::setArtificialMinimumLoad(
+   const std::vector<double>& artificial_minimum_load)
+{
+   d_artificial_minimum = artificial_minimum_load;
+   if (d_artificial_minimum.empty()) {
+      d_artificial_minimum.resize(1, 1.0);
+   }
+}
+
+void
+CascadePartitioner::setArtificialFactors(
+   const std::vector<double>& artificial_factors)
+{
+   d_artificial_factor = artificial_factors;
+   if (d_artificial_factor.empty()) {
+      d_artificial_factor.resize(1, 1.0);
+   }
 }
 
 /*
@@ -258,6 +293,26 @@ CascadePartitioner::loadBalanceBoxLevel(
          }
          linear_load_ghost_width = ghost_width;
       }
+   }
+
+   if (d_minimum_cell_factor.size() < level_number + 1) {
+      d_minimum_cell_factor.resize(level_number + 1, 1.0);
+   }
+
+   if (minimum_cells > 0) {
+      const double scaled_min_cells =
+         static_cast<double>(minimum_cells) * d_minimum_cell_factor[level_number];
+      const size_t effective_min_cells =
+         static_cast<size_t>(std::max(1.0, std::floor(scaled_min_cells + 0.5)));
+      minimum_cells = effective_min_cells;
+   }
+
+   if (d_artificial_factor.size() < level_number + 1) {
+      d_artificial_factor.resize(level_number + 1, 1.0);
+   }
+
+   if (artificial_minimum > 1.0) {
+//      artificial_minimum *= d_artificial_factor[level_number];
    }
 
    if (d_mpi_is_dupe) {
@@ -557,6 +612,148 @@ CascadePartitioner::loadBalanceBoxLevel(
    /*
     * Finished load balancing.  Clean up and wrap up.
     */
+
+   d_pparams.reset();
+#if 1
+   int max_boxes = balance_box_level.getMaxNumberOfBoxes();
+   int min_boxes = balance_box_level.getMinNumberOfBoxes();
+   if (min_boxes == 0) min_boxes = 1;
+
+   const double box_ratio =
+      static_cast<double>(max_boxes) / static_cast<double>(min_boxes);
+
+   if (artificial_minimum > 1.0) {
+      /* Increase when box_ratio >= 4, decrease when near 1 */
+      if (box_ratio >= 10.0) {
+         d_artificial_factor[level_number] *= 1.1;
+      } else if (box_ratio > 3.6) {
+         d_artificial_factor[level_number] *=
+            1.0 + box_ratio / 100.0;
+      } else if (d_artificial_factor[level_number] > 0.2) {
+         if (box_ratio < 1.6) {
+            d_artificial_factor[level_number] *= 0.99;
+         } else if (box_ratio < 1.99) {
+            d_artificial_factor[level_number] *= 0.995;
+         } else if (box_ratio < 2.0001) {
+            d_artificial_factor[level_number] *= 0.9975;
+         } else if (box_ratio < 3.0001) {
+            if (d_artificial_factor[level_number] > 0.75) {
+               d_artificial_factor[level_number] *= 0.999;
+            }
+         }
+      }
+   }
+
+   if (d_artificial_factor[level_number] > 5.0) {
+      if (d_mpi.getRank() == 0) std::cout << "At 5.0\n";
+      d_artificial_factor[level_number] = 5.0;
+   } else {
+      if (d_mpi.getRank() == 0) std::cout << d_artificial_factor[level_number] << " factor\n";
+   } 
+
+   if (d_artificial_factor[level_number] > 2.0) {
+      size_t max_cells = balance_box_level.getMaxNumberOfCells();
+      size_t avg_cells = balance_box_level.getGlobalNumberOfCells() /
+                            static_cast<size_t>(d_mpi.getSize());
+      if (d_mpi.getRank() == 0) std::cout << max_cells << " max " << avg_cells << " avg\n";
+
+      if (static_cast<double>(max_cells) > 1.25 * static_cast<double>(avg_cells)) {
+         d_artificial_factor[level_number] *= 0.9;
+	 if (d_mpi.getRank() == 0) std::cout << "reduced\n";
+      }
+   } else {
+      size_t max_cells = balance_box_level.getMaxNumberOfCells();
+      if (d_mpi.getRank() == 0) std::cout << max_cells << " max\n";
+   }
+
+   if (level_number == 3 && d_mpi.getRank() == 0 && d_artificial_minimum.size() >= 3) {
+      std::cout << "artificial minimum = " << d_artificial_minimum[level_number] * d_artificial_factor[level_number] << "\n";
+   }
+#else
+   d_artificial_factor[level_number] = 1.0;
+#endif
+
+#if 0
+   /*
+    * Feedback for minimum_cell_request: if the box count is highly
+    * imbalanced and there exists a rank on which more than half of
+    * the boxes are smaller than 1.25 times the current effective
+    * minimum cell request, increase the per-level factor applied to
+    * minimum_cell_request for the next load balance.  When the box
+    * counts are well balanced and only a small fraction of boxes are
+    * this small globally, gently decrease the factor.
+    */
+   if (hierarchy) {
+      const size_t base_min_cells =
+         hierarchy->getMinimumCellRequest(level_number);
+      if (base_min_cells > 0) { 
+        //  balance_box_level.getLocalNumberOfBoxes() > 0) {
+
+         const double current_min_cells =
+            static_cast<double>(base_min_cells) *
+            d_minimum_cell_factor[level_number];
+         const double threshold_cells = 1.25 * current_min_cells;
+
+         const hier::BoxContainer& boxes = balance_box_level.getBoxes();
+         int local_total_boxes = 0;
+         int local_small_boxes = 0;
+
+         for (hier::BoxContainer::const_iterator bi = boxes.begin();
+              bi != boxes.end(); ++bi) {
+            const hier::Box& box = *bi;
+            const double box_cells =
+               static_cast<double>(box.size());
+            ++local_total_boxes;
+            if (box_cells < threshold_cells) {
+               ++local_small_boxes;
+            }
+         }
+
+         int local_flag = 0;
+         if ((local_total_boxes > 0) &&
+             (2 * local_small_boxes > local_total_boxes)) {
+            local_flag = 1;
+         }
+         int global_vals[3] = { local_total_boxes,
+                                local_small_boxes,
+                                local_flag };
+         if (d_mpi.getSize() > 1) {
+            int tmp_vals[3] = { local_total_boxes,
+                                local_small_boxes,
+                                local_flag };
+            d_mpi.Allreduce(tmp_vals,
+                            global_vals,
+                            3,
+                            MPI_INT,
+                            MPI_SUM);
+         }
+
+         const int global_total_boxes = global_vals[0];
+         const int global_small_boxes = global_vals[1];
+         const int global_flag = global_vals[2];
+
+         double small_ratio = static_cast<double>(global_small_boxes) /
+                              static_cast<double>(global_total_boxes);
+
+
+         if (box_ratio >= 10.0 || (box_ratio >= 5.0 && global_flag > 0)) {
+            d_minimum_cell_factor[level_number] *= 1.05;
+         } else if (box_ratio > 3.0 && small_ratio > 0.24) {
+            d_minimum_cell_factor[level_number] *= (1.0 + small_ratio/20.0);
+         } else if (box_ratio <= 2.0) {
+            d_minimum_cell_factor[level_number] *= 0.99;
+            if (d_minimum_cell_factor[level_number] < 0.5) {
+               d_minimum_cell_factor[level_number] = 0.5;
+            }
+         }
+
+         if (level_number == 2) {
+            d_num_balances += 1.0;
+            d_ratio_sum += box_ratio;
+         }
+      }
+   }
+#endif
 
    local_load = computeLocalLoad(balance_box_level);
    d_load_stat.push_back(local_load);
