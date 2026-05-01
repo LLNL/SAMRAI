@@ -63,12 +63,35 @@ public:
       const Patch& patch,
       const Box& box) = 0;
 
-   /* Implementation needed!!!!! */
+   /*!
+    * @brief Put blueprint field data into a domain database
+    *
+    * This virtual function provides an interface to call into application
+    * code to add field data to a domain that is part of a blueprint
+    * mesh, according to the blueprints format for fields.
+    *
+    * @param domain_db   Database for the blueprint mesh domain.  The domain
+    *                    should represent the spatial intersection of the
+    *                    patch and box arguments
+    * @param patch       Patch holding the data.
+    * @param box         Only data existing on the intersection of this
+    *                    box and the patch's box should be added to the
+    *                    domain database
+    * @param topology_name   Name of the topology to be associated with the
+    *                        fields
+    *
+    */
    virtual void putFieldsToDomainDatabase(
       std::shared_ptr<tbox::Database>& domain_db,
       const Patch& patch,
       const Box& box,
-      const std::string& topology_name) {}
+      const std::string& topology_name)
+   {
+      NULL_USE(domain_db);
+      NULL_USE(patch);
+      NULL_USE(box);
+      NULL_USE(topology_name);
+   }
 
 private:
 

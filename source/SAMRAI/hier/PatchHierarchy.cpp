@@ -2032,7 +2032,7 @@ PatchHierarchy::makeAdjacencySets(
                      IntVector b_ratio(ratio.getBlockVector(nbr_box.getBlockId()));
 
                      // positive modulo to handle negative numerators correctly
-		     auto pos_mod = [](int a, int m) -> int {
+                     auto pos_mod = [](int a, int m) -> int {
                         int r = a % m;
                         return (r < 0) ? (r + m) : r;
                      };
