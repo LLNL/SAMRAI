@@ -95,6 +95,12 @@ public:
     * index space of the Box is covered by a finer level, the returned
     * BoxContainer will be empty.
     *
+    * Each Box in the returned BoxContainer will have a BoxId that is unique
+    * across all visible boxes at all levels of resolution that can be returned
+    * by a FlattenedHierarchy object.  This differs from the usage of BoxId
+    * it PatchLevel or BoxLevel, where a BoxId is guaranteed to be unique only
+    * on one level, not across all levels.
+    *
     * @param box  The Box for a local patch on the PatchLevel having
     *             level number ln.
     * @param ln   Level number of the box's level of resolution

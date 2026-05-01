@@ -20,7 +20,7 @@ namespace SAMRAI {
 namespace hier {
 
 /*
- * Constructor does nothing because the objects are stateless.
+ * Constructor and destructor
  */
 
 BlueprintUtils::BlueprintUtils(BlueprintUtilsStrategy* strategy)
@@ -158,15 +158,6 @@ void BlueprintUtils::putFieldsToDatabase(
 {
    TBOX_ASSERT(blueprint_db);
 
-   std::vector<int> first_patch_id;
-   first_patch_id.push_back(0);
-
-   int patch_count = 0;
-   for (int i = 1; i < hierarchy.getNumberOfLevels(); ++i) {
-      patch_count += hierarchy.getPatchLevel(i-1)->getNumberOfPatches();
-      first_patch_id.push_back(patch_count);
-   }
-
    for (int i = 0; i < hierarchy.getNumberOfLevels(); ++i) {
       const std::shared_ptr<PatchLevel>& level(
          hierarchy.getPatchLevel(i));
@@ -179,15 +170,16 @@ void BlueprintUtils::putFieldsToDatabase(
 
          const auto& flat_boxes = flat_hierarchy.getVisibleBoxes(patch_box, i);
 
-         for (auto& domain_box : flat_boxes) {
+         for (const auto& domain_box : flat_boxes) {
             int domain_id = domain_box.getLocalId().getValue();
             std::string domain_name =
                "domain_" + tbox::Utilities::intToString(domain_id, 6);
 
-            std::shared_ptr<tbox::Database> domain_db(
-               blueprint_db->getDatabase(domain_name));
+            if (d_strategy && blueprint_db->isDatabase(domain_name)) {
 
-            if (d_strategy) {
+               std::shared_ptr<tbox::Database> domain_db(
+                  blueprint_db->getDatabase(domain_name));
+
                d_strategy->putFieldsToDomainDatabase(
                   domain_db, *patch, domain_box, topology_name);
             }

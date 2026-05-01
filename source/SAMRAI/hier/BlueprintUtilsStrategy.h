@@ -16,6 +16,7 @@
 #include "SAMRAI/tbox/Database.h"
 
 #include <memory>
+#include <string>
 
 namespace SAMRAI {
 namespace hier {

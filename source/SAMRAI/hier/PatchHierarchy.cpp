@@ -2031,18 +2031,24 @@ PatchHierarchy::makeAdjacencySets(
                      IntVector a_ratio(ratio.getBlockVector(domain_box.getBlockId()));
                      IntVector b_ratio(ratio.getBlockVector(nbr_box.getBlockId()));
 
+                     // positive modulo to handle negative numerators correctly
+		     auto pos_mod = [](int a, int m) -> int {
+                        int r = a % m;
+                        return (r < 0) ? (r + m) : r;
+                     };
+
                      int partial_lo = 0;
                      int partial_hi = 0;
                      for (int d = 0; d < d_dim.getValue(); ++d) {
                         if (b_width[d] > 1) {
                            const int& ovlp_lo = tnode_ovlp.lower(d);
-                           partial_lo = ovlp_lo % b_ratio[d];
+                           partial_lo = pos_mod(ovlp_lo, b_ratio[d]);
                            if (partial_lo) {
                               tnode_ovlp.setLower(d, ovlp_lo - partial_lo);
                               b_width[d] += partial_lo;
                            }
                            const int& ovlp_hi = tnode_ovlp.upper(d);
-                           partial_hi = ovlp_hi % b_ratio[d];
+                           partial_hi = pos_mod(ovlp_hi, b_ratio[d]);
                            if (partial_hi) {
                               partial_hi = b_ratio[d] - partial_hi;
                               tnode_ovlp.setUpper(d, ovlp_hi + partial_hi);
@@ -2060,7 +2066,7 @@ PatchHierarchy::makeAdjacencySets(
                      ratio_a_db->putInteger("i", a_ratio[0]);
                      origin_b_db->putInteger("i", tnode_ovlp.lower(0));
                      width_b_db->putInteger("i", b_width[0]);
-                     ratio_b_db->putInteger("i", a_ratio[0]);
+                     ratio_b_db->putInteger("i", b_ratio[0]);
                      if (d_dim.getValue() > 1) {
                         origin_a_db->putInteger("j", node_ovlp.lower(1));
                         width_a_db->putInteger("j", a_width[1]);
@@ -2282,18 +2288,24 @@ PatchHierarchy::makeAdjacencySets(
                      IntVector a_ratio(ratio.getBlockVector(domain_box.getBlockId()));
                      IntVector b_ratio(ratio.getBlockVector(nbr_box.getBlockId()));
 
+                     // positive modulo to handle negative numerators correctly
+                     auto pos_mod = [](int a, int m) -> int {
+                        int r = a % m;
+                        return (r < 0) ? (r + m) : r;
+                     };
+
                      int partial_lo = 0;
                      int partial_hi = 0;
                      for (int d = 0; d < d_dim.getValue(); ++d) {
                         if (a_width[d] > 1) {
                            const int& ovlp_lo = node_ovlp.lower(d);
-                           partial_lo = ovlp_lo % a_ratio[d];
+                           partial_lo = pos_mod(ovlp_lo, a_ratio[d]);
                            if (partial_lo) {
                               node_ovlp.setLower(d, ovlp_lo - partial_lo);
                               a_width[d] += partial_lo;
                            }
                            const int& ovlp_hi = node_ovlp.upper(d);
-                           partial_hi = ovlp_hi % a_ratio[d];
+                           partial_hi = pos_mod(ovlp_hi, a_ratio[d]);
                            if (partial_hi) {
                               partial_hi = a_ratio[d] - partial_hi;
                               node_ovlp.setUpper(d, ovlp_hi + partial_hi);
@@ -2312,7 +2324,7 @@ PatchHierarchy::makeAdjacencySets(
                      ratio_a_db->putInteger("i", a_ratio[0]);
                      origin_b_db->putInteger("i", tnode_ovlp.lower(0));
                      width_b_db->putInteger("i", b_width[0]);
-                     ratio_b_db->putInteger("i", a_ratio[0]);
+                     ratio_b_db->putInteger("i", b_ratio[0]);
                      if (d_dim.getValue() > 1) {
                         origin_a_db->putInteger("j", node_ovlp.lower(1));
                         width_a_db->putInteger("j", a_width[1]);
