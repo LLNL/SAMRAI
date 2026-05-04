@@ -39,11 +39,8 @@ project_dir="$(pwd)"
 build_dir="${build_root}/build_${sys_type}_${compiler}"
 option=${1:-""}
 
-raja_ver="2025.09.0"
-if [[ "${sys_type}" == "blueos_3_ppc64le_ib_p9" ]]
-then
-    raja_ver="2025.03.0"
-fi
+raja_ver="2025.12.2"
+umpire_ver="2025.12.0"
 
 # Build
 if [[ "${option}" != "--test-only" ]]
@@ -66,13 +63,13 @@ then
     else
         cp -r /usr/WS1/samrai/tpl/raja/v$raja_ver raja
     fi
-    if [[ ! -d /usr/WS1/samrai/tpl/umpire/v$raja_ver ]]
+    if [[ ! -d /usr/WS1/samrai/tpl/umpire/v$umpire_ver ]]
     then
-        wget https://github.com/LLNL/umpire/releases/download/v$raja_ver/umpire-$raja_ver.tar.gz
-        tar xvf umpire-$raja_ver.tar.gz
-        mv umpire-$raja_ver umpire
+        wget https://github.com/LLNL/umpire/releases/download/v$umpire_ver/umpire-$umpire_ver.tar.gz
+        tar xvf umpire-$umpire_ver.tar.gz
+        mv umpire-$umpire_ver umpire
     else
-        cp -r /usr/WS1/samrai/tpl/umpire/v$raja_ver umpire
+        cp -r /usr/WS1/samrai/tpl/umpire/v$umpire_ver umpire
     fi
 
     tpl_script="${project_dir}/source/scripts/gitlab/build_tpl.sh"
@@ -95,7 +92,12 @@ then
         echo "ERROR: Host-config file ${samrai_conf} does not exist" && exit 1
     fi
 
-    cmake_cmd="/usr/tce/packages/cmake/cmake-3.23.1/bin/cmake"
+    cmake_cmd="/usr/tce/packages/cmake/cmake-3.25.2/bin/cmake"
+    if [[ "${sys_type}" == "toss_4_x86_64_ib_cray" ]]
+    then
+        cmake_cmd="/usr/tce/packages/cmake/cmake-3.24.2/bin/cmake"
+    fi
+
     ${cmake_cmd} \
       -C ${samrai_conf} \
       ${tpl_flags} \
