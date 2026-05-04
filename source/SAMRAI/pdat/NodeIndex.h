@@ -126,6 +126,20 @@ public:
    }
 
    /**
+    * Plus-equals operator for a node index and a node index.
+    *
+    * @pre getDim() == rhs.getDim()
+    */
+   NodeIndex&
+   operator += (
+      const NodeIndex& rhs)
+   {
+      TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
+      hier::Index::operator += (rhs);
+      return *this;
+   }
+
+   /**
     * Plus operator for a node index and an integer vector.
     *
     * @pre getDim() == rhs.getDim()
@@ -133,6 +147,21 @@ public:
    NodeIndex
    operator + (
       const hier::IntVector& rhs) const
+   {
+      TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
+      NodeIndex tmp = *this;
+      tmp += rhs;
+      return tmp;
+   }
+
+   /**
+    * Plus operator for a node index and a node index.
+    *
+    * @pre getDim() == rhs.getDim()
+    */
+   NodeIndex
+   operator + (
+      const NodeIndex& rhs) const
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       NodeIndex tmp = *this;
@@ -185,6 +214,35 @@ public:
    NodeIndex
    operator - (
       const hier::IntVector& rhs) const
+   {
+      TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
+      NodeIndex tmp = *this;
+      tmp -= rhs;
+      return tmp;
+   }
+
+   /**
+    * Minus-equals operator for a node index and a node index.
+    *
+    * @pre getDim() == rhs.getDim()
+    */
+   NodeIndex&
+   operator -= (
+      const NodeIndex& rhs)
+   {
+      TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
+      hier::Index::operator -= (rhs);
+      return *this;
+   }
+
+   /**
+    * Minus operator for a node index and a node index.
+    *
+    * @pre getDim() == rhs.getDim()
+    */
+   NodeIndex
+   operator - (
+      const NodeIndex& rhs) const
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       NodeIndex tmp = *this;
