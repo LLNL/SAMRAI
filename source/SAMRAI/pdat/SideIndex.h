@@ -121,6 +121,22 @@ public:
    }
 
    /**
+    * Plus-equals operator for a side index and a side index.
+    *
+    * @pre getDim() == rhs.getDim()
+    * @pre getAxis() == rhs.getAxis()
+    */
+   SideIndex&
+   operator += (
+      const SideIndex& rhs)
+   {
+      TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
+      TBOX_ASSERT(d_axis == rhs.d_axis);
+      hier::Index::operator += (rhs);
+      return *this;
+   }
+
+   /**
     * Plus operator for a side index and an integer vector.
     *
     * @pre getDim() == rhs.getDim()
@@ -130,6 +146,23 @@ public:
       const hier::IntVector& rhs) const
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
+      SideIndex tmp = *this;
+      tmp += rhs;
+      return tmp;
+   }
+
+   /**
+    * Plus operator for a side index and a side index.
+    *
+    * @pre getDim() == rhs.getDim()
+    * @pre getAxis() == rhs.getAxis()
+    */
+   SideIndex
+   operator + (
+      const SideIndex& rhs) const
+   {
+      TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
+      TBOX_ASSERT(d_axis == rhs.d_axis);
       SideIndex tmp = *this;
       tmp += rhs;
       return tmp;
@@ -182,6 +215,39 @@ public:
       const hier::IntVector& rhs) const
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
+      SideIndex tmp = *this;
+      tmp -= rhs;
+      return tmp;
+   }
+
+   /**
+    * Minus-equals operator for a side index and a side index.
+    *
+    * @pre getDim() == rhs.getDim()
+    * @pre getAxis() == rhs.getAxis()
+    */
+   SideIndex&
+   operator -= (
+      const SideIndex& rhs)
+   {
+      TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
+      TBOX_ASSERT(d_axis == rhs.d_axis);
+      hier::Index::operator -= (rhs);
+      return *this;
+   }
+
+   /**
+    * Minus operator for a side index and a side index.
+    *
+    * @pre getDim() == rhs.getDim()
+    * @pre getAxis() == rhs.getAxis()
+    */
+   SideIndex
+   operator - (
+      const SideIndex& rhs) const
+   {
+      TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
+      TBOX_ASSERT(d_axis == rhs.d_axis);
       SideIndex tmp = *this;
       tmp -= rhs;
       return tmp;
