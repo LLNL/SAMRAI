@@ -37,28 +37,17 @@ public:
     * @brief Copy constructor
     */
    BoxContainerSingleBlockIterator(
-      const BoxContainerSingleBlockIterator& other):
-   d_boxes(other.d_boxes),
-   d_block_id(other.d_block_id),
-   d_iter(other.d_iter)
-   {
-   }
+      const BoxContainerSingleBlockIterator& other) = default;
 
-   //! @brief Destructor
-   ~BoxContainerSingleBlockIterator();
+   //! @brief Destructor.
+   ~BoxContainerSingleBlockIterator() = default;
 
    /*!
     * @brief Assignment operator.
     */
    BoxContainerSingleBlockIterator&
    operator = (
-      const BoxContainerSingleBlockIterator& r)
-   {
-      d_boxes = r.d_boxes;
-      d_iter = r.d_iter;
-      d_block_id = r.d_block_id;
-      return *this;
-   }
+      const BoxContainerSingleBlockIterator& r) = default;
 
    /*!
     * @brief Dereference operator mimicking a pointer dereference.

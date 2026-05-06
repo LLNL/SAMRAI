@@ -74,7 +74,7 @@ public:
    /*!
     * @brief Destructor.
     */
-   ~BoxTree();
+   ~BoxTree() = default;
 
 private:
 
@@ -116,7 +116,7 @@ private:
    /*!
     * Default constructor is unimplemented and should not be used.
     */
-   BoxTree();
+   BoxTree() = delete;
 
    /*!
     * @brief Reset to uninitialized state.

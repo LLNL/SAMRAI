@@ -60,11 +60,15 @@ public:
     */
    AssumedPartition();
 
+   AssumedPartition(const AssumedPartition&) = default;
+   AssumedPartition& operator=(const AssumedPartition&) = default;
+   AssumedPartition(AssumedPartition&&) = default;
+   AssumedPartition& operator=(AssumedPartition&&) = default;
+
    /*!
     * @brief Destructor.
     */
-   ~AssumedPartition() {
-   }
+   ~AssumedPartition() = default;
 
    /*!
     * @brief Partition a set of boxes, discarding the current state.

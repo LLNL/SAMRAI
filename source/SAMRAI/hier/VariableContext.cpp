@@ -36,9 +36,5 @@ VariableContext::VariableContext(
    d_name = name;
 }
 
-VariableContext::~VariableContext()
-{
-}
-
 }
 }

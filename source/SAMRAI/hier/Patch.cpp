@@ -38,18 +38,6 @@ Patch::Patch(
    TBOX_ASSERT(box.getLocalId() >= 0);
 }
 
-/*
- *************************************************************************
- *
- * The virtual destructor does nothing; all memory deallocation is
- * managed automatically by the pointer and array classes.
- *
- *************************************************************************
- */
-
-Patch::~Patch()
-{
-}
 
 /*
  *************************************************************************

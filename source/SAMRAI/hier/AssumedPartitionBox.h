@@ -60,6 +60,11 @@ public:
    AssumedPartitionBox(
       const tbox::Dimension& dim);
 
+   AssumedPartitionBox(const AssumedPartitionBox&) = default;
+   AssumedPartitionBox& operator=(const AssumedPartitionBox&) = default;
+   AssumedPartitionBox(AssumedPartitionBox&&) = default;
+   AssumedPartitionBox& operator=(AssumedPartitionBox&&) = default;
+
    /*!
     * @brief Partition the given box, discarding the current state.
     *
@@ -91,8 +96,7 @@ public:
    /*!
     * @brief Destructor.
     */
-   ~AssumedPartitionBox() {
-   }
+   ~AssumedPartitionBox() = default;
 
    //! @brief Return the original unpartitioned box.
    const Box& getUnpartitionedBox() const {

@@ -36,28 +36,17 @@ public:
     * @brief Copy constructor
     */
    BoxContainerSingleOwnerIterator(
-      const BoxContainerSingleOwnerIterator& other):
-   d_boxes(other.d_boxes),
-   d_owner_rank(other.d_owner_rank),
-   d_iter(other.d_iter)
-   {
-   }
+      const BoxContainerSingleOwnerIterator& other) = default;
 
-   //! @brief Destructor
-   ~BoxContainerSingleOwnerIterator();
+   //! @brief Destructor.
+   ~BoxContainerSingleOwnerIterator() = default;
 
    /*!
     * @brief Assignment operator.
     */
    BoxContainerSingleOwnerIterator&
    operator = (
-      const BoxContainerSingleOwnerIterator& r)
-   {
-      d_boxes = r.d_boxes;
-      d_iter = r.d_iter;
-      d_owner_rank = r.d_owner_rank;
-      return *this;
-   }
+      const BoxContainerSingleOwnerIterator& r) = default;
 
    /*!
     * @brief Dereference operator mimicking a pointer dereference.

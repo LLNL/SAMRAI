@@ -95,10 +95,6 @@ VariableDatabase::VariableDatabase():
    d_internal_SAMRAI_context = getContext("Internal_SAMRAI_Variable");
 }
 
-VariableDatabase::~VariableDatabase()
-{
-}
-
 void
 VariableDatabase::registerSingletonSubclassInstance(
    VariableDatabase* subclass_instance)

@@ -157,9 +157,5 @@ FlattenedHierarchy::FlattenedHierarchy(
  **************************************************************************
  */
 
-FlattenedHierarchy::~FlattenedHierarchy()
-{
-}
-
 }
 }

@@ -34,7 +34,7 @@ public:
    /*!
     * @brief Destructor
     */
-   ~SingularityFinder();
+   ~SingularityFinder() = default;
 
    /*!
     * @brief Find the singularities based on the relationship between

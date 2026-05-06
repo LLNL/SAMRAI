@@ -35,9 +35,5 @@ Variable::Variable(
    d_instance = s_instance_counter++;
 }
 
-Variable::~Variable()
-{
-}
-
 }
 }

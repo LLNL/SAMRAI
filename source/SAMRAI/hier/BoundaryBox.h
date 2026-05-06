@@ -76,12 +76,15 @@ public:
     * @param[in] boundary_box
     */
    BoundaryBox(
-      const BoundaryBox& boundary_box);
+      const BoundaryBox& boundary_box) = default;
+
+   BoundaryBox(
+      BoundaryBox&& boundary_box) = default;
 
    /*!
     * @brief The destructor for BoundaryBox.
     */
-   ~BoundaryBox();
+   ~BoundaryBox() = default;
 
    /*!
     * @brief Return the Box member of the boundary box

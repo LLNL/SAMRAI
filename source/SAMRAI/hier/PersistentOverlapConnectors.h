@@ -32,6 +32,7 @@ enum ConnectorNotFoundAction {
 
 class Connector;
 class BoxLevel;
+struct PersistentOverlapConnectorsDeleter;
 
 /*!
  * @brief A managager of overlap Connectors incident from a
@@ -350,6 +351,7 @@ private:
     * PersistentOverlapConnectors.
     */
    friend class BoxLevel;
+   friend struct PersistentOverlapConnectorsDeleter;
    //@}
 
    typedef std::vector<std::shared_ptr<Connector> > ConVect;

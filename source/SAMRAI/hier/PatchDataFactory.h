@@ -84,7 +84,7 @@ public:
     * @brief Virtual destructor for the patch data factory class.
     *
     */
-   virtual ~PatchDataFactory();
+   virtual ~PatchDataFactory() = default;
 
    /**
     * @brief Abstract virtual function to clone a patch data factory.
@@ -194,12 +194,13 @@ protected:
 
 private:
    PatchDataFactory(
-      const PatchDataFactory&);               // not implemented
+      const PatchDataFactory&) = delete;
    PatchDataFactory&
    operator = (
-      const PatchDataFactory&);               // not implemented
-   PatchDataFactory();                             // not implemented,
-                                                   // must specify ghost width
+      const PatchDataFactory&) = delete;
+   PatchDataFactory(PatchDataFactory&&) = delete;
+   PatchDataFactory& operator=(PatchDataFactory&&) = delete;
+   PatchDataFactory() = delete;  // must specify ghost width
 
 };
 

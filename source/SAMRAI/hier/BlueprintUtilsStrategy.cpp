@@ -13,14 +13,5 @@ namespace SAMRAI {
 namespace hier {
 
 
-BlueprintUtilsStrategy::BlueprintUtilsStrategy()
-{
-}
-
-BlueprintUtilsStrategy::~BlueprintUtilsStrategy()
-{
-}
-
-
 }
 }

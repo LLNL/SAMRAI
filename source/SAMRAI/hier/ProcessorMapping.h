@@ -62,7 +62,7 @@ public:
    /**
     * The destructor simply releases the storage for the mapping.
     */
-   ~ProcessorMapping();
+   ~ProcessorMapping() = default;
 
    /**
     * Resize the mapping so that it has n elements.  Before it can be
@@ -188,7 +188,7 @@ private:
 
    ProcessorMapping&
    operator = (
-      const ProcessorMapping&);                 // not implemented
+      const ProcessorMapping&) = delete;
 
    int d_my_rank;
    int d_nodes;

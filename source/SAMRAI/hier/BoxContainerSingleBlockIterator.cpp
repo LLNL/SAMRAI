@@ -28,11 +28,6 @@ BoxContainerSingleBlockIterator::BoxContainerSingleBlockIterator(
    }
 }
 
-BoxContainerSingleBlockIterator::~BoxContainerSingleBlockIterator()
-{
-   d_boxes = 0;
-}
-
 /*
  ****************************************************************************
  * Pre-increment operator.

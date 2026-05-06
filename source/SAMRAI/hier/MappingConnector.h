@@ -87,7 +87,7 @@ public:
    /*!
     * @brief Destructor.
     */
-   ~MappingConnector();
+   ~MappingConnector() = default;
 
    /*!
     * @brief Assignment operator

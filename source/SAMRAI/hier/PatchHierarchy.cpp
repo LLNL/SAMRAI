@@ -837,7 +837,7 @@ PatchHierarchy::makeNewPatchLevel(
       }
    }
    if (static_cast<int>(d_patch_levels.size()) > ln &&
-       d_patch_levels[ln].get() != 0) {
+       d_patch_levels[ln].get() != nullptr) {
       TBOX_ERROR("PatchHierarchy::makeNewPatchLevel: patch level "
          << ln << " already exists. "
          << "Remove old level from the hierarchy before making "
@@ -909,7 +909,7 @@ PatchHierarchy::makeNewPatchLevel(
       }
    }
    if (static_cast<int>(d_patch_levels.size()) > ln &&
-       d_patch_levels[ln].get() != 0) {
+       d_patch_levels[ln].get() != nullptr) {
       TBOX_ERROR("PatchHierarchy::makeNewPatchLevel: patch level "
          << ln << " already exists. "
          << "Remove old level from the hierarchy before making "
@@ -2523,9 +2523,6 @@ PatchHierarchy::recursivePrint(
    return 0;
 }
 
-PatchHierarchy::ConnectorWidthRequestorStrategy::~ConnectorWidthRequestorStrategy()
-{
-}
 
 }
 }

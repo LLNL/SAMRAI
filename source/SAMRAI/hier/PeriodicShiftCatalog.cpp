@@ -43,15 +43,6 @@ PeriodicShiftCatalog::PeriodicShiftCatalog(
  ***********************************************************************
  */
 
-PeriodicShiftCatalog::~PeriodicShiftCatalog()
-{
-}
-
-/*
- ***********************************************************************
- ***********************************************************************
- */
-
 void
 PeriodicShiftCatalog::setShifts(
    const tbox::Dimension& dim,

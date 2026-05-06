@@ -78,8 +78,8 @@ public:
 
    /*!
     * @brief Destructor
-    */ 
-   ~HierarchyNeighbors();
+    */
+   ~HierarchyNeighbors() = default;
 
    /*!
     * @brief Get the coarsest level number represented by this object

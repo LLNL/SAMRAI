@@ -115,7 +115,7 @@ private:
    /*!
     * @brief Unimplemented default constructor.
     */
-   UncoveredBoxIterator();
+   UncoveredBoxIterator() = delete;
 
    /*!
     * @brief Constructor.
@@ -152,8 +152,7 @@ private:
    /* The PatchHierarchy on which this iterator operates. */
    const PatchHierarchy* d_hierarchy;
    const FlattenedHierarchy* d_flattened_hierarchy;
-
-   bool d_allocated_flattened_hierarchy;
+   std::unique_ptr<FlattenedHierarchy> d_owned_flattened_hierarchy;
 
    /* The current level in the PatchHierarchy. */
    int d_level_num;
@@ -168,7 +167,7 @@ private:
    BoxContainer::const_iterator d_uncovered_boxes_itr_end;
 
    /* The current item in the iteration. */
-   std::pair<std::shared_ptr<Patch>, Box>* d_item;
+   std::unique_ptr<std::pair<std::shared_ptr<Patch>, Box> > d_item;
 
    /* The number of the finest level in the hierarchy. */
    int d_finest_level_num;

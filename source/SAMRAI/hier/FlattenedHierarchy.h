@@ -68,8 +68,8 @@ public:
 
    /*!
     * @brief Destructor
-    */ 
-   ~FlattenedHierarchy();
+    */
+   ~FlattenedHierarchy() = default;
 
    /*!
     * @brief Get the coarsest level number represented by this object

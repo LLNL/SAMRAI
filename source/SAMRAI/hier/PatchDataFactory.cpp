@@ -21,10 +21,6 @@ PatchDataFactory::PatchDataFactory(
    TBOX_ASSERT(ghosts.min() >= 0);
 }
 
-PatchDataFactory::~PatchDataFactory()
-{
-}
-
 /**********************************************************************
 * Default implementation
 **********************************************************************/

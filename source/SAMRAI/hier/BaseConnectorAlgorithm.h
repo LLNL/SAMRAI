@@ -26,12 +26,12 @@ protected:
    /*!
     * @brief Constructor
     */
-   BaseConnectorAlgorithm();
+   BaseConnectorAlgorithm() = default;
 
    /*!
     * @brief Destructor.
     */
-   virtual ~BaseConnectorAlgorithm();
+   virtual ~BaseConnectorAlgorithm() = default;
 
    /*!
     * @brief Set up communication objects for use in privateBridge/Modify.

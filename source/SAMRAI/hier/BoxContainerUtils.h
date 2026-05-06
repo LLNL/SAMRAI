@@ -53,7 +53,7 @@ public:
 
 private:
    // Disabled constructor.  No need for objects of this class.
-   BoxContainerUtils();
+   BoxContainerUtils() = default;
 
 };
 

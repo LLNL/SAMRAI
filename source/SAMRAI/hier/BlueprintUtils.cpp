@@ -28,9 +28,6 @@ BlueprintUtils::BlueprintUtils(BlueprintUtilsStrategy* strategy)
 {
 }
 
-BlueprintUtils::~BlueprintUtils()
-{
-}
 
 /*
  ***************************************************************************

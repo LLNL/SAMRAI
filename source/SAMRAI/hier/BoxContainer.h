@@ -148,7 +148,7 @@ public:
       /*!
        * @brief The destructor releases all storage.
        */
-      ~BoxContainerConstIterator();
+      ~BoxContainerConstIterator() = default;
 
       /*!
        * @brief Get box corresponding to iterator's position in container.
@@ -361,7 +361,7 @@ public:
       /*!
        * @brief The destructor releases all storage.
        */
-      ~BoxContainerIterator();
+      ~BoxContainerIterator() = default;
 
       /*!
        * @brief Get box corresponding to iterator's position in container.
@@ -689,7 +689,7 @@ private:
    /*!
     * @brief The destructor releases all storage.
     */
-   ~BoxContainer();
+   ~BoxContainer() = default;
 
    //@}
 

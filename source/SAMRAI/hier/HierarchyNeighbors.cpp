@@ -151,9 +151,5 @@ HierarchyNeighbors::HierarchyNeighbors(
  **************************************************************************
  */
 
-HierarchyNeighbors::~HierarchyNeighbors()
-{
-}
-
 }
 }
