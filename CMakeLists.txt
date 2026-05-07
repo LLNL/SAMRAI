@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.1)
 project(SAMRAI C CXX Fortran)
 
 set(SAMRAI_VERSION_MAJOR 4)
-set(SAMRAI_VERSION_MINOR 4)
+set(SAMRAI_VERSION_MINOR 5)
 set(SAMRAI_VERSION_PATCHLEVEL 0)
 set(SAMRAI_VERSION
   "${SAMRAI_VERSION_MAJOR}.${SAMRAI_VERSION_MINOR}.${SAMRAI_VERSION_PATCHLEVEL}")
@@ -40,15 +40,14 @@ set(ENABLE_HIP Off CACHE Bool "Enable HIP")
 set(ENABLE_MPI On CACHE Bool "Enable MPI.")
 set(ENABLE_TESTS On CACHE Bool "Enable Tests.")
 set(ENABLE_DOCS Off CACHE Bool "Enable Docs.")
-set(BLT_CXX_STD "c++14" CACHE STRING "Version of C++ standard")
+set(BLT_CXX_STD "c++20" CACHE STRING "Version of C++ standard")
 set(gtest_disable_pthreads ON CACHE BOOL "")
 
-# Set allow list for C++ standard.  C++ 14 is the recommended and default standard, but users may
-# try 17 or 20.  
-set(ALLOWED_CXX_STD "c++14;c++17;c++20")
+# Set allow list for C++ standard.  C++ 20 is the required minimum.
+set(ALLOWED_CXX_STD "c++20")
 list(FIND ALLOWED_CXX_STD "${BLT_CXX_STD}" FOUND_INDEX)
 if (FOUND_INDEX EQUAL -1)
-    message(FATAL_ERROR "BLT_CXX_STD is set to '${BLT_CXX_STD}', which is not supported.  The recommended standard is C++ 14.")
+    message(FATAL_ERROR "BLT_CXX_STD is set to '${BLT_CXX_STD}', which is not supported.  The recommended standard is C++ 20.")
 endif()
 
 message(STATUS "Enable Test Flag Top: ${ENABLE_TESTS} " )

@@ -3,7 +3,7 @@
  * This file is part of the SAMRAI distribution.  For full copyright
  * information, see COPYRIGHT and LICENSE.
  *
- * Copyright:     (c) 1997-2025 Lawrence Livermore National Security, LLC
+ * Copyright:     (c) 1997-2026 Lawrence Livermore National Security, LLC
  * Description:   Base class for geometry management in AMR hierarchy
  *
  ************************************************************************/
@@ -1592,11 +1592,11 @@ BaseGridGeometry::resetDomainBoxContainer()
 
          for (int ishift = 1; ishift < d_periodic_shift_catalog.getNumberOfShifts();
               ++ishift) {
-            const Box image_box(real_box,
-                                PeriodicId(ishift),
-                                one_vector,
-                                d_periodic_shift_catalog);
-            d_domain_with_images.pushBack(image_box);
+
+            d_domain_with_images.emplaceBack(real_box,
+                                             PeriodicId(ishift),
+                                             one_vector,
+                                             d_periodic_shift_catalog);
          }
 
       }

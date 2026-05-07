@@ -3,7 +3,7 @@
  * This file is part of the SAMRAI distribution.  For full copyright
  * information, see COPYRIGHT and LICENSE.
  *
- * Copyright:     (c) 1997-2025 Lawrence Livermore National Security, LLC
+ * Copyright:     (c) 1997-2026 Lawrence Livermore National Security, LLC
  * Description:   A N-dimensional integer vector
  *
  ************************************************************************/
@@ -19,8 +19,10 @@
 #include "SAMRAI/tbox/MathUtilities.h"
 #include "SAMRAI/tbox/Utilities.h"
 
+#include <array>
 #include <vector>
 #include <iostream>
+#include <optional>
 
 namespace SAMRAI {
 
@@ -100,7 +102,7 @@ public:
     * @param vec Vector of integers with a size equal to the desired dimension
     * @param num_blocks
     */
-   IntVector(
+   explicit IntVector(
       const std::vector<int>& vec,
       size_t num_blocks = 1);
 
@@ -128,11 +130,13 @@ public:
 
    /*!
     * @brief Copy constructor.
-    *
-    * @pre rhs.getNumBlocks() >= 1
     */
-   IntVector(
-      const IntVector& rhs);
+   IntVector(const IntVector& rhs) = default;
+
+   /*!
+    * @brief Move copy constructor.
+    */
+   IntVector(IntVector&& rhs) = default;
 
    /*!
     * @brief Construct an IntVector from another IntVector.
@@ -170,7 +174,7 @@ public:
     * @param rhs
     * @param num_blocks
     */
-   IntVector(
+   explicit IntVector(
       const Index& rhs,
       size_t num_blocks = 1);
 
@@ -192,6 +196,19 @@ public:
    }
 
    /*!
+    * @brief Move assignment operator
+    *
+    * @pre getDim() == rhs.getDim()
+    */
+   IntVector& operator=(IntVector&& rhs)
+   {
+      TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
+      d_num_blocks = rhs.d_num_blocks;
+      d_vector = std::move(rhs.d_vector);
+      return *this;
+   }
+
+   /*!
     * @brief Assignment operator assigning the values of an Index to an
     * IntVector.
     *
@@ -204,14 +221,14 @@ public:
       const Index& rhs);
 
    /*!
-    * @brief The IntVector destructor does nothing interesting.
+    * @brief default destructor
     */
-   virtual ~IntVector();
+   ~IntVector() noexcept = default;
 
    /*!
     * @brief Return the number of blocks for this IntVector
     */
-   size_t getNumBlocks() const
+   size_t getNumBlocks() const noexcept
    {
       return d_num_blocks;
    }
@@ -249,7 +266,7 @@ public:
     */
    int&
    operator [] (
-      const unsigned int i)
+      const unsigned int i) noexcept
    {
       TBOX_ASSERT(i < d_dim.getValue());
       TBOX_ASSERT(d_num_blocks == 1);
@@ -265,7 +282,7 @@ public:
     */
    const int&
    operator [] (
-      const unsigned int i) const
+      const unsigned int i) const noexcept
    {
       TBOX_ASSERT(i < d_dim.getValue());
       TBOX_ASSERT(d_num_blocks == 1);
@@ -281,7 +298,7 @@ public:
     */
    int&
    operator () (
-      const unsigned int i)
+      const unsigned int i) noexcept
    {
       TBOX_ASSERT(i < d_dim.getValue());
       TBOX_ASSERT(d_num_blocks == 1);
@@ -297,7 +314,7 @@ public:
     */
    const int&
    operator () (
-      const unsigned int i) const
+      const unsigned int i) const noexcept
    {
       TBOX_ASSERT(i < d_dim.getValue());
       TBOX_ASSERT(d_num_blocks == 1);
@@ -316,7 +333,7 @@ public:
    int&
    operator () (
       const BlockId::block_t b,
-      const unsigned int i)
+      const unsigned int i) noexcept
    {
       TBOX_ASSERT(b < d_num_blocks);
       TBOX_ASSERT(i < d_dim.getValue());
@@ -336,7 +353,7 @@ public:
    const int&
    operator () (
       const BlockId::block_t b,
-      const unsigned int i) const
+      const unsigned int i) const noexcept
    {
       TBOX_ASSERT(b < d_num_blocks);
       TBOX_ASSERT(i < d_dim.getValue());
@@ -371,7 +388,7 @@ public:
     */
    IntVector&
    operator += (
-      const IntVector& rhs)
+      const IntVector& rhs) noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       TBOX_ASSERT(d_num_blocks == rhs.d_num_blocks || rhs.d_num_blocks == 1);
@@ -411,7 +428,7 @@ public:
     */
    IntVector&
    operator += (
-      const int rhs)
+      const int rhs) noexcept
    {
       size_t length = d_num_blocks * d_dim.getValue();
       for (unsigned int i = 0; i < length; ++i) {
@@ -441,7 +458,7 @@ public:
     */
    IntVector&
    operator -= (
-      const IntVector& rhs)
+      const IntVector& rhs) noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       TBOX_ASSERT(d_num_blocks == rhs.d_num_blocks || rhs.d_num_blocks == 1);
@@ -481,7 +498,7 @@ public:
     */
    IntVector&
    operator -= (
-      const int rhs)
+      const int rhs) noexcept
    {
       size_t length = d_num_blocks * d_dim.getValue();
       for (unsigned int i = 0; i < length; ++i) {
@@ -511,7 +528,7 @@ public:
     */
    IntVector&
    operator *= (
-      const IntVector& rhs)
+      const IntVector& rhs) noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       TBOX_ASSERT(d_num_blocks == rhs.d_num_blocks || rhs.d_num_blocks == 1);
@@ -551,7 +568,7 @@ public:
     */
    IntVector&
    operator *= (
-      const int rhs)
+      const int rhs) noexcept
    {
       size_t length = d_num_blocks * d_dim.getValue();
       for (unsigned int i = 0; i < length; ++i) {
@@ -580,7 +597,7 @@ public:
     */
    IntVector&
    operator /= (
-      const IntVector& rhs)
+      const IntVector& rhs) noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       TBOX_ASSERT(d_num_blocks == rhs.d_num_blocks || rhs.d_num_blocks == 1);
@@ -620,7 +637,7 @@ public:
     */
    IntVector&
    operator /= (
-      const int rhs)
+      const int rhs) noexcept
    {
       size_t length = d_num_blocks * d_dim.getValue();
       for (unsigned int i = 0; i < length; ++i) {
@@ -651,7 +668,7 @@ public:
     */
    void
    ceilingDivide(
-      const IntVector& denominator)
+      const IntVector& denominator) noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, denominator);
       TBOX_ASSERT(d_num_blocks == denominator.d_num_blocks ||
@@ -723,7 +740,7 @@ public:
     */
    bool
    operator == (
-      int rhs) const
+      int rhs) const noexcept
    {
       bool result = true;
       size_t length = d_num_blocks * d_dim.getValue();
@@ -738,7 +755,7 @@ public:
     */
    bool
    operator != (
-      int rhs) const
+      int rhs) const noexcept
    {
       return !(*this == rhs);
    }
@@ -752,7 +769,7 @@ public:
     */
    bool
    operator == (
-      const IntVector& rhs) const
+      const IntVector& rhs) const noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       TBOX_ASSERT(d_num_blocks == rhs.d_num_blocks || rhs.d_num_blocks == 1);
@@ -781,7 +798,7 @@ public:
     */
    bool
    operator != (
-      const IntVector& rhs) const
+      const IntVector& rhs) const noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       return !(*this == rhs);
@@ -796,7 +813,7 @@ public:
     */
    bool
    operator < (
-      const IntVector& rhs) const
+      const IntVector& rhs) const noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       TBOX_ASSERT(d_num_blocks == rhs.d_num_blocks || rhs.d_num_blocks == 1);
@@ -826,7 +843,7 @@ public:
     */
    bool
    operator <= (
-      const IntVector& rhs) const
+      const IntVector& rhs) const noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       TBOX_ASSERT(d_num_blocks == rhs.d_num_blocks || rhs.d_num_blocks == 1);
@@ -856,7 +873,7 @@ public:
     */
    bool
    operator > (
-      const IntVector& rhs) const
+      const IntVector& rhs) const noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       TBOX_ASSERT(d_num_blocks == rhs.d_num_blocks || rhs.d_num_blocks == 1);
@@ -886,7 +903,7 @@ public:
     */
    bool
    operator >= (
-      const IntVector& rhs) const
+      const IntVector& rhs) const noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       TBOX_ASSERT(d_num_blocks == rhs.d_num_blocks || rhs.d_num_blocks == 1);
@@ -915,7 +932,7 @@ public:
     */
    void
    min(
-      const IntVector& rhs)
+      const IntVector& rhs) noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       TBOX_ASSERT(d_num_blocks == rhs.d_num_blocks || rhs.d_num_blocks == 1);
@@ -942,7 +959,7 @@ public:
     * @brief Return the minimum entry in an integer vector.
     */
    int
-   min() const
+   min() const noexcept
    {
       int min = d_vector[0];
       size_t length = d_num_blocks * d_dim.getValue();
@@ -959,7 +976,7 @@ public:
     */
    void
    max(
-      const IntVector& rhs)
+      const IntVector& rhs) noexcept
    {
       TBOX_ASSERT_OBJDIM_EQUALITY2(*this, rhs);
       TBOX_ASSERT(d_num_blocks == rhs.d_num_blocks || rhs.d_num_blocks == 1);
@@ -986,7 +1003,7 @@ public:
     * @brief Return the maximum entry in an integer vector.
     */
    int
-   max() const
+   max() const noexcept
    {
       int max = d_vector[0];
       size_t length = d_num_blocks * d_dim.getValue();
@@ -1073,7 +1090,7 @@ public:
     * @param block_id  Optional block on which to compute the product.
     */
    long int
-   getProduct(const BlockId& block_id = BlockId::invalidId()) const
+   getProduct(const BlockId& block_id = BlockId::invalidId()) const noexcept
    {
 #ifdef DEBUG_CHECK_ASSERTIONS
       TBOX_ASSERT(block_id == BlockId::invalidId() ||
@@ -1096,7 +1113,7 @@ public:
     *        with the provided name.
     *
     */
-   virtual void
+   void
    putToRestart(
       tbox::Database& restart_db,
       const std::string& name) const;
@@ -1106,7 +1123,7 @@ public:
     *        state from the specified restart database.
     *
     */
-   virtual void
+   void
    getFromRestart(
       tbox::Database& restart_db,
       const std::string& name);
@@ -1115,7 +1132,7 @@ public:
     * @brief Return the dimension of this object.
     */
    const tbox::Dimension&
-   getDim() const
+   getDim() const noexcept
    {
       return d_dim;
    }
@@ -1130,7 +1147,8 @@ public:
    getZero(
       const tbox::Dimension& dim)
    {
-      return *(s_zeros[dim.getValue() - 1]);
+      TBOX_ASSERT(s_zeros[dim.getValue() - 1].has_value());
+      return (s_zeros[dim.getValue() - 1].value());
    }
 
    /*!
@@ -1143,7 +1161,8 @@ public:
    getOne(
       const tbox::Dimension& dim)
    {
-      return *(s_ones[dim.getValue() - 1]);
+      TBOX_ASSERT(s_ones[dim.getValue() - 1].has_value());
+      return (s_ones[dim.getValue() - 1].value());
    }
 
    /*!
@@ -1152,8 +1171,16 @@ public:
     * For an single-block IntVector, set the ith entry of this to the
     * position of the ith smallest value in the argument IntVector.
     *
-    * If the IntVectors are multilbock, each section of the IntVector
+    * If the IntVectors are multiblock, each section of the IntVector
     * associated with a block is sorted independently.
+    *
+    * Any values existing in this IntVector will be overwritten by this
+    * method.  If this IntVector has a different block size than the input
+    * vector, this IntVector will be resized to the input vector's size.
+    *
+    * @pre d_dim == values.getDim()
+    *
+    * @param values input IntVector to be sorted
     */
    void
    sortIntVector(
@@ -1184,7 +1211,7 @@ private:
    /*
     * Unimplemented default constructor
     */
-   IntVector();
+   IntVector() = delete;
 
    /*!
     * @brief Initialize static objects and register shutdown routine.
@@ -1209,8 +1236,8 @@ private:
 
    std::vector<int> d_vector;
 
-   static IntVector* s_zeros[SAMRAI::MAX_DIM_VAL];
-   static IntVector* s_ones[SAMRAI::MAX_DIM_VAL];
+   static std::array<std::optional<IntVector>, SAMRAI::MAX_DIM_VAL> s_zeros;
+   static std::array<std::optional<IntVector>, SAMRAI::MAX_DIM_VAL> s_ones;
 
    static tbox::StartupShutdownManager::Handler
       s_initialize_finalize_handler;

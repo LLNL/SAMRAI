@@ -3,7 +3,7 @@
  * This file is part of the SAMRAI distribution.  For full copyright
  * information, see COPYRIGHT and LICENSE.
  *
- * Copyright:     (c) 1997-2025 Lawrence Livermore National Security, LLC
+ * Copyright:     (c) 1997-2026 Lawrence Livermore National Security, LLC
  * Description:   A container of boxes with basic domain calculus operations
  *
  ************************************************************************/
@@ -128,7 +128,7 @@ BoxContainer::BoxContainer(
 {
    const int n = static_cast<int>(other.size());
    for (int j = 0; j < n; ++j) {
-      pushBack(Box(other[j]));
+      emplaceBack(other[j]);
    }
 }
 
@@ -168,7 +168,7 @@ BoxContainer::operator = (
 
    const int n = static_cast<int>(rhs.size());
    for (int j = 0; j < n; ++j) {
-      pushBack(Box(rhs[j]));
+      emplaceBack(rhs[j]);
    }
    d_ordered = false;
 
@@ -1278,13 +1278,13 @@ BoxContainer::burstBoxes(
       if (bursth(d) > solidh(d)) {
          Index newl = burstl;
          newl(d) = solidh(d) + 1;
-         pushBack(Box(newl, bursth, block_id));
+         emplaceBack(newl, bursth, block_id);
          bursth(d) = solidh(d);
       }
       if (burstl(d) < solidl(d)) {
          Index newh = bursth;
          newh(d) = solidl(d) - 1;
-         pushBack(Box(burstl, newh, block_id));
+         emplaceBack(burstl, newh, block_id);
          burstl(d) = solidl(d);
       }
    }

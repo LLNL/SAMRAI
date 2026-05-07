@@ -3,7 +3,7 @@
  * This file is part of the SAMRAI distribution.  For full copyright
  * information, see COPYRIGHT and LICENSE.
  *
- * Copyright:     (c) 1997-2025 Lawrence Livermore National Security, LLC
+ * Copyright:     (c) 1997-2026 Lawrence Livermore National Security, LLC
  * Description:   Main program to test index data operations
  *
  ************************************************************************/
@@ -539,10 +539,10 @@ getGeometry(
    hier::BoxContainer& fine_domain,
    const tbox::Dimension& dim)
 {
-   double lo[dim.getValue()];
+   std::vector<double> lo(dim.getValue());
    lo[0] = 0.0;
    lo[1] = 0.0;
-   double hi[dim.getValue()];
+   std::vector<double> hi(dim.getValue());
    hi[0] = 1.0;
    hi[1] = 0.5;
 
@@ -560,8 +560,8 @@ getGeometry(
    std::shared_ptr<geom::CartesianGridGeometry> geometry(
       new geom::CartesianGridGeometry(
          "CartesianGeometry",
-         lo,
-         hi,
+         &lo[0],
+         &hi[0],
          coarse_domain));
    return geometry;
 }
