@@ -198,8 +198,6 @@ private:
    PatchDataFactory&
    operator = (
       const PatchDataFactory&) = delete;
-   PatchDataFactory(PatchDataFactory&&) = delete;
-   PatchDataFactory& operator=(PatchDataFactory&&) = delete;
    PatchDataFactory() = delete;  // must specify ghost width
 
 };
