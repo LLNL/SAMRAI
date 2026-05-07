@@ -29,14 +29,13 @@ UncoveredBoxIterator::UncoveredBoxIterator(
    d_finest_level_num = d_hierarchy->getFinestLevelNumber();
    if (begin) {
       d_level_num = -1;
-      d_owned_flattened_hierarchy =
-         std::make_unique<FlattenedHierarchy>(*d_hierarchy, 0, d_finest_level_num);
-      d_flattened_hierarchy = d_owned_flattened_hierarchy.get();
+      d_flattened_hierarchy = new FlattenedHierarchy(*d_hierarchy, 0, d_finest_level_num);
+      d_allocated_flattened_hierarchy = true;
       findFirstUncoveredBox();
    } else {
       d_level_num = d_finest_level_num + 1;
       d_flattened_hierarchy = nullptr;
-      d_owned_flattened_hierarchy.reset();
+      d_allocated_flattened_hierarchy = false;
    }
 }
 
@@ -55,12 +54,12 @@ UncoveredBoxIterator::UncoveredBoxIterator(
    if (begin) {
       d_level_num = -1;
       d_flattened_hierarchy = flattened_hierarchy;
-      d_owned_flattened_hierarchy.reset();
+      d_allocated_flattened_hierarchy = false;
       findFirstUncoveredBox();
    } else {
       d_level_num = d_finest_level_num + 1;
       d_flattened_hierarchy = nullptr;
-      d_owned_flattened_hierarchy.reset();
+      d_allocated_flattened_hierarchy = false;
    }
 }
 
@@ -68,7 +67,7 @@ UncoveredBoxIterator::UncoveredBoxIterator(
    const UncoveredBoxIterator& other):
    d_hierarchy(other.d_hierarchy),
    d_flattened_hierarchy(nullptr),
-   d_owned_flattened_hierarchy(nullptr),
+   d_allocated_flattened_hierarchy(false),
    d_level_num(other.d_level_num),
    d_current_patch_id(other.d_current_patch_id),
    d_uncovered_boxes_itr(other.d_uncovered_boxes_itr),
@@ -77,43 +76,46 @@ UncoveredBoxIterator::UncoveredBoxIterator(
    d_finest_level_num(other.d_finest_level_num)
 {
    if (other.d_item) {
-      d_item = std::make_unique<std::pair<std::shared_ptr<Patch>, Box> >(*other.d_item);
+      d_item = new std::pair<std::shared_ptr<Patch>, Box>(*other.d_item);
    }
+   if (other.d_flattened_hierarchy) {
+      d_flattened_hierarchy =
+         new FlattenedHierarchy(*other.d_flattened_hierarchy);
+      d_allocated_flattened_hierarchy = true;
+      if (d_level_num <= d_finest_level_num) {
+         TBOX_ASSERT(d_item);
+         const Box& patch_box = d_item->first->getBox();
+         const BoxContainer& visible_boxes =
+            d_flattened_hierarchy->getVisibleBoxes(patch_box, d_level_num);
 
-   if (other.d_owned_flattened_hierarchy) {
-      d_owned_flattened_hierarchy =
-         std::make_unique<FlattenedHierarchy>(*other.d_owned_flattened_hierarchy);
-      d_flattened_hierarchy = d_owned_flattened_hierarchy.get();
-   } else {
-      d_flattened_hierarchy = other.d_flattened_hierarchy;
-   }
+         BoxContainer::const_iterator itr = visible_boxes.begin(); 
+            for( ; itr != visible_boxes.end(); ++itr) {
 
-   if (d_flattened_hierarchy && d_level_num <= d_finest_level_num) {
-      TBOX_ASSERT(d_item);
-      const Box& patch_box = d_item->first->getBox();
-      const BoxContainer& visible_boxes =
-         d_flattened_hierarchy->getVisibleBoxes(patch_box, d_level_num);
+            if (itr->getBoxId() == d_item->second.getBoxId() &&
+                itr->isSpatiallyEqual(d_item->second)) {
 
-      BoxContainer::const_iterator itr = visible_boxes.begin();
-      for (; itr != visible_boxes.end(); ++itr) {
-         if (itr->getBoxId() == d_item->second.getBoxId() &&
-             itr->isSpatiallyEqual(d_item->second)) {
-            d_uncovered_boxes_itr = itr;
-            d_uncovered_boxes_itr_end = visible_boxes.end();
-            break;
+               d_uncovered_boxes_itr = itr;
+               d_uncovered_boxes_itr_end = visible_boxes.end();
+               break;
+            }
          }
-      }
 
-      if (itr == visible_boxes.end()) {
-         d_uncovered_boxes_itr = itr;
-         d_uncovered_boxes_itr_end = itr;
+         if (itr == visible_boxes.end()) {
+            d_uncovered_boxes_itr = itr;
+            d_uncovered_boxes_itr_end = itr;
+         }
       }
    }
 }
 
 UncoveredBoxIterator::~UncoveredBoxIterator()
 {
-   // All owned state is managed by std::unique_ptr members.
+   if (d_item) {
+      delete d_item;
+   }
+   if (d_flattened_hierarchy && d_allocated_flattened_hierarchy) {
+      delete d_flattened_hierarchy;
+   } 
 }
 
 UncoveredBoxIterator&
@@ -126,41 +128,48 @@ UncoveredBoxIterator::operator = (
       d_uncovered_boxes_itr = rhs.d_uncovered_boxes_itr;
       d_uncovered_boxes_itr_end = rhs.d_uncovered_boxes_itr_end;
       d_current_patch_id = rhs.d_current_patch_id; 
+      if (d_item) {
+         delete d_item;
+      }
       if (rhs.d_item) {
-         d_item = std::make_unique<std::pair<std::shared_ptr<Patch>, Box> >(*rhs.d_item);
+         d_item = new std::pair<std::shared_ptr<Patch>, Box>(*rhs.d_item);
+         d_item->first = rhs.d_item->first;
+         d_item->second = rhs.d_item->second;
       } else {
-         d_item.reset();
-      }
+         d_item = nullptr;
+      } 
       d_finest_level_num = rhs.d_finest_level_num;
-
-      if (rhs.d_owned_flattened_hierarchy) {
-         d_owned_flattened_hierarchy =
-            std::make_unique<FlattenedHierarchy>(*rhs.d_owned_flattened_hierarchy);
-         d_flattened_hierarchy = d_owned_flattened_hierarchy.get();
-      } else {
-         d_owned_flattened_hierarchy.reset();
-         d_flattened_hierarchy = rhs.d_flattened_hierarchy;
+      if (d_flattened_hierarchy && d_allocated_flattened_hierarchy) {
+         delete d_flattened_hierarchy;
       }
-
-      if (d_flattened_hierarchy && d_level_num <= d_finest_level_num) {
-         TBOX_ASSERT(d_item);
-         const Box& patch_box = d_item->first->getBox();
-         const BoxContainer& visible_boxes =
+      d_flattened_hierarchy = nullptr;
+      d_allocated_flattened_hierarchy = false;
+      if (rhs.d_flattened_hierarchy) {
+         d_flattened_hierarchy =
+            new FlattenedHierarchy(*rhs.d_flattened_hierarchy);
+         d_allocated_flattened_hierarchy = true;
+         if (d_level_num <= d_finest_level_num) {
+            TBOX_ASSERT(d_item);
+            const Box& patch_box = d_item->first->getBox();
+            const BoxContainer& visible_boxes =
             d_flattened_hierarchy->getVisibleBoxes(patch_box, d_level_num);
 
-         BoxContainer::const_iterator itr = visible_boxes.begin();
-         for (; itr != visible_boxes.end(); ++itr) {
-            if (itr->getBoxId() == d_item->second.getBoxId() &&
-                itr->isSpatiallyEqual(d_item->second)) {
-               d_uncovered_boxes_itr = itr;
-               d_uncovered_boxes_itr_end = visible_boxes.end();
-               break;
-            }
-         }
+            BoxContainer::const_iterator itr = visible_boxes.begin();
+               for( ; itr != visible_boxes.end(); ++itr) {
 
-         if (itr == visible_boxes.end()) {
-            d_uncovered_boxes_itr = itr;
-            d_uncovered_boxes_itr_end = itr;
+               if (itr->getBoxId() == d_item->second.getBoxId() &&
+                   itr->isSpatiallyEqual(d_item->second)) {
+
+                  d_uncovered_boxes_itr = itr;
+                  d_uncovered_boxes_itr_end = visible_boxes.end();
+                  break;
+               }
+            }
+
+            if (itr == visible_boxes.end()) {
+               d_uncovered_boxes_itr = itr;
+               d_uncovered_boxes_itr_end = itr;
+            }
          }
       }
    }
@@ -177,7 +186,7 @@ UncoveredBoxIterator::operator * () const
 const std::pair<std::shared_ptr<Patch>, Box> *
 UncoveredBoxIterator::operator -> () const
 {
-   return d_item.get();
+   return d_item;
 }
 
 bool
@@ -302,9 +311,14 @@ UncoveredBoxIterator::incrementIterator()
       if (id_found) {
          setIteratorItem();
       } else {
-         d_owned_flattened_hierarchy.reset();
+         if (d_flattened_hierarchy && d_allocated_flattened_hierarchy) {
+            delete d_flattened_hierarchy;
+         }
          d_flattened_hierarchy = nullptr;
-         d_item.reset();
+         if (d_item) {
+            delete d_item;
+            d_item = nullptr; 
+         }
       }
    }
 }
@@ -349,9 +363,18 @@ UncoveredBoxIterator::findFirstUncoveredBox()
    if (id_found) {
       setIteratorItem();
    } else {
-      d_item.reset();
-      d_owned_flattened_hierarchy.reset();
+      if (d_item) {
+         delete d_item;
+         d_item = nullptr;
+      }
+      if (d_flattened_hierarchy && d_allocated_flattened_hierarchy) {
+         delete d_flattened_hierarchy;
+      }
       d_flattened_hierarchy = nullptr;
+      if (d_item) {
+         delete d_item;
+         d_item = nullptr;
+      }
    }
 }
 
@@ -369,9 +392,10 @@ UncoveredBoxIterator::setIteratorItem()
          this_level->getPatch(d_current_patch_id);
       d_item->second = cur_box;
    } else {
-      d_item = std::make_unique<std::pair<std::shared_ptr<Patch>, Box> >(
-         this_level->getPatch(d_current_patch_id),
-         cur_box);
+      d_item =
+         new std::pair<std::shared_ptr<Patch>, Box>(
+            this_level->getPatch(d_current_patch_id),
+            cur_box);
    }
 }
 
