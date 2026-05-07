@@ -5,7 +5,6 @@ set (hier_headers
   BaseGridGeometry.h
   BlockId.h
   BlueprintUtils.h
-  BlueprintUtilsStrategy.h
   BoundaryBox.h
   BoundaryBoxUtils.h
   BoundaryLookupTable.h
