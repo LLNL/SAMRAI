@@ -732,7 +732,7 @@ public:
        *
        * @param other
        */
-      NeighborIterator(NeighborIterator& other) = default;
+      NeighborIterator(const NeighborIterator& other) = default;
 
       /*!
        * @brief Assignment operator.
