@@ -17,6 +17,15 @@
 #include "SAMRAI/tbox/RestartManager.h"
 #include "SAMRAI/tbox/MathUtilities.h"
 
+namespace {
+inline int positiveModulo(int a, int m)
+{
+   int r = a % m;
+   return (r < 0) ? (r + m) : r;
+}
+
+} // anonymous namespace
+
 
 namespace SAMRAI {
 namespace hier {
@@ -2031,36 +2040,37 @@ PatchHierarchy::makeAdjacencySets(
                      IntVector a_ratio(ratio.getBlockVector(domain_box.getBlockId()));
                      IntVector b_ratio(ratio.getBlockVector(nbr_box.getBlockId()));
 
-                     // positive modulo to handle negative numerators correctly
-                     auto pos_mod = [](int a, int m) -> int {
-                        int r = a % m;
-                        return (r < 0) ? (r + m) : r;
-                     };
-
-                     int partial_lo = 0;
-                     int partial_hi = 0;
+                     IntVector partial_lo(d_dim, 0);
+                     IntVector partial_hi(d_dim, 0);
                      for (int d = 0; d < d_dim.getValue(); ++d) {
                         if (b_width[d] > 1) {
                            const int& ovlp_lo = tnode_ovlp.lower(d);
-                           partial_lo = pos_mod(ovlp_lo, b_ratio[d]);
-                           if (partial_lo) {
-                              tnode_ovlp.setLower(d, ovlp_lo - partial_lo);
-                              b_width[d] += partial_lo;
+                           partial_lo[d] = positiveModulo(ovlp_lo, b_ratio[d]);
+                           if (partial_lo[d]) {
+                              tnode_ovlp.setLower(d, ovlp_lo - partial_lo[d]);
+                              b_width[d] += partial_lo[d];
                            }
                            const int& ovlp_hi = tnode_ovlp.upper(d);
-                           partial_hi = pos_mod(ovlp_hi, b_ratio[d]);
-                           if (partial_hi) {
-                              partial_hi = b_ratio[d] - partial_hi;
-                              tnode_ovlp.setUpper(d, ovlp_hi + partial_hi);
-                              b_width[d] += partial_hi;
+                           partial_hi[d] = positiveModulo(ovlp_hi, b_ratio[d]);
+                           if (partial_hi[d]) {
+                              partial_hi[d] = b_ratio[d] - partial_hi[d];
+                              tnode_ovlp.setUpper(d, ovlp_hi + partial_hi[d]);
+                              b_width[d] += partial_hi[d];
                            }
-                           break;
                         }
                      }
-                     window_a_db->putInteger("partial_lo", partial_lo);
-                     window_a_db->putInteger("partial_hi", partial_hi);
-                     window_b_db->putInteger("partial_lo", partial_lo);
-                     window_b_db->putInteger("partial_hi", partial_hi);
+                     std::shared_ptr<tbox::Database> partial_lo_a_db(
+                        window_a_db->putDatabase("partial_lo"));
+                     std::shared_ptr<tbox::Database> partial_hi_a_db(
+                        window_a_db->putDatabase("partial_hi"));
+                     std::shared_ptr<tbox::Database> partial_lo_b_db(
+                        window_b_db->putDatabase("partial_lo"));
+                     std::shared_ptr<tbox::Database> partial_hi_b_db(
+                        window_b_db->putDatabase("partial_hi"));
+                     partial_lo_a_db->putInteger("i", partial_lo[0]);
+                     partial_hi_a_db->putInteger("i", partial_hi[0]);
+                     partial_lo_b_db->putInteger("i", partial_lo[0]);
+                     partial_hi_b_db->putInteger("i", partial_hi[0]);
                      origin_a_db->putInteger("i", node_ovlp.lower(0));
                      width_a_db->putInteger("i", a_width[0]);
                      ratio_a_db->putInteger("i", a_ratio[0]);
@@ -2074,6 +2084,10 @@ PatchHierarchy::makeAdjacencySets(
                         origin_b_db->putInteger("j", tnode_ovlp.lower(1));
                         width_b_db->putInteger("j", b_width[1]);
                         ratio_b_db->putInteger("j", b_ratio[1]);
+                        partial_lo_a_db->putInteger("j", partial_lo[1]);
+                        partial_hi_a_db->putInteger("j", partial_hi[1]);
+                        partial_lo_b_db->putInteger("j", partial_lo[1]);
+                        partial_hi_b_db->putInteger("j", partial_hi[1]);
                      }
                      if (d_dim.getValue() > 2) {
                         origin_a_db->putInteger("k", node_ovlp.lower(2));
@@ -2082,6 +2096,10 @@ PatchHierarchy::makeAdjacencySets(
                         origin_b_db->putInteger("k", tnode_ovlp.lower(2));
                         width_b_db->putInteger("k", b_width[2]);
                         ratio_b_db->putInteger("k", b_ratio[2]);
+                        partial_lo_a_db->putInteger("k", partial_lo[2]);
+                        partial_hi_a_db->putInteger("k", partial_hi[2]);
+                        partial_lo_b_db->putInteger("k", partial_lo[2]);
+                        partial_hi_b_db->putInteger("k", partial_hi[2]);
                      }
 
                      if (pbox.getBlockId() != nbr_box.getBlockId()) {
@@ -2288,36 +2306,38 @@ PatchHierarchy::makeAdjacencySets(
                      IntVector a_ratio(ratio.getBlockVector(domain_box.getBlockId()));
                      IntVector b_ratio(ratio.getBlockVector(nbr_box.getBlockId()));
 
-                     // positive modulo to handle negative numerators correctly
-                     auto pos_mod = [](int a, int m) -> int {
-                        int r = a % m;
-                        return (r < 0) ? (r + m) : r;
-                     };
 
-                     int partial_lo = 0;
-                     int partial_hi = 0;
+                     IntVector partial_lo(d_dim, 0);
+                     IntVector partial_hi(d_dim, 0);
                      for (int d = 0; d < d_dim.getValue(); ++d) {
                         if (a_width[d] > 1) {
                            const int& ovlp_lo = node_ovlp.lower(d);
-                           partial_lo = pos_mod(ovlp_lo, a_ratio[d]);
-                           if (partial_lo) {
-                              node_ovlp.setLower(d, ovlp_lo - partial_lo);
-                              a_width[d] += partial_lo;
+                           partial_lo[d] = positiveModulo(ovlp_lo, a_ratio[d]);
+                           if (partial_lo[d]) {
+                              node_ovlp.setLower(d, ovlp_lo - partial_lo[d]);
+                              a_width[d] += partial_lo[d];
                            }
                            const int& ovlp_hi = node_ovlp.upper(d);
-                           partial_hi = pos_mod(ovlp_hi, a_ratio[d]);
-                           if (partial_hi) {
-                              partial_hi = a_ratio[d] - partial_hi;
-                              node_ovlp.setUpper(d, ovlp_hi + partial_hi);
-                              a_width[d] += partial_hi;
+                           partial_hi[d] = positiveModulo(ovlp_hi, a_ratio[d]);
+                           if (partial_hi[d]) {
+                              partial_hi[d] = a_ratio[d] - partial_hi[d];
+                              node_ovlp.setUpper(d, ovlp_hi + partial_hi[d]);
+                              a_width[d] += partial_hi[d];
                            }
-                           break;
                         }
                      }
-                     window_a_db->putInteger("partial_lo", partial_lo);
-                     window_a_db->putInteger("partial_hi", partial_hi);
-                     window_b_db->putInteger("partial_lo", partial_lo);
-                     window_b_db->putInteger("partial_hi", partial_hi);
+                     std::shared_ptr<tbox::Database> partial_lo_a_db(
+                        window_a_db->putDatabase("partial_lo"));
+                     std::shared_ptr<tbox::Database> partial_hi_a_db(
+                        window_a_db->putDatabase("partial_hi"));
+                     std::shared_ptr<tbox::Database> partial_lo_b_db(
+                        window_b_db->putDatabase("partial_lo"));
+                     std::shared_ptr<tbox::Database> partial_hi_b_db(
+                        window_b_db->putDatabase("partial_hi"));
+                     partial_lo_a_db->putInteger("i", partial_lo[0]);
+                     partial_hi_a_db->putInteger("i", partial_hi[0]);
+                     partial_lo_b_db->putInteger("i", partial_lo[0]);
+                     partial_hi_b_db->putInteger("i", partial_hi[0]);
 
                      origin_a_db->putInteger("i", node_ovlp.lower(0));
                      width_a_db->putInteger("i", a_width[0]);
@@ -2332,6 +2352,10 @@ PatchHierarchy::makeAdjacencySets(
                         origin_b_db->putInteger("j", tnode_ovlp.lower(1));
                         width_b_db->putInteger("j", b_width[1]);
                         ratio_b_db->putInteger("j", b_ratio[1]);
+                        partial_lo_a_db->putInteger("j", partial_lo[1]);
+                        partial_hi_a_db->putInteger("j", partial_hi[1]);
+                        partial_lo_b_db->putInteger("j", partial_lo[1]);
+                        partial_hi_b_db->putInteger("j", partial_hi[1]);
                      }
                      if (d_dim.getValue() > 2) {
                         origin_a_db->putInteger("k", node_ovlp.lower(2));
@@ -2340,6 +2364,10 @@ PatchHierarchy::makeAdjacencySets(
                         origin_b_db->putInteger("k", tnode_ovlp.lower(2));
                         width_b_db->putInteger("k", b_width[2]);
                         ratio_b_db->putInteger("k", b_ratio[2]);
+                        partial_lo_a_db->putInteger("k", partial_lo[2]);
+                        partial_hi_a_db->putInteger("k", partial_hi[2]);
+                        partial_lo_b_db->putInteger("k", partial_lo[2]);
+                        partial_hi_b_db->putInteger("k", partial_hi[2]);
                      }
 
                      if (pbox.getBlockId() != nbr_box.getBlockId()) {

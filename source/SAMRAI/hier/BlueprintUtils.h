@@ -86,14 +86,14 @@ public:
     *
     * This overloaded version of the method includes a FlattenedHierarchy
     * argument to restrict the filling of coordinates to the finest available
-    * level of resulation as represented by the flattened version of the
+    * level of resolution as represented by the flattened version of the
     * hierarchy.
     *
     * @param blueprint_db    Top-level blueprint database holding all local
     *                        domain information
     * @param hierarchy       The full AMR hierarchy being described
     * @param flat_hierarchy  The flattened version of the AMR hierarchy.  
-    * @param topology_name Name of the topology
+    * @param topology_name   Name of the topology
     */
    void putTopologyAndCoordinatesToDatabase(
       const std::shared_ptr<tbox::Database>& blueprint_db,
@@ -101,6 +101,27 @@ public:
       const FlattenedHierarchy& flat_hierarchy,
       const std::string& topology_name) const;
 
+   /*!
+    * @brief Put topology and coordinates to the database
+    *
+    * Using the BlueprintUtilsStrategy given to the constructor of this
+    * object, this loops over a hierarchy and calls back to user code to
+    * add fields data to the mesh in the blueprint_db, according to
+    * Blueprint schema defined by conduit.
+    *
+    * The fields will be associated with the topology identified by the
+    * topology_name string.
+    *
+    * The FlattenedHierarchy argument restricts the filling of field data
+    * to the finest level of resolution as represented by the flattened
+    * version of the hierarchy.
+    *
+    * @param blueprint_db    Top-level blueprint database holding all local
+    *                        domain information
+    * @param hierarchy       The full AMR hierarchy being described
+    * @param flat_hierarchy  The flattened version of the AMR hierarchy.  
+    * @param topology_name   Name of the topology
+    */
    void putFieldsToDatabase(
       const std::shared_ptr<tbox::Database>& blueprint_db,
       const PatchHierarchy& hierarchy,
