@@ -20,6 +20,7 @@
 namespace {
 inline int positiveModulo(int a, int m)
 {
+   TBOX_ASSERT(m > 0);
    int r = a % m;
    return (r < 0) ? (r + m) : r;
 }

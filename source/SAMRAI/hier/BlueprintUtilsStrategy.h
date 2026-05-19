@@ -70,6 +70,9 @@ public:
     * code to add field data to a domain that is part of a blueprint
     * mesh, according to the blueprints format for fields.
     *
+    * The default no-op implementation allows for meshes to be created with
+    * no fields.
+    *
     * @param domain_db   Database for the blueprint mesh domain.  The domain
     *                    should represent the spatial intersection of the
     *                    patch and box arguments

@@ -102,7 +102,7 @@ public:
       const std::string& topology_name) const;
 
    /*!
-    * @brief Put topology and coordinates to the database
+    * @brief Put fields to the database
     *
     * Using the BlueprintUtilsStrategy given to the constructor of this
     * object, this loops over a hierarchy and calls back to user code to
