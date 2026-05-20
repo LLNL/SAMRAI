@@ -2060,16 +2060,10 @@ PatchHierarchy::makeAdjacencySets(
                            }
                         }
                      }
-                     std::shared_ptr<tbox::Database> partial_lo_a_db(
-                        window_a_db->putDatabase("partial_lo"));
-                     std::shared_ptr<tbox::Database> partial_hi_a_db(
-                        window_a_db->putDatabase("partial_hi"));
                      std::shared_ptr<tbox::Database> partial_lo_b_db(
                         window_b_db->putDatabase("partial_lo"));
                      std::shared_ptr<tbox::Database> partial_hi_b_db(
                         window_b_db->putDatabase("partial_hi"));
-                     partial_lo_a_db->putInteger("i", partial_lo[0]);
-                     partial_hi_a_db->putInteger("i", partial_hi[0]);
                      partial_lo_b_db->putInteger("i", partial_lo[0]);
                      partial_hi_b_db->putInteger("i", partial_hi[0]);
                      origin_a_db->putInteger("i", node_ovlp.lower(0));
@@ -2085,8 +2079,6 @@ PatchHierarchy::makeAdjacencySets(
                         origin_b_db->putInteger("j", tnode_ovlp.lower(1));
                         width_b_db->putInteger("j", b_width[1]);
                         ratio_b_db->putInteger("j", b_ratio[1]);
-                        partial_lo_a_db->putInteger("j", partial_lo[1]);
-                        partial_hi_a_db->putInteger("j", partial_hi[1]);
                         partial_lo_b_db->putInteger("j", partial_lo[1]);
                         partial_hi_b_db->putInteger("j", partial_hi[1]);
                      }
@@ -2097,8 +2089,6 @@ PatchHierarchy::makeAdjacencySets(
                         origin_b_db->putInteger("k", tnode_ovlp.lower(2));
                         width_b_db->putInteger("k", b_width[2]);
                         ratio_b_db->putInteger("k", b_ratio[2]);
-                        partial_lo_a_db->putInteger("k", partial_lo[2]);
-                        partial_hi_a_db->putInteger("k", partial_hi[2]);
                         partial_lo_b_db->putInteger("k", partial_lo[2]);
                         partial_hi_b_db->putInteger("k", partial_hi[2]);
                      }
@@ -2331,14 +2321,8 @@ PatchHierarchy::makeAdjacencySets(
                         window_a_db->putDatabase("partial_lo"));
                      std::shared_ptr<tbox::Database> partial_hi_a_db(
                         window_a_db->putDatabase("partial_hi"));
-                     std::shared_ptr<tbox::Database> partial_lo_b_db(
-                        window_b_db->putDatabase("partial_lo"));
-                     std::shared_ptr<tbox::Database> partial_hi_b_db(
-                        window_b_db->putDatabase("partial_hi"));
                      partial_lo_a_db->putInteger("i", partial_lo[0]);
                      partial_hi_a_db->putInteger("i", partial_hi[0]);
-                     partial_lo_b_db->putInteger("i", partial_lo[0]);
-                     partial_hi_b_db->putInteger("i", partial_hi[0]);
 
                      origin_a_db->putInteger("i", node_ovlp.lower(0));
                      width_a_db->putInteger("i", a_width[0]);
@@ -2355,8 +2339,6 @@ PatchHierarchy::makeAdjacencySets(
                         ratio_b_db->putInteger("j", b_ratio[1]);
                         partial_lo_a_db->putInteger("j", partial_lo[1]);
                         partial_hi_a_db->putInteger("j", partial_hi[1]);
-                        partial_lo_b_db->putInteger("j", partial_lo[1]);
-                        partial_hi_b_db->putInteger("j", partial_hi[1]);
                      }
                      if (d_dim.getValue() > 2) {
                         origin_a_db->putInteger("k", node_ovlp.lower(2));
@@ -2367,8 +2349,6 @@ PatchHierarchy::makeAdjacencySets(
                         ratio_b_db->putInteger("k", b_ratio[2]);
                         partial_lo_a_db->putInteger("k", partial_lo[2]);
                         partial_hi_a_db->putInteger("k", partial_hi[2]);
-                        partial_lo_b_db->putInteger("k", partial_lo[2]);
-                        partial_hi_b_db->putInteger("k", partial_hi[2]);
                      }
 
                      if (pbox.getBlockId() != nbr_box.getBlockId()) {
