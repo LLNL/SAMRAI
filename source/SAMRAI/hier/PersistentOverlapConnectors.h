@@ -32,7 +32,6 @@ enum ConnectorNotFoundAction {
 
 class Connector;
 class BoxLevel;
-struct PersistentOverlapConnectorsDeleter;
 
 /*!
  * @brief A managager of overlap Connectors incident from a
@@ -107,11 +106,12 @@ public:
    setCreateEmptyNeighborContainers(
       bool create_empty_neighbor_containers);
 
-private:
    /*!
     * @brief Deletes all Connectors to and from this object
     */
    ~PersistentOverlapConnectors();
+
+private:
 
    /*!
     * @brief Create an overlap Connector, computing relationships by
@@ -351,7 +351,6 @@ private:
     * PersistentOverlapConnectors.
     */
    friend class BoxLevel;
-   friend struct PersistentOverlapConnectorsDeleter;
    //@}
 
    typedef std::vector<std::shared_ptr<Connector> > ConVect;

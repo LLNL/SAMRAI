@@ -28,14 +28,6 @@
 namespace SAMRAI {
 namespace hier {
 
-struct PersistentOverlapConnectorsDeleter
-{
-   void operator()(PersistentOverlapConnectors* ptr) const noexcept
-   {
-      delete ptr;
-   }
-};
-
 /*
  *****************************************************************************
  * IMPORTANT
@@ -2039,8 +2031,7 @@ private:
     * by always allocating the PersistentOverlapConnectors in the
     * constructor, but most BoxLevel won't need it at all.
     */
-   mutable std::unique_ptr<PersistentOverlapConnectors, PersistentOverlapConnectorsDeleter>
-      d_persistent_overlap_connectors;
+   mutable std::unique_ptr<PersistentOverlapConnectors> d_persistent_overlap_connectors;
 
    /*!
     * @brief A Handle for Connectors to reference this
