@@ -29,7 +29,7 @@ namespace hier {
  * what other Patches in the hierarchy are its neighbors--meaning
  * those Patches on the same or an adjacent level that either overlap the
  * first Patch in space or touch it along a Patch boundary.  This class
- * provides a basic interface for identifying the neightbors of a given
+ * provides a basic interface for identifying the neighbors of a given
  * local Patch.
  *
  * @see Connector
