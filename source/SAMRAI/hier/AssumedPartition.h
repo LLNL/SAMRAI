@@ -60,11 +60,6 @@ public:
     */
    AssumedPartition();
 
-   AssumedPartition(const AssumedPartition&) = default;
-   AssumedPartition& operator=(const AssumedPartition&) = default;
-   AssumedPartition(AssumedPartition&&) = default;
-   AssumedPartition& operator=(AssumedPartition&&) = default;
-
    /*!
     * @brief Destructor.
     */

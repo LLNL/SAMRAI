@@ -55,15 +55,10 @@ public:
       bool interleave = false);
 
    /*!
-    * @brief Nearly default constructor.
+    * @brief Constructor.
     */
    AssumedPartitionBox(
       const tbox::Dimension& dim);
-
-   AssumedPartitionBox(const AssumedPartitionBox&) = default;
-   AssumedPartitionBox& operator=(const AssumedPartitionBox&) = default;
-   AssumedPartitionBox(AssumedPartitionBox&&) = default;
-   AssumedPartitionBox& operator=(AssumedPartitionBox&&) = default;
 
    /*!
     * @brief Partition the given box, discarding the current state.

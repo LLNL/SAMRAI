@@ -52,11 +52,6 @@ public:
       d_increment(increment) {
    }
 
-   SequentialLocalIdGenerator(const SequentialLocalIdGenerator&) = default;
-   SequentialLocalIdGenerator& operator=(const SequentialLocalIdGenerator&) = default;
-   SequentialLocalIdGenerator(SequentialLocalIdGenerator&&) = default;
-   SequentialLocalIdGenerator& operator=(SequentialLocalIdGenerator&&) = default;
-
    /*!
     * @brief Destructor.
     */
