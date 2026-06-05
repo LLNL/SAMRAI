@@ -55,7 +55,7 @@ public:
       bool interleave = false);
 
    /*!
-    * @brief Nearly default constructor.
+    * @brief Constructor.
     */
    AssumedPartitionBox(
       const tbox::Dimension& dim);
@@ -91,8 +91,7 @@ public:
    /*!
     * @brief Destructor.
     */
-   ~AssumedPartitionBox() {
-   }
+   ~AssumedPartitionBox() = default;
 
    //! @brief Return the original unpartitioned box.
    const Box& getUnpartitionedBox() const {

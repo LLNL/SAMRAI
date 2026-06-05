@@ -121,7 +121,7 @@ private:
    /**
     * The virtual destructor for the patch geometry base class.
     */
-   virtual ~PatchGeometry();
+   virtual ~PatchGeometry() = default;
 
    /**
     * Return const reference to patch boundary information.

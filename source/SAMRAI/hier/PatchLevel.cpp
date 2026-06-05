@@ -361,10 +361,6 @@ PatchLevel::PatchLevel(
    t_level_constructor->stop();
 }
 
-PatchLevel::~PatchLevel()
-{
-}
-
 /*
  * ************************************************************************
  *

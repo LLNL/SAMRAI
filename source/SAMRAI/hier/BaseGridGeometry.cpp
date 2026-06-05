@@ -2500,7 +2500,7 @@ void BaseGridGeometry::findSingularities(
    }
 
    if (!face_neighbors.empty()) {
-      if (d_singularity_finder.get() == 0) {
+      if (d_singularity_finder.get() == nullptr) {
          d_singularity_finder.reset(new SingularityFinder(d_dim));
       }
       d_singularity_finder->findSingularities(singularity_blocks,
@@ -3463,10 +3463,6 @@ BaseGridGeometry::NeighborIterator::NeighborIterator(
  *************************************************************************
  */
 
-BaseGridGeometry::NeighborIterator::~NeighborIterator()
-{
-}
-
 /*
  *************************************************************************
  *************************************************************************
@@ -3538,10 +3534,6 @@ BaseGridGeometry::ConstNeighborIterator::ConstNeighborIterator(
  *************************************************************************
  *************************************************************************
  */
-
-BaseGridGeometry::ConstNeighborIterator::~ConstNeighborIterator()
-{
-}
 
 }
 }

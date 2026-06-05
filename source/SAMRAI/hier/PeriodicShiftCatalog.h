@@ -53,7 +53,7 @@ public:
    explicit PeriodicShiftCatalog(
       const tbox::Dimension& dim);
 
-   ~PeriodicShiftCatalog();
+   ~PeriodicShiftCatalog() = default;
 
    /*!
     * @brief Return the shift distance corresponding to the given

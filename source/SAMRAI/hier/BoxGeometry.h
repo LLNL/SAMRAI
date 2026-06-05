@@ -73,12 +73,12 @@ public:
    /**
     * The default constructor for BoxGeometry does nothing interesting.
     */
-   BoxGeometry();
+   BoxGeometry() = default;
 
    /**
     * The virtual destructor does nothing interesting.
     */
-   virtual ~BoxGeometry();
+   virtual ~BoxGeometry() = default;
 
    /**
     * Calculate the overlap between two box geometry objects given the
@@ -161,10 +161,10 @@ public:
 
 private:
    BoxGeometry(
-      const BoxGeometry&);              // not implemented
+      const BoxGeometry&) = delete;
    BoxGeometry&
    operator = (
-      const BoxGeometry&);              // not implemented
+      const BoxGeometry&) = delete;
 
 };
 

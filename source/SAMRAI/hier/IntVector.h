@@ -1206,8 +1206,6 @@ public:
 
 private:
 
-   typedef struct MaxIntArray { int d_array[3]; } MaxIntArray;
-
    /*
     * Unimplemented default constructor
     */

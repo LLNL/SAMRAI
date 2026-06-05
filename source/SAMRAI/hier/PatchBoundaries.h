@@ -54,7 +54,10 @@ public:
     * @param[in] r  Patchboundaries object to be copied in constructor.
     */
    PatchBoundaries(
-      const PatchBoundaries& r);
+      const PatchBoundaries& r) = default;
+
+   PatchBoundaries(
+      PatchBoundaries&& r) = default;
 
    /*!
     * @brief Assignment operator.
@@ -133,7 +136,7 @@ private:
    /*
     * Unimplemented default constructor.
     */
-   PatchBoundaries();
+   PatchBoundaries() = delete;
 
    /*!
     * @brief Dimension of the object.

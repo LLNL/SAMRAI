@@ -50,29 +50,5 @@ PatchDataRestartManager::shutdownCallback()
    }
 }
 
-/*
- *************************************************************************
- *
- * The constructor and destructor are protected and call only be called
- * by the singleton class or its subclasses.
- *
- *************************************************************************
- */
-
-PatchDataRestartManager::PatchDataRestartManager()
-{
-}
-
-/*
- *************************************************************************
- *
- * Destructor
- *
- *************************************************************************
- */
-PatchDataRestartManager::~PatchDataRestartManager()
-{
-}
-
 }
 }

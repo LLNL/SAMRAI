@@ -141,10 +141,10 @@ public:
 
 private:
    CoarsenOperator(
-      const CoarsenOperator&);                  // not implemented
+      const CoarsenOperator&) = delete;
    CoarsenOperator&
    operator = (
-      const CoarsenOperator&);                  // not implemented
+      const CoarsenOperator&) = delete;
 
    /*
     * TODO SGS Rich has better way of doing this.

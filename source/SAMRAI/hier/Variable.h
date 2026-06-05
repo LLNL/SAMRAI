@@ -92,7 +92,7 @@ public:
    /**
     * Virtual destructor for variable objects.
     */
-   virtual ~Variable();
+   virtual ~Variable() = default;
 
    /**
     * Return the instance identifier for this particular variable object.
@@ -166,10 +166,10 @@ public:
 
 private:
    Variable(
-      const Variable&);         // not implemented
+      const Variable&) = delete;
    Variable&
    operator = (
-      const Variable&);                 // not implemented
+      const Variable&) = delete;
 
    const tbox::Dimension d_dim;
 

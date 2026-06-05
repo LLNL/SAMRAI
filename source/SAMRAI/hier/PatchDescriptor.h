@@ -242,10 +242,10 @@ private:
    static const int INDEX_UNDEFINED;
 
    PatchDescriptor(
-      const PatchDescriptor&);                  // not implemented
+      const PatchDescriptor&) = delete;
    PatchDescriptor&
    operator = (
-      const PatchDescriptor&);                  // not implemented
+      const PatchDescriptor&) = delete;
 
    int d_max_number_registered_components;
    std::vector<std::string> d_names;

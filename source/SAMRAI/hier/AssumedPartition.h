@@ -63,8 +63,7 @@ public:
    /*!
     * @brief Destructor.
     */
-   ~AssumedPartition() {
-   }
+   ~AssumedPartition() = default;
 
    /*!
     * @brief Partition a set of boxes, discarding the current state.

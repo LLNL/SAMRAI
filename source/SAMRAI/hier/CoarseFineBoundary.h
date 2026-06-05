@@ -120,7 +120,7 @@ public:
    /*!
     * @brief Destructor.
     */
-   ~CoarseFineBoundary();
+   ~CoarseFineBoundary() = default;
 
    /*!
     * @brief Clear all boundary data.

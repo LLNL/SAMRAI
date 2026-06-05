@@ -24,16 +24,6 @@ BoundaryBox::BoundaryBox(
 }
 
 BoundaryBox::BoundaryBox(
-   const BoundaryBox& boundary_box):
-   d_dim(boundary_box.getDim()),
-   d_box(boundary_box.d_box),
-   d_bdry_type(boundary_box.d_bdry_type),
-   d_location_index(boundary_box.d_location_index),
-   d_is_mblk_singularity(boundary_box.d_is_mblk_singularity)
-{
-}
-
-BoundaryBox::BoundaryBox(
    const Box& box,
    const int bdry_type,
    const int location_index):
@@ -54,10 +44,6 @@ BoundaryBox::BoundaryBox(
    d_location_index = location_index;
 
    d_is_mblk_singularity = false;
-}
-
-BoundaryBox::~BoundaryBox()
-{
 }
 
 BoundaryBox::BoundaryOrientation

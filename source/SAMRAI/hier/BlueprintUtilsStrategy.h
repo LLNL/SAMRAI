@@ -37,12 +37,12 @@ public:
    /*!
     * @brief Constructor
     */
-   BlueprintUtilsStrategy();
+   BlueprintUtilsStrategy() = default;
 
    /*!
     * @brief Destructor
     */
-   virtual ~BlueprintUtilsStrategy();
+   virtual ~BlueprintUtilsStrategy() = default;
 
    /*!
     * @brief Put blueprint coordinate information into a database

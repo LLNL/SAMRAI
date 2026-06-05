@@ -38,12 +38,12 @@ public:
    /*!
     * @brief Construct a patch level factory object.
     */
-   PatchLevelFactory();
+   PatchLevelFactory() = default;
 
    /*!
     * @brief Virtual destructor for patch level factory objects.
     */
-   virtual ~PatchLevelFactory();
+   virtual ~PatchLevelFactory() = default;
 
    /*!
     * @brief Allocate a patch level with the specified boxes and processor
@@ -137,10 +137,10 @@ private:
     * Copy constructor and assignment are not implemented.
     */
    PatchLevelFactory(
-      const PatchLevelFactory&);
+      const PatchLevelFactory&) = delete;
    PatchLevelFactory&
    operator = (
-      const PatchLevelFactory&);
+      const PatchLevelFactory&) = delete;
 
 };
 

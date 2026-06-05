@@ -23,10 +23,6 @@ BoundaryBoxUtils::BoundaryBoxUtils(
    computeOutwardShift();
 }
 
-BoundaryBoxUtils::~BoundaryBoxUtils()
-{
-}
-
 void
 BoundaryBoxUtils::computeOutwardShift()
 {

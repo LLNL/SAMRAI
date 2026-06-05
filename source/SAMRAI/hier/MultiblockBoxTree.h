@@ -44,7 +44,7 @@ public:
    /*!
     * @brief Destructor.
     */
-   ~MultiblockBoxTree();
+   ~MultiblockBoxTree() = default;
 
 private:
    /*!
@@ -69,7 +69,7 @@ private:
    /*!
     * Default constructor is unimplemented and should not be used.
     */
-   MultiblockBoxTree();
+   MultiblockBoxTree() = delete;
 
    /*!
     * @brief Return whether the tree contains any Boxes with the

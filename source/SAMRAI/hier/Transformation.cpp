@@ -46,27 +46,6 @@ Transformation::Transformation(
 {
 }
 
-Transformation::Transformation(
-   const Transformation& copy_trans):
-   d_rotation(copy_trans.d_rotation),
-   d_offset(copy_trans.d_offset),
-   d_begin_block(copy_trans.d_begin_block),
-   d_end_block(copy_trans.d_end_block)
-{
-}
-
-/*
- * ************************************************************************
- *
- * Destructor
- *
- * ************************************************************************
- */
-
-Transformation::~Transformation()
-{
-}
-
 /*
  * ************************************************************************
  *

@@ -41,7 +41,7 @@ public:
    /*!
     * @brief Destructor.
     */
-   ~BoundaryBoxUtils();
+   ~BoundaryBoxUtils() = default;
 
    /*!
     * @brief Reset boundary box.

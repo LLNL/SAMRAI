@@ -68,10 +68,6 @@ PatchGeometry::PatchGeometry(
    }
 }
 
-PatchGeometry::~PatchGeometry()
-{
-}
-
 Box
 PatchGeometry::getBoundaryFillBox(
    const BoundaryBox& bbox,

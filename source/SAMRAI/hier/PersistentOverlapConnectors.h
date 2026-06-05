@@ -106,11 +106,12 @@ public:
    setCreateEmptyNeighborContainers(
       bool create_empty_neighbor_containers);
 
-private:
    /*!
     * @brief Deletes all Connectors to and from this object
     */
    ~PersistentOverlapConnectors();
+
+private:
 
    /*!
     * @brief Create an overlap Connector, computing relationships by

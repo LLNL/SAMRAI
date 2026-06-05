@@ -28,11 +28,6 @@ BoxContainerSingleOwnerIterator::BoxContainerSingleOwnerIterator(
    }
 }
 
-BoxContainerSingleOwnerIterator::~BoxContainerSingleOwnerIterator()
-{
-   d_boxes = 0;
-}
-
 /*
  ****************************************************************************
  * Pre-increment operator.

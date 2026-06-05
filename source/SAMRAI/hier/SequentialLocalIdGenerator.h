@@ -55,8 +55,7 @@ public:
    /*!
     * @brief Destructor.
     */
-   ~SequentialLocalIdGenerator() {
-   }
+   ~SequentialLocalIdGenerator() = default;
 
    /*!
     * @brief Return a LocalId that is greater than the previous

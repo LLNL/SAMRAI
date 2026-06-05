@@ -68,7 +68,7 @@ public:
     * The virtual destructor for the coarsening operator does
     * nothing interesting.
     */
-   virtual ~TimeInterpolateOperator();
+   virtual ~TimeInterpolateOperator() = default;
 
    /**
     * Return name std::string identifier of the time interpolate operation.
@@ -97,10 +97,10 @@ public:
 private:
    // Neither of these is implemented.
    TimeInterpolateOperator(
-      const TimeInterpolateOperator&);
+      const TimeInterpolateOperator&) = delete;
    TimeInterpolateOperator&
    operator = (
-      const TimeInterpolateOperator&);
+      const TimeInterpolateOperator&) = delete;
 
    const std::string d_name;
 };

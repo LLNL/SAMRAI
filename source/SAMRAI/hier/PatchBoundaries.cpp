@@ -26,22 +26,5 @@ PatchBoundaries::PatchBoundaries(
 {
 }
 
-/*
- *************************************************************************
- *
- * Copy constructor
- *
- *************************************************************************
- */
-PatchBoundaries::PatchBoundaries(
-   const PatchBoundaries& r):
-   d_dim(r.d_dim),
-   d_array_of_bboxes(r.d_dim.getValue())
-{
-   for (unsigned int d = 0; d < d_dim.getValue(); ++d) {
-      d_array_of_bboxes[d] = r.d_array_of_bboxes[d];
-   }
-}
-
 } // SAMRAI namespace
 } // hier namespace

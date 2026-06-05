@@ -82,10 +82,6 @@ BoundaryLookupTable::BoundaryLookupTable(
    buildBoundaryDirectionVectors();
 }
 
-BoundaryLookupTable::~BoundaryLookupTable()
-{
-}
-
 /*
  *************************************************************************
  *

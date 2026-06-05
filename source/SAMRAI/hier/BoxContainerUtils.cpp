@@ -15,14 +15,6 @@ namespace SAMRAI {
 namespace hier {
 
 /*
- * Constructor does nothing because the objects are stateless.
- */
-
-BoxContainerUtils::BoxContainerUtils()
-{
-}
-
-/*
  ***************************************************************************
  ***************************************************************************
  */

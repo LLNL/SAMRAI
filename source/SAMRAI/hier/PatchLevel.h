@@ -172,7 +172,7 @@ public:
    /*!
     * @brief The virtual destructor for patch level deallocates all patches.
     */
-   virtual ~PatchLevel();
+   virtual ~PatchLevel() = default;
 
    /*!
     * @brief Get the level number

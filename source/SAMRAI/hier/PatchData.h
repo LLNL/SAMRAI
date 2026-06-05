@@ -71,7 +71,7 @@ public:
    /**
     * The virtual destructor for a patch data object.
     */
-   virtual ~PatchData();
+   virtual ~PatchData() = default;
 
    /**
     * Return the box over which this patch data object is defined.  All
@@ -311,10 +311,10 @@ private:
    static const int HIER_PATCH_DATA_VERSION;
 
    PatchData(
-      const PatchData&);        // not implemented
+      const PatchData&) = delete;
    PatchData&
    operator = (
-      const PatchData&);                // not implemented
+      const PatchData&) = delete;
 
    Box d_box;                           // interior box description
    Box d_ghost_box;                     // interior box plus ghosts

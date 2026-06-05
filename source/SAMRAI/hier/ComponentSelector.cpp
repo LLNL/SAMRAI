@@ -39,19 +39,9 @@ ComponentSelector::ComponentSelector(
    }
 }
 
-ComponentSelector::ComponentSelector(
-   const ComponentSelector& flags)
-{
-   d_bit_vector = flags.d_bit_vector;
-   d_max_bit_index = flags.d_max_bit_index;
-}
-
-ComponentSelector::~ComponentSelector()
-{
-}
-
 bool
-ComponentSelector::any() const {
+ComponentSelector::any() const noexcept
+{
    std::vector<std::bitset<C_BITSET_SIZE> >::const_iterator iter;
    bool set = false;
    for (iter = d_bit_vector.begin(); iter != d_bit_vector.end() && !set;
@@ -63,7 +53,7 @@ ComponentSelector::any() const {
 
 int
 ComponentSelector::_findMaxIndex(
-   const std::vector<std::bitset<C_BITSET_SIZE> >& bits) const
+   const std::vector<std::bitset<C_BITSET_SIZE> >& bits) const noexcept
 {
    bool bits_set = false;
    int max_index = -1;

@@ -52,28 +52,19 @@ public:
     * @brief Copy constructor
     */
    RealBoxConstIterator(
-      const RealBoxConstIterator& other):
-   d_boxes(other.d_boxes),
-   d_ni(other.d_ni)
-   {
-   }
+      const RealBoxConstIterator& other) = default;
 
    /*!
     * @brief Destructor.
     */
-   ~RealBoxConstIterator();
+   ~RealBoxConstIterator() = default;
 
    /*!
     * @brief Assignment operator.
     */
    RealBoxConstIterator&
    operator = (
-      const RealBoxConstIterator& r)
-   {
-      d_boxes = r.d_boxes;
-      d_ni = r.d_ni;
-      return *this;
-   }
+      const RealBoxConstIterator& r) = default;
 
    /*!
     * @brief Dereference operator mimicking a pointer dereference.

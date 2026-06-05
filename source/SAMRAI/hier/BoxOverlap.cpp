@@ -12,14 +12,6 @@
 namespace SAMRAI {
 namespace hier {
 
-BoxOverlap::BoxOverlap()
-{
-}
-
-BoxOverlap::~BoxOverlap()
-{
-}
-
 void
 BoxOverlap::print(
    std::ostream& os) const

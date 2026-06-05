@@ -67,7 +67,7 @@ public:
    bool
    isAttached() const
    {
-      return d_box_level != 0;
+      return d_box_level != nullptr;
    }
 
 private:
@@ -90,7 +90,7 @@ private:
     * multiple handles attached to the same BoxLevel.
     */
    BoxLevelHandle(
-      const BoxLevelHandle& other);
+      const BoxLevelHandle& other) = delete;
 
    /*!
     * @brief Forbidden assignment operator.
@@ -100,7 +100,7 @@ private:
     */
    BoxLevelHandle&
    operator = (
-      const BoxLevelHandle& other);
+      const BoxLevelHandle& other) = delete;
 
    /*!
     * @brief Detach the BoxLevel
@@ -114,7 +114,7 @@ private:
    void
    detachMyBoxLevel()
    {
-      d_box_level = 0;
+      d_box_level = nullptr;
    }
 
    //@{

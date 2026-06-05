@@ -141,10 +141,10 @@ public:
 
 private:
    RefineOperator(
-      const RefineOperator&);                   // not implemented
+      const RefineOperator&) = delete;
    RefineOperator&
    operator = (
-      const RefineOperator&);                           // not implemented
+      const RefineOperator&) = delete;
 
    /*
     * TODO SGS Rich has better way of doing this.

@@ -1260,7 +1260,7 @@ public:
       /*!
        * @brief Destructor.
        */
-      ~NeighborIterator();
+      ~NeighborIterator() = default;
 
       /*!
        * @brief Assignment operator.
@@ -1447,7 +1447,7 @@ public:
       /*!
        * @brief Destructor.
        */
-      ~ConstNeighborIterator();
+      ~ConstNeighborIterator() = default;
 
       /*!
        * @brief Assignment operator.

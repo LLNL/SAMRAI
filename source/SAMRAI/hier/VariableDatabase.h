@@ -655,7 +655,7 @@ protected:
     *
     * The destructor deallocates database contents.
     */
-   virtual ~VariableDatabase();
+   virtual ~VariableDatabase() = default;
 
    /**
     * @brief Return integer value used to indicate undefined variable or

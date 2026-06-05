@@ -77,7 +77,7 @@ public:
    /*!
     * @brief Virtual destructor for patch objects.
     */
-   virtual ~Patch();
+   virtual ~Patch() = default;
 
    /*!
     * @brief Get the box over which the patch is defined.

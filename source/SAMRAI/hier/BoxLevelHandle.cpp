@@ -39,7 +39,7 @@ BoxLevelHandle::~BoxLevelHandle()
 const BoxLevel&
 BoxLevelHandle::getBoxLevel() const
 {
-   if (d_box_level == 0) {
+   if (d_box_level == nullptr) {
       TBOX_ERROR(
          "BoxLevelHandle::getBoxLevel Attempted to access a BoxLevel\n"
          << "that has been detached from its handle.  Detachment happens\n"

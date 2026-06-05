@@ -13,14 +13,6 @@
 namespace SAMRAI {
 namespace hier {
 
-PatchFactory::PatchFactory()
-{
-}
-
-PatchFactory::~PatchFactory()
-{
-}
-
 std::shared_ptr<Patch>
 PatchFactory::allocate(
    const Box& box_level_box,

@@ -42,7 +42,7 @@ public:
    /*!
     * @brief Destructor.
     */
-   ~BoxLevelConnectorUtils();
+   ~BoxLevelConnectorUtils() = default;
 
    /*!
     * @brief Set whether to run expensive sanity checks on input parameters.

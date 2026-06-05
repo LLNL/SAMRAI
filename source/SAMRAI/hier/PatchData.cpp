@@ -27,10 +27,6 @@ PatchData::PatchData(
    d_ghost_box.grow(ghosts);
 }
 
-PatchData::~PatchData()
-{
-}
-
 void
 PatchData::copyFuseable(
    const PatchData& src,

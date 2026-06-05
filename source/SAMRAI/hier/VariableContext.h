@@ -76,7 +76,7 @@ public:
    /**
     * The destructor does nothing interesting.
     */
-   ~VariableContext();
+   ~VariableContext() = default;
 
    /**
     * Return integer index for VariableContext object.
@@ -110,10 +110,10 @@ public:
 
 private:
    VariableContext(
-      const VariableContext&);                // not implemented
+      const VariableContext&) = delete;
    VariableContext&
    operator = (
-      const VariableContext&);                     // not implemented
+      const VariableContext&) = delete;
 
    static int s_instance_counter;
 

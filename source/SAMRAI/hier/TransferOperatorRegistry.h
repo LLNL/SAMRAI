@@ -75,7 +75,7 @@ public:
    /*!
     * @brief Destructor
     */
-   virtual ~TransferOperatorRegistry();
+   virtual ~TransferOperatorRegistry() = default;
 
    /*!
     * @brief Add a concrete spatial coarsening operator.

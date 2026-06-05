@@ -54,7 +54,7 @@ public:
    /*!
     * @brief Destructor
     */
-   virtual ~BlueprintUtils();
+   virtual ~BlueprintUtils() = default;
 
    /*!
     * @brief Put topology and coordinates to the database

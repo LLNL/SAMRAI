@@ -69,10 +69,6 @@ ProcessorMapping::ProcessorMapping(
    setProcessorMapping(mapping);
 }
 
-ProcessorMapping::~ProcessorMapping()
-{
-}
-
 void
 ProcessorMapping::setMappingSize(
    const size_t n)

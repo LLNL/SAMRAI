@@ -243,7 +243,7 @@ protected:
     *
     * The destructor deallocates lookup table contents.
     */
-   ~BoundaryLookupTable();
+   ~BoundaryLookupTable() = default;
 
 private:
    /*!

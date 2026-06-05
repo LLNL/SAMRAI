@@ -29,10 +29,6 @@ TransferOperatorRegistry::TransferOperatorRegistry(
 {
 }
 
-TransferOperatorRegistry::~TransferOperatorRegistry()
-{
-}
-
 /*
  *************************************************************************
  *

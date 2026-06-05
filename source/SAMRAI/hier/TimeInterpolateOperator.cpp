@@ -18,9 +18,5 @@ TimeInterpolateOperator::TimeInterpolateOperator(
 {
 }
 
-TimeInterpolateOperator::~TimeInterpolateOperator()
-{
-}
-
 }
 }

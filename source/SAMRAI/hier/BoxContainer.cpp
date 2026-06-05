@@ -132,10 +132,6 @@ BoxContainer::BoxContainer(
    }
 }
 
-BoxContainer::~BoxContainer()
-{
-}
-
 /*
  *************************************************************************
  *
@@ -1974,10 +1970,6 @@ BoxContainer::BoxContainerIterator::BoxContainerIterator():
 {
 }
 
-BoxContainer::BoxContainerIterator::~BoxContainerIterator()
-{
-}
-
 BoxContainer::BoxContainerConstIterator::BoxContainerConstIterator(
    const BoxContainer& container,
    bool from_start):
@@ -2013,10 +2005,6 @@ BoxContainer::BoxContainerConstIterator::BoxContainerConstIterator(
 
 BoxContainer::BoxContainerConstIterator::BoxContainerConstIterator():
    d_ordered(false)
-{
-}
-
-BoxContainer::BoxContainerConstIterator::~BoxContainerConstIterator()
 {
 }
 

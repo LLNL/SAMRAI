@@ -25,11 +25,6 @@ RealBoxConstIterator::RealBoxConstIterator(
    }
 }
 
-RealBoxConstIterator::~RealBoxConstIterator()
-{
-   d_boxes = 0;
-}
-
 /*
  ****************************************************************************
  * Pre-increment operator.

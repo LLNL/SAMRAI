@@ -115,10 +115,6 @@ CoarseFineBoundary::CoarseFineBoundary(
 
 }
 
-CoarseFineBoundary::~CoarseFineBoundary()
-{
-}
-
 /*
  ************************************************************************
  * Use grid_geometry.computeBoundaryGeometry function,
