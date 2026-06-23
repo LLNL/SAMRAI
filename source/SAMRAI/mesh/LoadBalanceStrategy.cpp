@@ -43,6 +43,20 @@ LoadBalanceStrategy::~LoadBalanceStrategy()
 
 /*
  *************************************************************************
+ * Return the effective minimum cell request to use when generating boxes.
+ *************************************************************************
+ */
+size_t
+LoadBalanceStrategy::getEffectiveMinimumCellRequest(
+   size_t minimum_cell_request,
+   int level_number) const
+{
+   NULL_USE(level_number);
+   return minimum_cell_request;
+}
+
+/*
+ *************************************************************************
  * Report the load balance on processor, primarily
  * for debugging and checking load balance quality.
  *************************************************************************

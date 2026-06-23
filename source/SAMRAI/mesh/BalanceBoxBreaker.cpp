@@ -1117,7 +1117,8 @@ double BalanceBoxBreaker::TrialBreak::computeBreakOffLoad(
 
       double minimum_load = d_pparams->getArtificialMinimumLoad();
       if (d_pparams->usingLinearLoad()) {
-         minimum_load = d_pparams->computeLinearLoad(minimum_load);
+         minimum_load =
+            d_pparams->computeLinearLoadWithoutGhostWidth(minimum_load);
       }
 
       if (breakoff_load < minimum_load) {

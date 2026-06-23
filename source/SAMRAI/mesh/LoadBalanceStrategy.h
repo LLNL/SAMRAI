@@ -16,6 +16,7 @@
 #include "SAMRAI/hier/PatchHierarchy.h"
 #include "SAMRAI/tbox/RankGroup.h"
 
+#include <cstddef>
 #include <memory>
 
 namespace SAMRAI {
@@ -56,6 +57,23 @@ public:
    virtual bool
    getLoadBalanceDependsOnPatchData(
       int level_number) const = 0;
+
+   /*!
+    * @brief Return the effective minimum cell request to use when
+    * generating boxes for a level.
+    *
+    * Load balancers that adapt their partitioning constraints can override
+    * this hook so clustering and balancing use the same effective request.
+    * The default leaves the hierarchy-provided value unchanged.
+    *
+    * @param[in] minimum_cell_request Minimum cell request from the hierarchy.
+    *
+    * @param[in] level_number Level for which boxes are being generated.
+    */
+   virtual size_t
+   getEffectiveMinimumCellRequest(
+      size_t minimum_cell_request,
+      int level_number) const;
 
    /*!
     * @brief Given a BoxLevel, representing the domain of a specified

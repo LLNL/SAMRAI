@@ -151,7 +151,8 @@ void BoxTransitSet::insertAllWithArtificialMinimum(
    size_t old_size = d_set.size();
    double effective_minimum = minimum_load;
    if (d_pparams && d_pparams->usingLinearLoad()) {
-      effective_minimum = d_pparams->computeLinearLoad(minimum_load);
+      effective_minimum =
+         d_pparams->computeLinearLoadWithoutGhostWidth(minimum_load);
    }
 
    for (hier::BoxContainer::const_iterator bi = other.begin(); bi != other.end(); ++bi) {

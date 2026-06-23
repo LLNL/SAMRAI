@@ -332,6 +332,15 @@ public:
       int level_number) const;
 
    /*!
+    * @brief Return the hierarchy minimum cell request scaled by the
+    * current per-level feedback factor.
+    */
+   size_t
+   getEffectiveMinimumCellRequest(
+      size_t minimum_cell_request,
+      int level_number) const override;
+
+   /*!
     * @brief Get the current artificial factor used to scale the
     * "artificial_minimum_load" value for a given level.
     *
@@ -381,6 +390,25 @@ public:
    void
    setArtificialFactors(
       const std::vector<double>& artificial_factors);
+
+   /*!
+    * @brief Override the per-level intercept adjustment factors.
+    *
+    * This can be used to seed or reset the internal tuning state
+    * for linear load intercept adjustments.
+    */
+   void
+   setInterceptAdjustmentFactors(
+      const std::vector<double>& intercept_factors);
+
+   /*!
+    * @brief Get the current per-level intercept adjustment factors.
+    */
+   const std::vector<double>&
+   getInterceptFactors() const
+   {
+      return d_intercept_factor;
+   }
 
 private:
    typedef double LoadType;
@@ -435,6 +463,13 @@ private:
     */
    LoadType
    computeLocalLoad(
+      const hier::BoxLevel& box_level) const;
+
+   /*
+    * Count the local workload without applying the artificial minimum.
+    */
+   LoadType
+   computeLocalLoadWithoutArtificialMinimum(
       const hier::BoxLevel& box_level) const;
 
    /*
@@ -561,6 +596,14 @@ private:
    std::vector<double> d_artificial_minimum;
 
    mutable std::vector<double> d_artificial_factor;
+
+   /*!
+    * @brief Per-level factor applied to linear_load_intercept.
+    *
+    * Multiplies the base intercept value to adjust load model overhead.
+    * Starts at 1.0 (no adjustment).
+    */
+   mutable std::vector<double> d_intercept_factor;
 
    mutable double d_num_balances = 0.0;
    mutable double d_ratio_sum = 0.0;

@@ -3466,8 +3466,12 @@ GriddingAlgorithm::findRefinementBoxes(
    }
 
    if (!bounding_container.empty()) {
+      const size_t minimum_cell_request =
+         d_load_balancer->getEffectiveMinimumCellRequest(
+            d_hierarchy->getMinimumCellRequest(new_ln),
+            new_ln);
       d_box_generator->setMinimumCellRequest(
-         d_hierarchy->getMinimumCellRequest(tag_ln+1));
+         minimum_cell_request);
       d_box_generator->setRatioToNewLevel(ratio);
       d_box_generator->findBoxesContainingTags(
          new_box_level,

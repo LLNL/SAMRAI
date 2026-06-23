@@ -120,10 +120,13 @@ public:
       d_load_ghost_width = load_ghost_width;
    }
 
+   double computeLinearLoadWithoutGhostWidth(double size) const {
+      return d_load_slope * size + d_load_intercept;
+   }
+
    double computeLinearLoad(double size) const {
-       
       if (d_load_ghost_width == 0) {
-         return d_load_slope * size + d_load_intercept;
+         return computeLinearLoadWithoutGhostWidth(size);
       } else {
          const double dim = static_cast<double>(getDim().getValue());
          TBOX_ASSERT(dim > 0.0);
@@ -131,7 +134,7 @@ public:
          const double new_width =
             base_width + 2.0 * static_cast<double>(d_load_ghost_width);
          const double new_size = std::pow(new_width, dim);
-         return d_load_slope * new_size + d_load_intercept;
+         return computeLinearLoadWithoutGhostWidth(new_size);
       } 
    }
 
