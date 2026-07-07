@@ -275,7 +275,7 @@ CascadePartitioner::loadBalanceBoxLevel(
    size_t minimum_cells = 1;
    double artificial_minimum = 1.0;
    bool using_linear_load = false;
-   double linear_load_slope = 1.0
+   double linear_load_slope = 1.0;
    double linear_load_intercept = 0.0;
    int linear_load_ghost_width = 0;
 
