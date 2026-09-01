@@ -3,7 +3,7 @@
  * This file is part of the SAMRAI distribution.  For full copyright
  * information, see COPYRIGHT and LICENSE.
  *
- * Copyright:     (c) 1997-2025 Lawrence Livermore National Security, LLC
+ * Copyright:     (c) 1997-2026 Lawrence Livermore National Security, LLC
  * Description:   Implementation of TreeLoadBalancer.
  *
  ************************************************************************/
@@ -78,6 +78,13 @@ public:
    void
    insertAll(
       const hier::BoxContainer& box_container);
+
+   //! @copydoc TransitLoad::insertAllWithArtificialMinimum(
+   //!           const hier::BoxContainer&, double)
+   void
+   insertAllWithArtificialMinimum(
+      const hier::BoxContainer& box_container,
+      double minimum_load);
 
    //! @copydoc TransitLoad::insertAll( TransitLoad & )
    void

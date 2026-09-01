@@ -1,10 +1,10 @@
 *****************************************************************************
-  Copyright 1997-2025
+  Copyright 1997-2026
   Lawrence Livermore National Security, LLC.
   All rights reserved.
 *****************************************************************************
 
-                     Release Notes for SAMRAI v4.5.0
+                     Release Notes for SAMRAI v4.6.0
 
      (notes for previous releases may be found in /SAMRAI/docs/release)
 
@@ -29,15 +29,17 @@ Please post an issue on github https://github.com/LLNL/SAMRAI
                 Significant bug fixes
 ----------------------------------------------------------------------------
 
-1) Some internal calls to AsyncCommPeer::beginSend() were casting the value
-passed in the second argument, 'size_t size', to type int.  This was exposed
-as a bug in cases where the size_t value was larger than the maximum value
-of the int type, causing an integer wraparound and an incorrect value to be
-used inside the function.  In particular this may happen during communication
-in a regrid step when the mesh size and total data to communicate are very
-large.  These casts have been removed from calls throughout the library, so
-that the correct size_t values are preserved.
+1) A fix was implemented to remove logic that was too restrictive in
+RefineSchedule when deciding to compute overlaps between source and
+destination patches that touch on their boundaries but do not overlap on
+their interiors.  These overlaps need to be computed for patch data types
+that are centered on the boundaries of cells (node, face, side, edge, etc.).
+The GitHub pull request for this bug fix is at
+https://github.com/llnl/SAMRAI/pull/312
 
+This fix may cause changes to numerical results.  These changes should be
+improvements to accuracy due to adding necessary overlaps that were missed
+before the fix.
 
 
 *****************************************************************************
@@ -49,45 +51,41 @@ that the correct size_t values are preserved.
                 Summary of what's new
 -----------------------------------------------------------------------------
 
-1) The message-passing capability of AsycCommPeer has been extended to
-handle much larger buffer sizes.
+1)
+
 
 -----------------------------------------------------------------------------
                 Summary of what's changed
 -----------------------------------------------------------------------------
 
-1) The recommended minimum C++ standard is now C++ 17.
+1) There have been some incremental additions of modern C++ features in
+some of the important low-level classes in tbox and hier.
 
-2) If SAMRAI is configured to use Caliper, the #define macro created in
-the generated header SAMRAI_config.h is changed from HAVE_CALIPER to
-SAMRAI_HAVE_CALIPER.
+2) 
 
 -----------------------------------------------------------------------------
                 Details about what's new
 -----------------------------------------------------------------------------
 
-1) The message-passing capability in AsyncCommPeer, where the MPI calls for
-parallel SAMRAI algorithms such as the communication schedules are located,
-has been extended to handle much larger buffer sizes.  The existing limitation
-was due the use of the int type in the MPI API for the "count" argument
-in functions such as MPI_Isend and MPI_Irecv.  If the buffer passed into
-AsyncCommPeer had a byte length greater than the maximum value of int, then
-the length could not be passed accurately as the "count" argument in those
-functions.  To solve this, AsyncCommPeer now detects if the buffer will be
-too large, and if it is, it will break the buffer into chunks of sizes a
-small amount smaller than the maximum int value, and those chunks will be
-passed in a series of calls to MPI send and receive functions.  The chunks
-received by the receiving rank will be contiguous in memory, so there is no
-change to the results that the calling code should expect from calling
-AsyncCommPeer methods.
+1) 
 
-The number of chunks that are able to be used is a constant set at compile
-time.  The default number is 10, and users can change it by setting the
-CMake variable SAMRAI_MAX_COMM_BUFFERS.
+-----------------------------------------------------------------------------
+                Details about what's changed
+-----------------------------------------------------------------------------
+
+1) There have been some incremental additions of modern C++ features in
+some of the important low-level classes in tbox and hier.  This includes
+adding of constexpr and noexcept keywords in appropriate places, and
+explicit defaulting of a number of constructors and destructors. 
+
+An API change related to these changes is the removal of implicit converstion
+from Index to IntVector via the IntVector constructor that takes an Index.
+This constructor still exists, but is now declared explicit.  This removes
+the implicit conversion that occured when an Index was passed into a function
+that requires an IntVector.
 
 
 
 
-
-=============================================================================
+============================================================================
 =============================================================================
