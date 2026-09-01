@@ -39,8 +39,8 @@ project_dir="$(pwd)"
 build_dir="${build_root}/build_${sys_type}_${compiler}"
 option=${1:-""}
 
-raja_ver="2025.12.2"
-umpire_ver="2025.12.0"
+raja_ver="2026.07.0"
+umpire_ver="2026.07.1"
 
 # Build
 if [[ "${option}" != "--test-only" ]]
@@ -65,9 +65,9 @@ then
     fi
     if [[ ! -d /usr/WS1/samrai/tpl/umpire/v$umpire_ver ]]
     then
-        wget https://github.com/LLNL/umpire/releases/download/v$umpire_ver/umpire-$umpire_ver.tar.gz
-        tar xvf umpire-$umpire_ver.tar.gz
-        mv umpire-$umpire_ver umpire
+        wget https://github.com/LLNL/umpire/releases/download/v$umpire_ver/umpire-v$umpire_ver.tar.gz
+        tar xvf umpire-v$umpire_ver.tar.gz
+        mv umpire-v$umpire_ver umpire
     else
         cp -r /usr/WS1/samrai/tpl/umpire/v$umpire_ver umpire
     fi
