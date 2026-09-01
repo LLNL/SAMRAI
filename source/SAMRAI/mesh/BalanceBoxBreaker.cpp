@@ -18,6 +18,8 @@
 #include "SAMRAI/tbox/Utilities.h"
 #include "SAMRAI/tbox/TimerManager.h"
 
+#include <cmath>
+
 #if !defined(__BGL_FAMILY__) && defined(__xlC__)
 /*
  * Suppress XLC warnings
@@ -1085,7 +1087,7 @@ void BalanceBoxBreaker::TrialBreak::computeBreakData(
    }
    if (do_cut) {
       d_breakoff.push_back(box);
-      d_breakoff_load = computeBreakOffLoad(box);
+      d_breakoff_load = computeBreakOffLoad(box, &d_leftover);
    } else {
       d_leftover.clear(); 
       d_leftover.push_back(d_whole_box);
@@ -1101,19 +1103,57 @@ void BalanceBoxBreaker::TrialBreak::computeBreakData(
  *************************************************************************
  */
 double BalanceBoxBreaker::TrialBreak::computeBreakOffLoad(
-   const hier::Box& box)
+   const hier::Box& box,
+   const hier::BoxContainer* precomputed_leftover)
 {
    double breakoff_load = 0.0;
 
    if (d_corner_weights.empty()) {
       /*
-       * If there is no corner weight information, the breakoff load is
-       * box.size() multiplied by the ratio of the whole load to the whole
-       * box size.
+       * If there is no corner weight information, apportion the existing
+       * load according to box size.  For the linear model, weight every
+       * resulting box by its ghost-grown size and per-box intercept.  The
+       * normalization preserves the load of the original box while
+       * accounting for the additional ghost regions created by the split.
        */
-      breakoff_load = (d_whole_box_load /
-                       static_cast<double>(d_whole_box.size())) *
-                      static_cast<double>(box.size());
+      if (d_pparams->usingLinearLoad()) {
+         hier::Box grown_breakoff(box);
+         grown_breakoff.grow(d_pparams->getGhostWidth());
+         const double breakoff_weight = d_pparams->computeLinearLoad(
+            static_cast<double>(grown_breakoff.size()));
+         if (!std::isfinite(breakoff_weight) || breakoff_weight <= 0.0) {
+            TBOX_ERROR("BalanceBoxBreaker cannot use a non-positive or "
+               << "non-finite linear breakoff load.\n");
+         }
+
+         hier::BoxContainer computed_leftover;
+         if (!precomputed_leftover) {
+            BalanceBoxBreaker::burstBox(
+               computed_leftover,
+               d_whole_box,
+               box);
+            precomputed_leftover = &computed_leftover;
+         }
+         double total_weight = breakoff_weight;
+         for (hier::BoxContainer::const_iterator bi =
+                 precomputed_leftover->begin();
+              bi != precomputed_leftover->end(); ++bi) {
+            hier::Box grown_leftover(*bi);
+            grown_leftover.grow(d_pparams->getGhostWidth());
+            total_weight += d_pparams->computeLinearLoad(
+               static_cast<double>(grown_leftover.size()));
+         }
+
+         if (!std::isfinite(total_weight) || total_weight <= 0.0) {
+            TBOX_ERROR("BalanceBoxBreaker cannot apportion a non-positive "
+               << "linear load after splitting a box.\n");
+         }
+         breakoff_load = d_whole_box_load * breakoff_weight / total_weight;
+      } else {
+         breakoff_load = (d_whole_box_load /
+                          static_cast<double>(d_whole_box.size())) *
+                         static_cast<double>(box.size());
+      }
 
       if (breakoff_load < d_pparams->getArtificialMinimumLoad()) {
          breakoff_load = d_pparams->getArtificialMinimumLoad();
