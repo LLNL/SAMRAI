@@ -79,7 +79,7 @@ printLoadBalanceDiagnostics(
    const int level_number,
    const char* load_label,
    const int local_patch_count,
-   //const double local_zone,
+   const double local_zones,
    const double local_load,
    const hier::IntVector* ghost_width)
 {
@@ -94,7 +94,7 @@ printLoadBalanceDiagnostics(
    std::cout << "level=" << level_number
              << " rank=" << mpi.getRank()
              << " Patches=" << local_patch_count
-             //<< " zones=" << local_zone
+             << " zones=" << local_zones
              << " " << load_label << "=" << local_load
              << std::endl;
 }
@@ -118,10 +118,10 @@ CascadePartitioner::CascadePartitioner(
    d_workload_data_id(0),
    d_master_workload_data_id(s_default_data_id),
    d_tile_size(dim, 1),
-   d_ghost_width(dim, 0),
    d_using_linear_load(1, false),
    d_linear_load_slope(1, 1.0),
    d_linear_load_intercept(1, 0.0),
+   d_linear_load_data_ids(),
    d_max_linear_load_iterations(3),
    d_max_spread_procs(500),
    d_limit_supply_to_surplus(true),
@@ -179,6 +179,21 @@ CascadePartitioner::updateLoadModelCoefficients(
    d_using_linear_load = using_linear_load;
    d_linear_load_slope = linear_load_slope;
    d_linear_load_intercept = linear_load_intercept;
+}
+
+void
+CascadePartitioner::setLinearLoadPatchDataIndices(
+   const std::vector<int>& data_ids)
+{
+   for (std::vector<int>::const_iterator di = data_ids.begin();
+        di != data_ids.end(); ++di) {
+      if (*di < 0) {
+         TBOX_ERROR(
+            d_object_name << "::setLinearLoadPatchDataIndices error:\n"
+            << "Patch data indices must be non-negative.\n");
+      }
+   }
+   d_linear_load_data_ids = data_ids;
 }
 
 /*
@@ -439,8 +454,35 @@ CascadePartitioner::loadBalanceBoxLevel(
     * load estimates account for any ghost-region work the application has
     * requested.
     */
-   d_ghost_width = hierarchy->getPatchDescriptor()->getMaxGhostWidth(d_dim);
-   d_pparams->setGhostWidth(d_ghost_width);
+   hier::IntVector ghost_width(d_dim, 0);
+   if (using_linear_load) {
+      const std::shared_ptr<hier::PatchDescriptor> patch_descriptor =
+         hierarchy->getPatchDescriptor();
+      if (d_linear_load_data_ids.empty()) {
+         ghost_width = patch_descriptor->getMaxGhostWidth(d_dim);
+      } else {
+         for (std::vector<int>::const_iterator di =
+                 d_linear_load_data_ids.begin();
+              di != d_linear_load_data_ids.end(); ++di) {
+            if (*di >= patch_descriptor->getMaxNumberRegisteredComponents()) {
+               TBOX_ERROR(
+                  d_object_name << "::loadBalanceBoxLevel error:\n"
+                  << "Linear-load patch data index " << *di
+                  << " is not registered.\n");
+            }
+            const std::shared_ptr<hier::PatchDataFactory> factory =
+               patch_descriptor->getPatchDataFactory(*di);
+            if (!factory || factory->getDim().getValue() != d_dim.getValue()) {
+               TBOX_ERROR(
+                  d_object_name << "::loadBalanceBoxLevel error:\n"
+                  << "Linear-load patch data index " << *di
+                  << " is unavailable or has the wrong dimension.\n");
+            }
+            ghost_width.max(factory->getGhostCellWidth());
+         }
+      }
+   }
+   d_pparams->setGhostWidth(ghost_width);
 
    if (using_linear_load) {
       double minimum_modeled_load =
@@ -451,7 +493,7 @@ CascadePartitioner::loadBalanceBoxLevel(
          for (int d = 0; d < d_dim.getValue(); ++d) {
             minimum_grown_volume *=
                static_cast<double>(min_size(b, d)) +
-               2.0 * static_cast<double>(d_ghost_width[d]);
+               2.0 * static_cast<double>(ghost_width[d]);
          }
          minimum_modeled_load = tbox::MathUtilities<double>::Min(
             minimum_modeled_load,
@@ -488,14 +530,15 @@ CascadePartitioner::loadBalanceBoxLevel(
    LoadType local_load = computeLocalLoad(balance_box_level);
 
    if (print_load_balance_diagnostics) {
+      const LoadType local_zones = computeLocalZones(balance_box_level);
       printLoadBalanceDiagnostics(
          d_mpi,
          level_number,
          "initial local_load",
          static_cast<int>(balance_box_level.getBoxes().size()),
-         //local_zone,
+         local_zones,
          local_load,
-         &d_ghost_width);
+         &ghost_width);
    }
 
    globalWorkReduction(local_load,
@@ -715,9 +758,6 @@ CascadePartitioner::loadBalanceBoxLevel(
     * Finished load balancing.  Clean up and wrap up.
     */
 
-
-   //temp comment out for logging:
-   //local_zone = computeLocalZones(balance_box_level);
    local_load = computeLocalLoad(balance_box_level, using_linear_load);
    d_load_stat.push_back(local_load);
    d_box_count_stat.push_back(
@@ -764,12 +804,13 @@ CascadePartitioner::loadBalanceBoxLevel(
    }
 
    if (print_load_balance_diagnostics) {
+      const LoadType local_zones = computeLocalZones(balance_box_level);
       printLoadBalanceDiagnostics(
          d_mpi,
          level_number,
          "updated local_load",
          static_cast<int>(balance_box_level.getBoxes().size()),
-         //local_zone,
+         local_zones,
          local_load,
          0);
    }
@@ -1003,7 +1044,7 @@ CascadePartitioner::partitionByCascade(
    } else if (d_pparams->usingLinearLoad()) {
       TBOX_ASSERT(box_local_load);
       box_local_load->insertAllWithScaledLoad(
-         balance_box_level.getBoxes(), d_ghost_width);
+         balance_box_level.getBoxes(), d_pparams->getGhostWidth());
    } else if (d_pparams->getArtificialMinimumLoad() >
               d_pparams->getMinBoxSizeProduct()) {
       local_load->insertAllWithArtificialMinimum(
@@ -1268,7 +1309,7 @@ CascadePartitioner::computeLocalLoad(
       double box_size = static_cast<double>(ni->size());
       if (using_linear_load) {
          hier::Box grown_box(*ni);
-         grown_box.grow(d_ghost_width);
+         grown_box.grow(d_pparams->getGhostWidth());
          box_size = static_cast<double>(grown_box.size());
       }
       double box_load = box_size;
@@ -1298,6 +1339,7 @@ CascadePartitioner::LoadType
 CascadePartitioner::computeNonUniformWorkLoad(
    const hier::PatchLevel& patch_level) const
 {
+   TBOX_ASSERT(d_pparams);
    double load = 0.0;
    for (hier::PatchLevel::iterator ip(patch_level.begin());
         ip != patch_level.end(); ++ip) {
@@ -1321,9 +1363,9 @@ CascadePartitioner::computeLocalZones(
    const hier::BoxContainer& boxes = box_level.getBoxes();
    for (hier::BoxContainer::const_iterator ni = boxes.begin();
         ni != boxes.end();
-        ++ni) {
+      ++ni) {
       hier::Box tmp(*ni);
-      tmp.grow(d_ghost_width);
+      tmp.grow(d_pparams->getGhostWidth());
       double box_load = static_cast<double>(tmp.size());
 
       load += box_load;

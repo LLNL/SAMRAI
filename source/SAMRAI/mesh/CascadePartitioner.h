@@ -262,6 +262,18 @@ public:
       const std::vector<double>& linear_load_intercept);
 
    /*!
+    * @brief Select application patch data whose ghost widths contribute to
+    * the linear load model.
+    *
+    * The component-wise maximum ghost width of these registered data
+    * factories is used.  An empty list restores the fallback that considers
+    * all registered patch data.
+    */
+   void
+   setLinearLoadPatchDataIndices(
+      const std::vector<int>& data_ids);
+
+   /*!
     * @brief Configure the load balancer to use the data stored
     * in the hierarchy at the specified descriptor index
     * for estimating the workload on each cell.
@@ -454,11 +466,6 @@ private:
    hier::IntVector d_tile_size;
 
    /*!
-    * @brief Ghost width used to compute load. Zero by default.
-    */
-   mutable hier::IntVector d_ghost_width;
-
-   /*!
     * @brief Per-level flags for using the linear load model.
     *
     * If fewer values are provided than hierarchy levels, the last
@@ -487,6 +494,12 @@ private:
     * See input parameter "linear_load_intercept".
     */
    std::vector<double> d_linear_load_intercept;
+
+   /*!
+    * @brief Application patch data used to derive the linear-load ghost
+    * width. An empty list means all registered patch data.
+    */
+   std::vector<int> d_linear_load_data_ids;
 
    /*!
     * @brief Maximum number of split-producing linear-load passes.
