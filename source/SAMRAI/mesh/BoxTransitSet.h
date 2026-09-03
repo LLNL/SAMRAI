@@ -93,6 +93,17 @@ public:
       const hier::BoxContainer& box_container,
       double minimum_load);
 
+   /*!
+    * @brief Insert boxes with loads computed from ghost-grown sizes.
+    *
+    * @param[in] other Box container whose boxes are inserted.
+    * @param[in] ghost_width Application-specific ghost width.
+    */
+   void
+   insertAllWithScaledLoad(
+      const hier::BoxContainer& other,
+      const hier::IntVector& ghost_width);
+
    //! @copydoc TransitLoad::insertAll( TransitLoad & )
    void
    insertAll(
