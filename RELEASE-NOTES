@@ -128,7 +128,7 @@ on this implicit conversion will need to change to explicitly construct an
 IntVector.  This change protects against potentially bug-prone confusion
 of these two similar types, as well as helping to avoid repeated
 silent invocations of the IntVector constructor caused by usage such as
-passing an Index in a function argument that is declared IntVector.
+passing an Index for a function argument that is declared IntVector.
 
 3) The minimum C++ standard for the source and test code is now C++20.  In
 particular, variable-length arrays have been replaced with standard-library
